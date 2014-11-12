@@ -1,0 +1,544 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		83568D851A136D7800766DA3 /* libGap-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83568D791A136D7700766DA3 /* libGap-iOS.a */; };
+		83568D9F1A136DEE00766DA3 /* InfinitStateWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568D9E1A136DEE00766DA3 /* InfinitStateWrapper.mm */; };
+		83568DA41A136DF600766DA3 /* InfinitUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA11A136DF600766DA3 /* InfinitUser.m */; };
+		83568DA51A136DF600766DA3 /* InfinitUserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA31A136DF600766DA3 /* InfinitUserManager.m */; };
+		83568DAA1A136DFF00766DA3 /* InfinitPeerTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA71A136DFF00766DA3 /* InfinitPeerTransaction.m */; };
+		83568DAB1A136DFF00766DA3 /* InfinitPeerTransactionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA91A136DFF00766DA3 /* InfinitPeerTransactionManager.m */; };
+		83568DB01A136E1000766DA3 /* InfinitStateManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DAD1A136E1000766DA3 /* InfinitStateManager.mm */; };
+		83568DB11A136E1000766DA3 /* InfinitStateResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DAF1A136E1000766DA3 /* InfinitStateResult.m */; };
+		83F4D0131A136E3C0068BEB2 /* InfinitStateWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568D9D1A136DEE00766DA3 /* InfinitStateWrapper.h */; };
+		83F4D0141A136E3C0068BEB2 /* InfinitStateManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DAC1A136E1000766DA3 /* InfinitStateManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DAE1A136E1000766DA3 /* InfinitStateResult.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83F4D0161A136E3C0068BEB2 /* InfinitPeerTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA61A136DFF00766DA3 /* InfinitPeerTransaction.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83F4D0171A136E3C0068BEB2 /* InfinitPeerTransactionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA81A136DFF00766DA3 /* InfinitPeerTransactionManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83F4D0181A136E3C0068BEB2 /* InfinitUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA01A136DF600766DA3 /* InfinitUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83F4D0191A136E3C0068BEB2 /* InfinitUserManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA21A136DF600766DA3 /* InfinitUserManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		83568D861A136D7800766DA3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83568D6C1A136D5D00766DA3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 83568D781A136D7700766DA3;
+			remoteInfo = "Gap-iOS";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		83568D771A136D7700766DA3 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		83568D791A136D7700766DA3 /* libGap-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libGap-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		83568D841A136D7800766DA3 /* Gap-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Gap-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		83568D8A1A136D7800766DA3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		83568D9D1A136DEE00766DA3 /* InfinitStateWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitStateWrapper.h; sourceTree = "<group>"; };
+		83568D9E1A136DEE00766DA3 /* InfinitStateWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitStateWrapper.mm; sourceTree = "<group>"; };
+		83568DA01A136DF600766DA3 /* InfinitUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitUser.h; sourceTree = "<group>"; };
+		83568DA11A136DF600766DA3 /* InfinitUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitUser.m; sourceTree = "<group>"; };
+		83568DA21A136DF600766DA3 /* InfinitUserManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitUserManager.h; sourceTree = "<group>"; };
+		83568DA31A136DF600766DA3 /* InfinitUserManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitUserManager.m; sourceTree = "<group>"; };
+		83568DA61A136DFF00766DA3 /* InfinitPeerTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitPeerTransaction.h; sourceTree = "<group>"; };
+		83568DA71A136DFF00766DA3 /* InfinitPeerTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitPeerTransaction.m; sourceTree = "<group>"; };
+		83568DA81A136DFF00766DA3 /* InfinitPeerTransactionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitPeerTransactionManager.h; sourceTree = "<group>"; };
+		83568DA91A136DFF00766DA3 /* InfinitPeerTransactionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitPeerTransactionManager.m; sourceTree = "<group>"; };
+		83568DAC1A136E1000766DA3 /* InfinitStateManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitStateManager.h; sourceTree = "<group>"; };
+		83568DAD1A136E1000766DA3 /* InfinitStateManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitStateManager.mm; sourceTree = "<group>"; };
+		83568DAE1A136E1000766DA3 /* InfinitStateResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitStateResult.h; sourceTree = "<group>"; };
+		83568DAF1A136E1000766DA3 /* InfinitStateResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitStateResult.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		83568D761A136D7700766DA3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		83568D811A136D7800766DA3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				83568D851A136D7800766DA3 /* libGap-iOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		83568D6B1A136D5D00766DA3 = {
+			isa = PBXGroup;
+			children = (
+				83568D9B1A136DDE00766DA3 /* Gap */,
+				83568D9C1A136DE300766DA3 /* Peer Transactions */,
+				83568D9A1A136DD900766DA3 /* Users */,
+				83568D881A136D7800766DA3 /* Gap-iOSTests */,
+				83568D7A1A136D7700766DA3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		83568D7A1A136D7700766DA3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				83568D791A136D7700766DA3 /* libGap-iOS.a */,
+				83568D841A136D7800766DA3 /* Gap-iOSTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		83568D881A136D7800766DA3 /* Gap-iOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				83568D891A136D7800766DA3 /* Supporting Files */,
+			);
+			path = "Gap-iOSTests";
+			sourceTree = "<group>";
+		};
+		83568D891A136D7800766DA3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				83568D8A1A136D7800766DA3 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		83568D9A1A136DD900766DA3 /* Users */ = {
+			isa = PBXGroup;
+			children = (
+				83568DA01A136DF600766DA3 /* InfinitUser.h */,
+				83568DA11A136DF600766DA3 /* InfinitUser.m */,
+				83568DA21A136DF600766DA3 /* InfinitUserManager.h */,
+				83568DA31A136DF600766DA3 /* InfinitUserManager.m */,
+			);
+			name = Users;
+			sourceTree = "<group>";
+		};
+		83568D9B1A136DDE00766DA3 /* Gap */ = {
+			isa = PBXGroup;
+			children = (
+				83568DAC1A136E1000766DA3 /* InfinitStateManager.h */,
+				83568DAD1A136E1000766DA3 /* InfinitStateManager.mm */,
+				83568DAE1A136E1000766DA3 /* InfinitStateResult.h */,
+				83568DAF1A136E1000766DA3 /* InfinitStateResult.m */,
+				83568D9D1A136DEE00766DA3 /* InfinitStateWrapper.h */,
+				83568D9E1A136DEE00766DA3 /* InfinitStateWrapper.mm */,
+			);
+			name = Gap;
+			sourceTree = "<group>";
+		};
+		83568D9C1A136DE300766DA3 /* Peer Transactions */ = {
+			isa = PBXGroup;
+			children = (
+				83568DA61A136DFF00766DA3 /* InfinitPeerTransaction.h */,
+				83568DA71A136DFF00766DA3 /* InfinitPeerTransaction.m */,
+				83568DA81A136DFF00766DA3 /* InfinitPeerTransactionManager.h */,
+				83568DA91A136DFF00766DA3 /* InfinitPeerTransactionManager.m */,
+			);
+			name = "Peer Transactions";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		83568DB21A136E1D00766DA3 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				83F4D0141A136E3C0068BEB2 /* InfinitStateManager.h in Headers */,
+				83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */,
+				83F4D0161A136E3C0068BEB2 /* InfinitPeerTransaction.h in Headers */,
+				83F4D0171A136E3C0068BEB2 /* InfinitPeerTransactionManager.h in Headers */,
+				83F4D0181A136E3C0068BEB2 /* InfinitUser.h in Headers */,
+				83F4D0191A136E3C0068BEB2 /* InfinitUserManager.h in Headers */,
+				83F4D0131A136E3C0068BEB2 /* InfinitStateWrapper.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		83568D781A136D7700766DA3 /* Gap-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 83568D8B1A136D7800766DA3 /* Build configuration list for PBXNativeTarget "Gap-iOS" */;
+			buildPhases = (
+				83568D751A136D7700766DA3 /* Sources */,
+				83568DB21A136E1D00766DA3 /* Headers */,
+				83568D761A136D7700766DA3 /* Frameworks */,
+				83568D771A136D7700766DA3 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Gap-iOS";
+			productName = "Gap-iOS";
+			productReference = 83568D791A136D7700766DA3 /* libGap-iOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		83568D831A136D7800766DA3 /* Gap-iOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 83568D8E1A136D7800766DA3 /* Build configuration list for PBXNativeTarget "Gap-iOSTests" */;
+			buildPhases = (
+				83568D801A136D7800766DA3 /* Sources */,
+				83568D811A136D7800766DA3 /* Frameworks */,
+				83568D821A136D7800766DA3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				83568D871A136D7800766DA3 /* PBXTargetDependency */,
+			);
+			name = "Gap-iOSTests";
+			productName = "Gap-iOSTests";
+			productReference = 83568D841A136D7800766DA3 /* Gap-iOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		83568D6C1A136D5D00766DA3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				TargetAttributes = {
+					83568D781A136D7700766DA3 = {
+						CreatedOnToolsVersion = 6.1;
+					};
+					83568D831A136D7800766DA3 = {
+						CreatedOnToolsVersion = 6.1;
+					};
+				};
+			};
+			buildConfigurationList = 83568D6F1A136D5D00766DA3 /* Build configuration list for PBXProject "Gap" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 83568D6B1A136D5D00766DA3;
+			productRefGroup = 83568D7A1A136D7700766DA3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				83568D781A136D7700766DA3 /* Gap-iOS */,
+				83568D831A136D7800766DA3 /* Gap-iOSTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		83568D821A136D7800766DA3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		83568D751A136D7700766DA3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				83568DA41A136DF600766DA3 /* InfinitUser.m in Sources */,
+				83568DB01A136E1000766DA3 /* InfinitStateManager.mm in Sources */,
+				83568DB11A136E1000766DA3 /* InfinitStateResult.m in Sources */,
+				83568DAB1A136DFF00766DA3 /* InfinitPeerTransactionManager.m in Sources */,
+				83568D9F1A136DEE00766DA3 /* InfinitStateWrapper.mm in Sources */,
+				83568DAA1A136DFF00766DA3 /* InfinitPeerTransaction.m in Sources */,
+				83568DA51A136DF600766DA3 /* InfinitUserManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		83568D801A136D7800766DA3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		83568D871A136D7800766DA3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 83568D781A136D7700766DA3 /* Gap-iOS */;
+			targetProxy = 83568D861A136D7800766DA3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		83568D701A136D5D00766DA3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../elle/elle/src,
+					../../../fist/src,
+					../../../oracles/src,
+				);
+				PRIVATE_HEADERS_FOLDER_PATH = "$(PUBLIC_HEADERS_FOLDER_PATH)/Private";
+				PUBLIC_HEADERS_FOLDER_PATH = include/Gap;
+			};
+			name = Debug;
+		};
+		83568D711A136D5D00766DA3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../elle/elle/src,
+					../../../fist/src,
+					../../../oracles/src,
+				);
+				PRIVATE_HEADERS_FOLDER_PATH = "$(PUBLIC_HEADERS_FOLDER_PATH)/Private";
+				PUBLIC_HEADERS_FOLDER_PATH = include/Gap;
+			};
+			name = Release;
+		};
+		83568D8C1A136D7800766DA3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../elle/elle/src,
+					../../fist/src,
+					../../_build/ios,
+					../../../_build/ios/fist/src,
+					../../../_build/ios/elle/boost/include,
+					../../../_build/ios/oracles/src,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		83568D8D1A136D7800766DA3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../elle/elle/src,
+					../../fist/src,
+					../../_build/ios,
+					../../../_build/ios/fist/src,
+					../../../_build/ios/elle/boost/include,
+					../../../_build/ios/oracles/src,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		83568D8F1A136D7800766DA3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "Gap-iOSTests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		83568D901A136D7800766DA3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "Gap-iOSTests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		83568D6F1A136D5D00766DA3 /* Build configuration list for PBXProject "Gap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				83568D701A136D5D00766DA3 /* Debug */,
+				83568D711A136D5D00766DA3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		83568D8B1A136D7800766DA3 /* Build configuration list for PBXNativeTarget "Gap-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				83568D8C1A136D7800766DA3 /* Debug */,
+				83568D8D1A136D7800766DA3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		83568D8E1A136D7800766DA3 /* Build configuration list for PBXNativeTarget "Gap-iOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				83568D8F1A136D7800766DA3 /* Debug */,
+				83568D901A136D7800766DA3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 83568D6C1A136D5D00766DA3 /* Project object */;
+}
