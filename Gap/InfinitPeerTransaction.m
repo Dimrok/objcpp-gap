@@ -8,12 +8,24 @@
 
 #import "InfinitPeerTransaction.h"
 
+#import "InfinitStateManager.h"
+#import "InfinitUserManager.h"
+
 @implementation InfinitPeerTransaction
+{
+@private
+  NSNumber* _sender_id;
+  NSNumber* _recipient_id;
+  NSString* _sender_device_id;
+}
+
+#pragma mark - Init
 
 - (id)initWithId:(NSNumber*)id_
           status:(gap_TransactionStatus)status
-          sender:(InfinitUser*)sender
-       recipient:(InfinitUser*)recipient
+          sender:(NSNumber*)sender_id
+   sender_device:(NSString*)sender_device_id
+       recipient:(NSNumber*)recipient_id
            files:(NSArray*)files
            mtime:(NSTimeInterval)mtime
          message:(NSString*)message
@@ -23,15 +35,117 @@
   if (self = [super init])
   {
     _id_ = [id_ copy];
-    _sender = sender;
-    _recipient = recipient;
-    _files = files;
+    _sender_id = [sender_id copy];
+    _sender_device_id = [sender_device_id copy];
+    _recipient_id = [recipient_id copy];
+    _files = [files copy];
     _mtime = mtime;
     _message = [message copy];
     _size = [size copy];
+    _status = status;
     _directory = directory;
   }
   return self;
+}
+
+#pragma mark - Update Transaction
+
+- (void)updateWithTransaction:(InfinitPeerTransaction*)transaction
+{
+  _recipient_id = [transaction.recipient.id_ copy];
+  _mtime = transaction.mtime;
+  _status = transaction.status;
+}
+
+#pragma mark - Public
+
+- (InfinitUser*)sender
+{
+  return [[InfinitUserManager sharedInstance] userWithId:_sender_id];
+}
+
+- (InfinitUser*)recipient
+{
+  return [[InfinitUserManager sharedInstance] userWithId:_recipient_id];
+}
+
+- (BOOL)receivable
+{
+  NSString* self_device_id = [[InfinitStateManager sharedInstance] self_device_id];
+  if (self.status == gap_transaction_waiting_accept &&
+      self.recipient.is_self && ![_sender_device_id isEqualToString:self_device_id])
+  {
+    return YES;
+  }
+  else
+  {
+    return NO;
+  }
+}
+
+#pragma mark - Comparison
+
+- (BOOL)isEqual:(id)object
+{
+  if (![object isKindOfClass:InfinitPeerTransaction.class])
+    return NO;
+  InfinitPeerTransaction* other = object;
+  if ([self.id_ isEqualToNumber:other.id_])
+    return YES;
+  return NO;
+}
+
+- (NSComparisonResult)compare:(id)object
+{
+  if (![object isKindOfClass:InfinitPeerTransaction.class])
+    return NSOrderedAscending;
+  InfinitPeerTransaction* other = object;
+  if (self.mtime < other.mtime)
+    return NSOrderedDescending;
+  else if (self.mtime > other.mtime)
+    return NSOrderedAscending;
+
+  return NSOrderedSame;
+}
+
+#pragma mark - Description
+
+- (NSString*)statusText
+{
+  switch (self.status)
+  {
+    case gap_transaction_new:
+      return @"new";
+    case gap_transaction_on_other_device:
+      return @"on_other_device";
+    case gap_transaction_waiting_accept:
+      return @"waiting_accept";
+    case gap_transaction_waiting_data:
+      return @"waiting_data";
+    case gap_transaction_connecting:
+      return @"connecting";
+    case gap_transaction_transferring:
+      return @"transferring";
+    case gap_transaction_cloud_buffered:
+      return @"cloud_buffered";
+    case gap_transaction_finished:
+      return @"finished";
+    case gap_transaction_failed:
+      return @"failed";
+    case gap_transaction_canceled:
+      return @"canceled";
+    case gap_transaction_rejected:
+      return @"rejected";
+    case gap_transaction_deleted:
+      return @"deleted";
+    default:
+      return @"unknown";
+  }
+}
+
+- (NSString*)description
+{
+  return [NSString stringWithFormat:@"%@: %@", self.id_, [self statusText]];
 }
 
 @end

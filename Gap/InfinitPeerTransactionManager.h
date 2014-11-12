@@ -8,6 +8,18 @@
 
 #import <Foundation/Foundation.h>
 
+#import "InfinitPeerTransaction.h"
+
 @interface InfinitPeerTransactionManager : NSObject
 
+@property (readonly) NSArray* transactions;
+
++ (instancetype)sharedInstance;
+
+- (InfinitPeerTransaction*)transactionWithId:(NSNumber*)id_;
+
+- (void)acceptTransaction:(InfinitPeerTransaction*)transaction;
+- (void)rejectTransaction:(InfinitPeerTransaction*)transaction;
+
+- (void)transactionUpdated:(InfinitPeerTransaction*)transaction;
 @end

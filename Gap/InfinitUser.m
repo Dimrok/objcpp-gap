@@ -8,7 +8,11 @@
 
 #import "InfinitUser.h"
 
+#import "InfinitStateManager.h"
+
 @implementation InfinitUser
+
+#pragma mark - Init
 
 - (id)initWithId:(NSNumber*)id_
           status:(BOOL)status
@@ -27,6 +31,23 @@
     _ghost = ghost;
   }
   return self;
+}
+
+#pragma mark - Public
+
+- (BOOL)is_self
+{
+  if ([[[InfinitStateManager sharedInstance] self_id] isEqualToNumber:self.id_])
+    return YES;
+  else
+    return NO;
+}
+
+#pragma mark - Description
+
+- (NSString*)description
+{
+  return [NSString stringWithFormat:@"%@: %@", self.fullname, self.status ? @"online" : @"offline"];
 }
 
 @end

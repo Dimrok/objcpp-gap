@@ -12,6 +12,7 @@
 
 #import "InfinitPeerTransaction.h"
 #import "InfinitUser.h"
+#import "InfinitPeerTransactionManager.h"
 #import "InfinitUserManager.h"
 
 #import <surface/gap/gap.hh>
@@ -25,6 +26,8 @@ ELLE_LOG_COMPONENT("iOS.StateManager");
 typedef gap_Status(^gap_operation_t)(NSOperation*);
 
 static InfinitStateManager* _manager_instance = nil;
+static NSNumber* _self_id = nil;
+static NSString* _self_device_id = nil;
 
 @implementation InfinitStateManager
 {
@@ -34,6 +37,8 @@ static InfinitStateManager* _manager_instance = nil;
   NSTimer* _poll_timer;
   BOOL _polling; // Use boolean to guard polling as NSTimer valid is iOS 8.0+.
 }
+
+#pragma mark - Start
 
 - (id)init
 {
@@ -45,13 +50,6 @@ static InfinitStateManager* _manager_instance = nil;
   return self;
 }
 
-- (void)dealloc
-{
-  _polling = NO;
-  [_poll_timer invalidate];
-  [_queue cancelAllOperations];
-}
-
 + (instancetype)sharedInstance
 {
   if (_manager_instance == nil)
@@ -59,27 +57,17 @@ static InfinitStateManager* _manager_instance = nil;
   return _manager_instance;
 }
 
-+ (void)startState
-{
-  [[InfinitStateManager sharedInstance] attachCallbacks];
-}
-
-- (void)stopState
-{
-  [_queue cancelAllOperations];
-}
-
-+ (void)stopState
-{
-  [[InfinitStateManager sharedInstance] stopState];
-}
-
 - (InfinitStateWrapper*)stateWrapper
 {
   return [InfinitStateWrapper sharedInstance];
 }
 
-- (void)attachCallbacks
++ (void)startState
+{
+  [[InfinitStateManager sharedInstance] _attachCallbacks];
+}
+
+- (void)_attachCallbacks
 {
   if (gap_peer_transaction_callback(self.stateWrapper.state, on_peer_transaction) != gap_ok)
   {
@@ -99,7 +87,33 @@ static InfinitStateManager* _manager_instance = nil;
   }
 }
 
-//- Gap Functions ----------------------------------------------------------------------------------
+#pragma mark - Stop
+
+- (void)_clearSelf
+{
+  _self_id = nil;
+  _self_device_id = nil;
+}
+
+- (void)_stopState
+{
+  [_queue cancelAllOperations];
+  [self _clearSelf];
+}
+
++ (void)stopState
+{
+  [[InfinitStateManager sharedInstance] _stopState];
+}
+
+- (void)dealloc
+{
+  _polling = NO;
+  [_poll_timer invalidate];
+  [_queue cancelAllOperations];
+}
+
+#pragma mark - Login/Logout
 
 - (void)login:(NSString*)email
      password:(NSString*)password
@@ -111,23 +125,46 @@ performSelector:(SEL)selector
     {
       if (weak_self == nil)
         return gap_error;
+      gap_clean_state(weak_self.stateWrapper.state);
+      [weak_self _clearSelf];
+      [weak_self _startPolling];
       gap_Status res =
         gap_login(weak_self.stateWrapper.state, email.UTF8String, password.UTF8String);
       if (res == gap_ok)
-      {
         weak_self.logged_in = YES;
-        [weak_self startPolling];
-      }
+      else
+        [weak_self _stopPolling];
       return res;
-    } performSelector:selector onObject:object withData:nil];
+    } performSelector:selector onObject:object];
 }
 
-- (void)startPolling
+- (void)logoutPerformSelector:(SEL)selector
+                     onObject:(id)object
+{
+  __weak InfinitStateManager* weak_self = self;
+  [self _addOperation:^gap_Status(NSOperation*)
+  {
+    if (weak_self == nil)
+      return gap_error;
+    [weak_self _stopPolling];
+    gap_Status res = gap_logout(weak_self.stateWrapper.state);
+    return res;
+  } performSelector:selector onObject:object];
+}
+
+#pragma mark - Polling
+
+- (BOOL)_polling
+{
+  return _polling;
+}
+
+- (void)_startPolling
 {
   _polling = YES;
   _poll_timer = [NSTimer timerWithTimeInterval:2.0f
                                         target:self
-                                      selector:@selector(poll)
+                                      selector:@selector(_poll)
                                       userInfo:nil
                                        repeats:YES];
   if ([_poll_timer respondsToSelector:@selector(tolerance)])
@@ -137,21 +174,32 @@ performSelector:(SEL)selector
   [[NSRunLoop mainRunLoop] addTimer:_poll_timer forMode:NSDefaultRunLoopMode];
 }
 
-- (void)poll
+- (void)_stopPolling
+{
+  _polling = NO;
+  [_poll_timer invalidate];
+  _poll_timer = nil;
+}
+
+- (void)_poll
 {
   if (!_polling)
     return;
   __weak InfinitStateManager* weak_self = self;
   [self _addOperation:^gap_Status(NSOperation*)
     {
+      if (![weak_self _polling])
+        return gap_error;
       return gap_poll(weak_self.stateWrapper.state);
     }];
 }
 
-- (InfinitUser*)userById:(NSNumber*)user_id
+#pragma mark - User
+
+- (InfinitUser*)userById:(NSNumber*)id_
 {
-  auto user = gap_user_by_id(self.stateWrapper.state, user_id.unsignedIntValue);
-  return [self convertUser:user];
+  auto user = gap_user_by_id(self.stateWrapper.state, id_.unsignedIntValue);
+  return [self _convertUser:user];
 }
 
 - (NSArray*)swaggers
@@ -160,60 +208,100 @@ performSelector:(SEL)selector
   NSMutableArray* res = [NSMutableArray array];
   for (auto const& swagger: swaggers_)
   {
-    [res addObject:[self convertUser:swagger]];
+    [res addObject:[self _convertUser:swagger]];
   }
   return res;
 }
 
-//- C++ to Obj-C Conversion ------------------------------------------------------------------------
+- (NSNumber*)self_id
+{
+  if (_self_id == nil)
+    _self_id = [self _numFromId:gap_self_id(self.stateWrapper.state)];
+  return _self_id;
+}
 
-- (NSString*)nsString:(std::string const&)string
+- (NSString*)self_device_id
+{
+  if (_self_device_id == nil)
+    _self_device_id = [self _nsString:gap_self_device_id(self.stateWrapper.state)];
+  return _self_device_id;
+}
+
+#pragma mark - PeerTransaction
+
+- (InfinitPeerTransaction*)peerTransactionById:(NSNumber*)id_
+{
+  auto transaction = gap_peer_transaction_by_id(self.stateWrapper.state, id_.unsignedIntValue);
+  return [self _convertPeerTransaction:transaction];
+}
+
+- (NSArray*)peerTransactions
+{
+  auto transactions_ = gap_peer_transactions(self.stateWrapper.state);
+  NSMutableArray* res = [NSMutableArray array];
+  for (auto const& transaction: transactions_)
+  {
+    [res addObject:[self _convertPeerTransaction:transaction]];
+  }
+  return res;
+}
+
+- (void)acceptTransactionWithId:(NSNumber*)id_
+{
+  gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+}
+
+- (void)rejectTransactionWithId:(NSNumber*)id_
+{
+  gap_reject_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+}
+
+#pragma mark - Conversions
+
+- (NSString*)_nsString:(std::string const&)string
 {
   return [NSString stringWithUTF8String:string.c_str()];
 }
 
-- (NSNumber*)numFromId:(uint32_t)id_
+- (NSNumber*)_numFromId:(uint32_t)id_
 {
   return [NSNumber numberWithUnsignedInt:id_];
 }
 
-- (InfinitPeerTransaction*)convertPeerTransaction:(surface::gap::PeerTransaction const&)transaction
+- (InfinitPeerTransaction*)_convertPeerTransaction:(surface::gap::PeerTransaction const&)transaction
 {
-  InfinitUser* sender =
-    [[InfinitUserManager sharedInstance] userWithId:[self numFromId:transaction.sender_id]];
-  InfinitUser* recipient =
-    [[InfinitUserManager sharedInstance] userWithId:[self numFromId:transaction.recipient_id]];
   NSMutableArray* files = [NSMutableArray array];
   NSNumber* size = [NSNumber numberWithLongLong:transaction.total_size];
   for (auto const& file: transaction.file_names)
   {
-    [files addObject:[self nsString:file]];
+    [files addObject:[self _nsString:file]];
   }
   InfinitPeerTransaction* res =
-    [[InfinitPeerTransaction alloc] initWithId:[NSNumber numberWithUnsignedInt:transaction.id]
+    [[InfinitPeerTransaction alloc] initWithId:[self _numFromId:transaction.id]
                                         status:transaction.status
-                                        sender:sender
-                                     recipient:recipient
+                                        sender:[self _numFromId:transaction.sender_id]
+                                 sender_device:[self _nsString:transaction.sender_device_id]
+                                     recipient:[self _numFromId:transaction.recipient_id]
                                          files:files
                                          mtime:transaction.mtime
-                                       message:[self nsString:transaction.message]
+                                       message:[self _nsString:transaction.message]
                                           size:size
                                      directory:transaction.is_directory];
   return res;
 }
 
-- (InfinitUser*)convertUser:(surface::gap::User const&)user
+- (InfinitUser*)_convertUser:(surface::gap::User const&)user
 {
-  InfinitUser* res = [[InfinitUser alloc] initWithId:[NSNumber numberWithUnsignedInt:user.id]
+  InfinitUser* res = [[InfinitUser alloc] initWithId:[self _numFromId:user.id]
                                               status:user.status
-                                            fullname:[self nsString:user.fullname]
-                                              handle:[self nsString:user.handle]
+                                            fullname:[self _nsString:user.fullname]
+                                              handle:[self _nsString:user.handle]
                                              deleted:user.deleted
                                                ghost:user.ghost];
   return res;
 }
 
-//- Add Operation ----------------------------------------------------------------------------------
+#pragma mark - Operations
 
 - (void)_addOperation:(gap_operation_t)operation
 {
@@ -267,13 +355,19 @@ performSelector:(SEL)selector
   [_queue addOperation:block_operation];
 }
 
-//- Callback Functions -----------------------------------------------------------------------------
+#pragma mark - Callbacks
+
+- (void)_peerTransactionUpdated:(surface::gap::PeerTransaction const&)transaction_
+{
+  InfinitPeerTransaction* transaction = [self _convertPeerTransaction:transaction_];
+  [[InfinitPeerTransactionManager sharedInstance] transactionUpdated:transaction];
+}
 
 static
 void
 on_peer_transaction(surface::gap::PeerTransaction const& transaction)
 {
-  std::cerr << "xxx transaction: " << transaction << std::endl;
+  [[InfinitStateManager sharedInstance] _peerTransactionUpdated:transaction];
 }
 
 static

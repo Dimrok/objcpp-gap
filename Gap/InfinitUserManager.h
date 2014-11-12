@@ -14,6 +14,6 @@
 
 + (instancetype)sharedInstance;
 
-- (InfinitUser*)userWithId:(NSNumber*)user_id;
+- (InfinitUser*)userWithId:(NSNumber*)id_;
 
 @end

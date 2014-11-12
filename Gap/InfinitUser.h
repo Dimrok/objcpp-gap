@@ -10,14 +10,15 @@
 
 @interface InfinitUser : NSObject
 
-@property BOOL deleted;
-@property BOOL favorite;
-@property (strong) NSString* fullname;
-@property BOOL ghost;
-@property (strong) NSString* handle;
-@property (strong) NSNumber* id_;
-@property (strong) NSString* meta_id;
-@property BOOL status;
+@property (readonly) BOOL deleted;
+@property (readonly) BOOL favorite;
+@property (strong, readonly) NSString* fullname;
+@property (readonly) BOOL ghost;
+@property (strong, readonly) NSString* handle;
+@property (strong, readonly) NSNumber* id_;
+@property (strong, readonly) NSString* meta_id;
+@property (readonly) BOOL is_self;
+@property (readonly) BOOL status;
 
 - (id)initWithId:(NSNumber*)id_
           status:(BOOL)status

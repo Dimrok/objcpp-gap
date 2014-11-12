@@ -17,12 +17,13 @@ static InfinitUserManager* _instance = nil;
   NSMutableDictionary* _user_map;
 }
 
+#pragma mark - Init
+
 - (id)init
 {
   if (self = [super init])
   {
-    _user_map = [NSMutableDictionary dictionary];
-    [self fillMapWithSwaggers];
+    [self _fillMapWithSwaggers];
   }
   return self;
 }
@@ -34,21 +35,24 @@ static InfinitUserManager* _instance = nil;
   return _instance;
 }
 
-- (void)fillMapWithSwaggers
+- (void)_fillMapWithSwaggers
 {
+  _user_map = [NSMutableDictionary dictionary];
   NSArray* swaggers = [[InfinitStateManager sharedInstance] swaggers];
   for (InfinitUser* swagger in swaggers)
     [_user_map setObject:swagger forKey:swagger.id_];
 }
 
-- (InfinitUser*)userWithId:(NSNumber*)user_id
+#pragma mark - Public
+
+- (InfinitUser*)userWithId:(NSNumber*)id_
 {
   @synchronized(_user_map)
   {
-    InfinitUser* res = [_user_map objectForKey:user_id];
+    InfinitUser* res = [_user_map objectForKey:id_];
     if (res == nil)
     {
-      res = [[InfinitStateManager sharedInstance] userById:user_id];
+      res = [[InfinitStateManager sharedInstance] userById:id_];
     }
     return res;
   }
