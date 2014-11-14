@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "InfinitLinkTransaction.h"
 #import "InfinitPeerTransaction.h"
 #import "InfinitUser.h"
 
@@ -19,7 +20,13 @@
 + (void)stopState;
 + (instancetype)sharedInstance;
 
-#pragma mark - Login/Logout
+#pragma mark - Register/Login/Logout
+- (void)registerFullname:(NSString*)fullname
+                   email:(NSString*)email
+                password:(NSString*)password
+         performSelector:(SEL)selector
+                onObject:(id)object;
+
 - (void)login:(NSString*)email
      password:(NSString*)password
 performSelector:(SEL)selector
@@ -30,17 +37,37 @@ performSelector:(SEL)selector
 
 #pragma mark - User
 /// Users should be accessed using the User Manager.
-- (InfinitUser*)userById:(NSNumber*)id_;
 - (NSArray*)swaggers;
+- (InfinitUser*)userById:(NSNumber*)id_;
+- (void)userByHandle:(NSString*)handle
+     performSelector:(SEL)selector
+            onObject:(id)object
+            withData:(id)data;
 
 - (NSNumber*)self_id;
 - (NSString*)self_device_id;
 
-#pragma mark - PeerTransaction
-/// Peer Transactions should be accessed using the Peer Transaction Manager.
-- (InfinitPeerTransaction*)peerTransactionById:(NSNumber*)id_;
-- (NSArray*)peerTransactions;
+#pragma mark - All Transactions
+- (void)cancelTransactionWithId:(NSNumber*)id_;
+- (float)transactionProgressForId:(NSNumber*)id_;
 
+#pragma mark - Link Transactions
+/// Link Transactions should be accessed using the Peer Transaction Manager.
+- (NSArray*)linkTransactions;
+- (InfinitLinkTransaction*)linkTransactionById:(NSNumber*)id_;
+
+- (NSNumber*)createLinkWithFiles:(NSArray*)files
+                     withMessage:(NSString*)message;
+
+#pragma mark - Peer Transactions
+/// Peer Transactions should be accessed using the Peer Transaction Manager.
+- (NSArray*)peerTransactions;
+- (InfinitPeerTransaction*)peerTransactionById:(NSNumber*)id_;
+
+
+- (NSNumber*)sendFiles:(NSArray*)files
+           toRecipient:(id)recipient
+           withMessage:(NSString*)message;
 - (void)acceptTransactionWithId:(NSNumber*)id_;
 - (void)rejectTransactionWithId:(NSNumber*)id_;
 

@@ -10,7 +10,7 @@
 
 @interface InfinitUser : NSObject
 
-@property (readonly) BOOL deleted;
+@property (readwrite) BOOL deleted;
 @property (readonly) BOOL favorite;
 @property (strong, readonly) NSString* fullname;
 @property (readonly) BOOL ghost;
@@ -18,7 +18,7 @@
 @property (strong, readonly) NSNumber* id_;
 @property (strong, readonly) NSString* meta_id;
 @property (readonly) BOOL is_self;
-@property (readonly) BOOL status;
+@property (readwrite) BOOL status;
 
 - (id)initWithId:(NSNumber*)id_
           status:(BOOL)status

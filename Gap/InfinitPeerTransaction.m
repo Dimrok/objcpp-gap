@@ -83,6 +83,33 @@
   }
 }
 
+- (BOOL)done
+{
+  switch (self.status)
+  {
+    case gap_transaction_cloud_buffered:
+    case gap_transaction_finished:
+    case gap_transaction_failed:
+    case gap_transaction_canceled:
+    case gap_transaction_rejected:
+    case gap_transaction_deleted:
+      return YES;
+
+    default:
+      return NO;
+  }
+}
+
+- (float)progress
+{
+  if (self.status == gap_transaction_transferring)
+    return [[InfinitStateManager sharedInstance] transactionProgressForId:self.id_];
+  else if (self.done)
+    return 1.0f;
+  else
+    return 0.0f;
+}
+
 #pragma mark - Comparison
 
 - (BOOL)isEqual:(id)object

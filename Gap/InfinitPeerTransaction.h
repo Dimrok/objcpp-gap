@@ -18,10 +18,11 @@
 @property (strong, readonly) NSArray* files;
 @property (strong, readonly) NSNumber* id_;
 @property (strong, readonly) NSString* message;
-@property NSTimeInterval mtime;
+@property (readonly) NSTimeInterval mtime;
 @property (readonly) InfinitUser* recipient;
 @property (readonly) BOOL receivable;
-@property gap_TransactionStatus status;
+@property (readonly) float progress;
+@property (readonly) gap_TransactionStatus status;
 @property (readonly) InfinitUser* sender;
 @property (strong, readonly) NSNumber* size;
 

@@ -10,9 +10,11 @@
 #import "InfinitStateResult.h"
 #import "InfinitStateWrapper.h"
 
+#import "InfinitLinkTransaction.h"
+#import "InfinitLinkTransactionManager.h"
 #import "InfinitPeerTransaction.h"
-#import "InfinitUser.h"
 #import "InfinitPeerTransactionManager.h"
+#import "InfinitUser.h"
 #import "InfinitUserManager.h"
 
 #import <surface/gap/gap.hh>
@@ -85,6 +87,14 @@ static NSString* _self_device_id = nil;
   {
     ELLE_ERR("%s: unable to attach user status callback", self.description.UTF8String);
   }
+  if (gap_deleted_favorite_callback(self.stateWrapper.state, on_deleted_favorite) != gap_ok)
+  {
+    ELLE_ERR("%s: unable to attach favorite deleted callback", self.description.UTF8String);
+  }
+  if (gap_deleted_swagger_callback(self.stateWrapper.state, on_deleted_swagger) != gap_ok)
+  {
+    ELLE_ERR("%s: unable to attach swagger deleted callback", self.description.UTF8String);
+  }
 }
 
 #pragma mark - Stop
@@ -113,7 +123,32 @@ static NSString* _self_device_id = nil;
   [_queue cancelAllOperations];
 }
 
-#pragma mark - Login/Logout
+#pragma mark - Register/Login/Logout
+
+- (void)registerFullname:(NSString*)fullname
+                   email:(NSString*)email
+                password:(NSString*)password
+         performSelector:(SEL)selector
+                onObject:(id)object
+{
+  __weak InfinitStateManager* weak_self = self;
+  [self _addOperation:^gap_Status(NSOperation* op)
+   {
+     if (weak_self == nil)
+       return gap_error;
+     [weak_self _startPolling];
+     gap_Status res =
+       gap_register(weak_self.stateWrapper.state,
+                    fullname.UTF8String,
+                    email.UTF8String,
+                    password.UTF8String);
+     if (res == gap_ok)
+       weak_self.logged_in = YES;
+     else
+       [weak_self _stopPolling];
+     return res;
+   } performSelector:selector onObject:object];
+}
 
 - (void)login:(NSString*)email
      password:(NSString*)password
@@ -213,10 +248,27 @@ performSelector:(SEL)selector
   return res;
 }
 
+- (void)userByHandle:(NSString*)handle
+     performSelector:(SEL)selector
+            onObject:(id)object
+            withData:(id)data
+{
+  __weak InfinitStateManager* weak_self = self;
+  [self _addOperation:^gap_Status(NSOperation*)
+  {
+    if (weak_self == nil)
+      return gap_error;
+    auto user_ = gap_user_by_handle(weak_self.stateWrapper.state, handle.UTF8String);
+    InfinitUser* user = [weak_self _convertUser:user_];
+    data[@"user"] = user;
+    return gap_ok;
+  } performSelector:selector onObject:object withData:data];
+}
+
 - (NSNumber*)self_id
 {
   if (_self_id == nil)
-    _self_id = [self _numFromId:gap_self_id(self.stateWrapper.state)];
+    _self_id = [self _numFromUint:gap_self_id(self.stateWrapper.state)];
   return _self_id;
 }
 
@@ -227,7 +279,47 @@ performSelector:(SEL)selector
   return _self_device_id;
 }
 
-#pragma mark - PeerTransaction
+#pragma mark - All Transactions
+
+- (void)cancelTransactionWithId:(NSNumber*)id_
+{
+  gap_cancel_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+}
+
+- (float)transactionProgressForId:(NSNumber*)id_
+{
+  return gap_transaction_progress(self.stateWrapper.state, id_.unsignedIntValue);
+}
+
+#pragma mark - Link Transactions
+
+- (InfinitLinkTransaction*)linkTransactionById:(NSNumber*)id_
+{
+  auto transaction = gap_link_transaction_by_id(self.stateWrapper.state, id_.unsignedIntValue);
+  return [self _convertLinkTransaction:transaction];
+}
+
+- (NSArray*)linkTransactions
+{
+  auto transactions_ = gap_link_transactions(self.stateWrapper.state);
+  NSMutableArray* res = [NSMutableArray array];
+  for (auto const& transaction: transactions_)
+  {
+    [res addObject:[self _convertLinkTransaction:transaction]];
+  }
+  return res;
+}
+
+- (NSNumber*)createLinkWithFiles:(NSArray*)files
+                     withMessage:(NSString*)message
+{
+  uint32_t res = gap_create_link_transaction(self.stateWrapper.state,
+                                             [self _vectorFromNSArray:files],
+                                             message.UTF8String);
+  return [self _numFromUint:res];
+}
+
+#pragma mark - Peer Transactions
 
 - (InfinitPeerTransaction*)peerTransactionById:(NSNumber*)id_
 {
@@ -246,6 +338,30 @@ performSelector:(SEL)selector
   return res;
 }
 
+- (NSNumber*)sendFiles:(NSArray*)files
+           toRecipient:(id)recipient
+           withMessage:(NSString*)message
+{
+  uint32_t res;
+  if ([recipient isKindOfClass:InfinitUser.class])
+  {
+    InfinitUser* user = recipient;
+    res = gap_send_files(self.stateWrapper.state,
+                                  user.id_.unsignedIntValue,
+                                  [self _vectorFromNSArray:files],
+                                  message.UTF8String);
+  }
+  else if ([recipient isKindOfClass:NSString.class])
+  {
+    NSString* email = recipient;
+    res = gap_send_files_by_email(self.stateWrapper.state,
+                                  email.UTF8String,
+                                  [self _vectorFromNSArray:files], 
+                                  message.UTF8String);
+  }
+  return [self _numFromUint:res];
+}
+
 - (void)acceptTransactionWithId:(NSNumber*)id_
 {
   gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue);
@@ -258,14 +374,40 @@ performSelector:(SEL)selector
 
 #pragma mark - Conversions
 
+- (std::vector<std::string>)_vectorFromNSArray:(NSArray*)array
+{
+  std::vector<std::string> res;
+  for (NSString* element in array)
+  {
+    res.push_back(element.UTF8String);
+  }
+  return res;
+}
+
 - (NSString*)_nsString:(std::string const&)string
 {
   return [NSString stringWithUTF8String:string.c_str()];
 }
 
-- (NSNumber*)_numFromId:(uint32_t)id_
+- (NSNumber*)_numFromUint:(uint32_t)id_
 {
   return [NSNumber numberWithUnsignedInt:id_];
+}
+
+- (InfinitLinkTransaction*)_convertLinkTransaction:(surface::gap::LinkTransaction const&)transaction
+{
+  NSString* link = @"";
+  if (transaction.link)
+    link = [NSString stringWithUTF8String:transaction.link.get().c_str()];
+  InfinitLinkTransaction* res =
+    [[InfinitLinkTransaction alloc] initWithId:[self _numFromUint:transaction.id]
+                                        status:transaction.status
+                                 sender_device:[self _nsString:transaction.sender_device_id]
+                                          name:[self _nsString:transaction.name]
+                                         mtime:transaction.mtime
+                                          link:link
+                                   click_count:[self _numFromUint:transaction.click_count]];
+  return res;
 }
 
 - (InfinitPeerTransaction*)_convertPeerTransaction:(surface::gap::PeerTransaction const&)transaction
@@ -277,11 +419,11 @@ performSelector:(SEL)selector
     [files addObject:[self _nsString:file]];
   }
   InfinitPeerTransaction* res =
-    [[InfinitPeerTransaction alloc] initWithId:[self _numFromId:transaction.id]
+    [[InfinitPeerTransaction alloc] initWithId:[self _numFromUint:transaction.id]
                                         status:transaction.status
-                                        sender:[self _numFromId:transaction.sender_id]
+                                        sender:[self _numFromUint:transaction.sender_id]
                                  sender_device:[self _nsString:transaction.sender_device_id]
-                                     recipient:[self _numFromId:transaction.recipient_id]
+                                     recipient:[self _numFromUint:transaction.recipient_id]
                                          files:files
                                          mtime:transaction.mtime
                                        message:[self _nsString:transaction.message]
@@ -292,7 +434,7 @@ performSelector:(SEL)selector
 
 - (InfinitUser*)_convertUser:(surface::gap::User const&)user
 {
-  InfinitUser* res = [[InfinitUser alloc] initWithId:[self _numFromId:user.id]
+  InfinitUser* res = [[InfinitUser alloc] initWithId:[self _numFromUint:user.id]
                                               status:user.status
                                             fullname:[self _nsString:user.fullname]
                                               handle:[self _nsString:user.handle]
@@ -370,22 +512,62 @@ on_peer_transaction(surface::gap::PeerTransaction const& transaction)
   [[InfinitStateManager sharedInstance] _peerTransactionUpdated:transaction];
 }
 
+- (void)_linkTransactionUpdated:(surface::gap::LinkTransaction const&)transaction_
+{
+  InfinitLinkTransaction* transaction = [self _convertLinkTransaction:transaction_];
+  [[InfinitLinkTransactionManager sharedInstance] transactionUpdated:transaction];
+}
+
 static
 void
 on_link_transaction(surface::gap::LinkTransaction const& transaction)
 {
+  [[InfinitStateManager sharedInstance] _linkTransactionUpdated:transaction];
+}
+
+- (void)_newUser:(surface::gap::User const&)user_
+{
+  InfinitUser* user = [self _convertUser:user_];
+  [[InfinitUserManager sharedInstance] newUser:user];
 }
 
 static
 void
 on_new_swagger(surface::gap::User const& user)
 {
+  [[InfinitStateManager sharedInstance] _newUser:user];
+}
+
+- (void)_userWithId:(uint32_t)user_id
+      statusUpdated:(bool)status
+{
+  [[InfinitUserManager sharedInstance] userWithId:[self _numFromUint:user_id] statusUpdated:status];
 }
 
 static
 void
 on_user_status(uint32_t user_id, bool status)
 {
+  [[InfinitStateManager sharedInstance] _userWithId:user_id statusUpdated:status];
+}
+
+- (void)_userDeleted:(uint32_t)user_id
+{
+  [[InfinitUserManager sharedInstance] userDeletedWithId:[self _numFromUint:user_id]];
+}
+
+static
+void
+on_deleted_favorite(uint32_t user_id)
+{
+  [[InfinitStateManager sharedInstance] _userDeleted:user_id];
+}
+
+static
+void
+on_deleted_swagger(uint32_t user_id)
+{
+  [[InfinitStateManager sharedInstance] _userDeleted:user_id];
 }
 
 @end

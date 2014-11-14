@@ -10,9 +10,9 @@
 		83568D851A136D7800766DA3 /* libGap-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83568D791A136D7700766DA3 /* libGap-iOS.a */; };
 		83568D9F1A136DEE00766DA3 /* InfinitStateWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568D9E1A136DEE00766DA3 /* InfinitStateWrapper.mm */; };
 		83568DA41A136DF600766DA3 /* InfinitUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA11A136DF600766DA3 /* InfinitUser.m */; };
-		83568DA51A136DF600766DA3 /* InfinitUserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA31A136DF600766DA3 /* InfinitUserManager.m */; };
+		83568DA51A136DF600766DA3 /* InfinitUserManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA31A136DF600766DA3 /* InfinitUserManager.mm */; };
 		83568DAA1A136DFF00766DA3 /* InfinitPeerTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA71A136DFF00766DA3 /* InfinitPeerTransaction.m */; };
-		83568DAB1A136DFF00766DA3 /* InfinitPeerTransactionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA91A136DFF00766DA3 /* InfinitPeerTransactionManager.m */; };
+		83568DAB1A136DFF00766DA3 /* InfinitPeerTransactionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA91A136DFF00766DA3 /* InfinitPeerTransactionManager.mm */; };
 		83568DB01A136E1000766DA3 /* InfinitStateManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DAD1A136E1000766DA3 /* InfinitStateManager.mm */; };
 		83568DB11A136E1000766DA3 /* InfinitStateResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DAF1A136E1000766DA3 /* InfinitStateResult.m */; };
 		83F4D0131A136E3C0068BEB2 /* InfinitStateWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568D9D1A136DEE00766DA3 /* InfinitStateWrapper.h */; };
@@ -22,6 +22,12 @@
 		83F4D0171A136E3C0068BEB2 /* InfinitPeerTransactionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA81A136DFF00766DA3 /* InfinitPeerTransactionManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83F4D0181A136E3C0068BEB2 /* InfinitUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA01A136DF600766DA3 /* InfinitUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83F4D0191A136E3C0068BEB2 /* InfinitUserManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA21A136DF600766DA3 /* InfinitUserManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83F4D0AC1A14CBC90068BEB2 /* InfinitUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F4D0AA1A14CBC90068BEB2 /* InfinitUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83F4D0AD1A14CBC90068BEB2 /* InfinitUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F4D0AB1A14CBC90068BEB2 /* InfinitUtilities.m */; };
+		83F72CA91A1513810088106E /* InfinitLinkTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F72CA71A1513810088106E /* InfinitLinkTransaction.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83F72CAA1A1513810088106E /* InfinitLinkTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F72CA81A1513810088106E /* InfinitLinkTransaction.m */; };
+		83F72CAD1A1513FA0088106E /* InfinitLinkTransactionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F72CAB1A1513FA0088106E /* InfinitLinkTransactionManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83F72CAE1A1513FA0088106E /* InfinitLinkTransactionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F72CAC1A1513FA0088106E /* InfinitLinkTransactionManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,15 +61,21 @@
 		83568DA01A136DF600766DA3 /* InfinitUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitUser.h; sourceTree = "<group>"; };
 		83568DA11A136DF600766DA3 /* InfinitUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitUser.m; sourceTree = "<group>"; };
 		83568DA21A136DF600766DA3 /* InfinitUserManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitUserManager.h; sourceTree = "<group>"; };
-		83568DA31A136DF600766DA3 /* InfinitUserManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitUserManager.m; sourceTree = "<group>"; };
+		83568DA31A136DF600766DA3 /* InfinitUserManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitUserManager.mm; sourceTree = "<group>"; };
 		83568DA61A136DFF00766DA3 /* InfinitPeerTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitPeerTransaction.h; sourceTree = "<group>"; };
 		83568DA71A136DFF00766DA3 /* InfinitPeerTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitPeerTransaction.m; sourceTree = "<group>"; };
 		83568DA81A136DFF00766DA3 /* InfinitPeerTransactionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitPeerTransactionManager.h; sourceTree = "<group>"; };
-		83568DA91A136DFF00766DA3 /* InfinitPeerTransactionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitPeerTransactionManager.m; sourceTree = "<group>"; };
+		83568DA91A136DFF00766DA3 /* InfinitPeerTransactionManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitPeerTransactionManager.mm; sourceTree = "<group>"; };
 		83568DAC1A136E1000766DA3 /* InfinitStateManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitStateManager.h; sourceTree = "<group>"; };
 		83568DAD1A136E1000766DA3 /* InfinitStateManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitStateManager.mm; sourceTree = "<group>"; };
 		83568DAE1A136E1000766DA3 /* InfinitStateResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitStateResult.h; sourceTree = "<group>"; };
 		83568DAF1A136E1000766DA3 /* InfinitStateResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitStateResult.m; sourceTree = "<group>"; };
+		83F4D0AA1A14CBC90068BEB2 /* InfinitUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitUtilities.h; sourceTree = "<group>"; };
+		83F4D0AB1A14CBC90068BEB2 /* InfinitUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitUtilities.m; sourceTree = "<group>"; };
+		83F72CA71A1513810088106E /* InfinitLinkTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitLinkTransaction.h; sourceTree = "<group>"; };
+		83F72CA81A1513810088106E /* InfinitLinkTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitLinkTransaction.m; sourceTree = "<group>"; };
+		83F72CAB1A1513FA0088106E /* InfinitLinkTransactionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitLinkTransactionManager.h; sourceTree = "<group>"; };
+		83F72CAC1A1513FA0088106E /* InfinitLinkTransactionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitLinkTransactionManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,7 +100,9 @@
 		83568D6B1A136D5D00766DA3 = {
 			isa = PBXGroup;
 			children = (
+				83F4D0A91A14CB4C0068BEB2 /* Utilities */,
 				83568D9B1A136DDE00766DA3 /* Gap */,
+				83F72CA51A1513630088106E /* Link Transactions */,
 				83568D9C1A136DE300766DA3 /* Peer Transactions */,
 				83568D9A1A136DD900766DA3 /* Users */,
 				83568D881A136D7800766DA3 /* Gap-iOSTests */,
@@ -127,7 +141,7 @@
 				83568DA01A136DF600766DA3 /* InfinitUser.h */,
 				83568DA11A136DF600766DA3 /* InfinitUser.m */,
 				83568DA21A136DF600766DA3 /* InfinitUserManager.h */,
-				83568DA31A136DF600766DA3 /* InfinitUserManager.m */,
+				83568DA31A136DF600766DA3 /* InfinitUserManager.mm */,
 			);
 			name = Users;
 			sourceTree = "<group>";
@@ -151,9 +165,29 @@
 				83568DA61A136DFF00766DA3 /* InfinitPeerTransaction.h */,
 				83568DA71A136DFF00766DA3 /* InfinitPeerTransaction.m */,
 				83568DA81A136DFF00766DA3 /* InfinitPeerTransactionManager.h */,
-				83568DA91A136DFF00766DA3 /* InfinitPeerTransactionManager.m */,
+				83568DA91A136DFF00766DA3 /* InfinitPeerTransactionManager.mm */,
 			);
 			name = "Peer Transactions";
+			sourceTree = "<group>";
+		};
+		83F4D0A91A14CB4C0068BEB2 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				83F4D0AA1A14CBC90068BEB2 /* InfinitUtilities.h */,
+				83F4D0AB1A14CBC90068BEB2 /* InfinitUtilities.m */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
+		83F72CA51A1513630088106E /* Link Transactions */ = {
+			isa = PBXGroup;
+			children = (
+				83F72CA71A1513810088106E /* InfinitLinkTransaction.h */,
+				83F72CA81A1513810088106E /* InfinitLinkTransaction.m */,
+				83F72CAB1A1513FA0088106E /* InfinitLinkTransactionManager.h */,
+				83F72CAC1A1513FA0088106E /* InfinitLinkTransactionManager.m */,
+			);
+			name = "Link Transactions";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -168,6 +202,9 @@
 				83F4D0161A136E3C0068BEB2 /* InfinitPeerTransaction.h in Headers */,
 				83F4D0171A136E3C0068BEB2 /* InfinitPeerTransactionManager.h in Headers */,
 				83F4D0181A136E3C0068BEB2 /* InfinitUser.h in Headers */,
+				83F4D0AC1A14CBC90068BEB2 /* InfinitUtilities.h in Headers */,
+				83F72CAD1A1513FA0088106E /* InfinitLinkTransactionManager.h in Headers */,
+				83F72CA91A1513810088106E /* InfinitLinkTransaction.h in Headers */,
 				83F4D0191A136E3C0068BEB2 /* InfinitUserManager.h in Headers */,
 				83F4D0131A136E3C0068BEB2 /* InfinitStateWrapper.h in Headers */,
 			);
@@ -261,13 +298,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83F72CAE1A1513FA0088106E /* InfinitLinkTransactionManager.m in Sources */,
+				83F72CAA1A1513810088106E /* InfinitLinkTransaction.m in Sources */,
 				83568DA41A136DF600766DA3 /* InfinitUser.m in Sources */,
 				83568DB01A136E1000766DA3 /* InfinitStateManager.mm in Sources */,
+				83F4D0AD1A14CBC90068BEB2 /* InfinitUtilities.m in Sources */,
 				83568DB11A136E1000766DA3 /* InfinitStateResult.m in Sources */,
-				83568DAB1A136DFF00766DA3 /* InfinitPeerTransactionManager.m in Sources */,
+				83568DAB1A136DFF00766DA3 /* InfinitPeerTransactionManager.mm in Sources */,
 				83568D9F1A136DEE00766DA3 /* InfinitStateWrapper.mm in Sources */,
 				83568DAA1A136DFF00766DA3 /* InfinitPeerTransaction.m in Sources */,
-				83568DA51A136DF600766DA3 /* InfinitUserManager.m in Sources */,
+				83568DA51A136DF600766DA3 /* InfinitUserManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
