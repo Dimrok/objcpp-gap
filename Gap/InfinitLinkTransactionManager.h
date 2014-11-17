@@ -40,11 +40,17 @@
 - (NSNumber*)createLinkWithFiles:(NSArray*)files
                      withMessage:(NSString*)message;
 
-/** Cancel a Transaction
+/** Cancel a Transaction.
  @param transaction
   InfinitLinkTransaction object.
  */
 - (void)cancelTransaction:(InfinitLinkTransaction*)transaction;
+
+/** Delete a Transaction.
+ @param transaction
+  InfinitLinkTransaction object.
+ */
+- (void)deleteTransaction:(InfinitLinkTransaction*)transaction;
 
 #pragma mark - State Manager Callback
 - (void)transactionUpdated:(InfinitLinkTransaction*)transaction;

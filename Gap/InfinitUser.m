@@ -9,6 +9,7 @@
 #import "InfinitUser.h"
 
 #import "InfinitStateManager.h"
+#import "InfinitAvatarManager.h"
 
 @implementation InfinitUser
 
@@ -34,6 +35,11 @@
 }
 
 #pragma mark - Public
+
+- (UIImage*)avatar
+{
+  return [[InfinitAvatarManager sharedInstance] avatarForUser:self];
+}
 
 - (BOOL)is_self
 {

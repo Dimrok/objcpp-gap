@@ -9,6 +9,11 @@
 #import "InfinitLinkTransactionManager.h"
 #import "InfinitStateManager.h"
 
+#undef check
+#import <elle/log.hh>
+
+ELLE_LOG_COMPONENT("iOS.LinkTransactionManager");
+
 static InfinitLinkTransactionManager* _instance = nil;
 
 @implementation InfinitLinkTransactionManager
@@ -88,6 +93,11 @@ static InfinitLinkTransactionManager* _instance = nil;
 - (void)cancelTransaction:(InfinitLinkTransaction*)transaction
 {
   [[InfinitStateManager sharedInstance] cancelTransactionWithId:transaction.id_];
+}
+
+- (void)deleteTransaction:(InfinitLinkTransaction*)transaction
+{
+  [[InfinitStateManager sharedInstance] deleteTransactionWithId:transaction.id_];
 }
 
 #pragma mark - Transaction Updated

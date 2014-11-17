@@ -7,9 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIImage.h>
+
+#define INFINIT_USER_AVATAR_NOTIFICATION @"INFINIT_USER_AVATAR_NOTIFICATION"
 
 @interface InfinitUser : NSObject
 
+@property (readonly) UIImage* avatar;
 @property (readwrite) BOOL deleted;
 @property (readonly) BOOL favorite;
 @property (strong, readonly) NSString* fullname;

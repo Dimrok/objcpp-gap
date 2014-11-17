@@ -10,6 +10,7 @@
 #import "InfinitStateResult.h"
 #import "InfinitStateWrapper.h"
 
+#import "InfinitAvatarManager.h"
 #import "InfinitLinkTransaction.h"
 #import "InfinitLinkTransactionManager.h"
 #import "InfinitPeerTransaction.h"
@@ -18,6 +19,8 @@
 #import "InfinitUserManager.h"
 
 #import <surface/gap/gap.hh>
+
+#import <UIKit/UIImage.h>
 
 #undef check
 #import <elle/log.hh>
@@ -94,6 +97,10 @@ static NSString* _self_device_id = nil;
   if (gap_deleted_swagger_callback(self.stateWrapper.state, on_deleted_swagger) != gap_ok)
   {
     ELLE_ERR("%s: unable to attach swagger deleted callback", self.description.UTF8String);
+  }
+  if (gap_avatar_available_callback(self.stateWrapper.state, on_avatar) != gap_ok)
+  {
+    ELLE_ERR("%s: unable to attach avatar recieved callback", self.description.UTF8String);
   }
 }
 
@@ -279,6 +286,20 @@ performSelector:(SEL)selector
   return _self_device_id;
 }
 
+- (UIImage*)avatarForUserWithId:(NSNumber*)id_
+{
+  void* gap_data;
+  size_t size;
+  gap_Status status = gap_avatar(self.stateWrapper.state, id_.unsignedIntValue, &gap_data, &size);
+  UIImage* res = nil;
+  if (status == gap_ok && size > 0)
+  {
+    NSData* data = [[NSData alloc] initWithBytes:gap_data length:size];;
+    res = [UIImage imageWithData:data];
+  }
+  return res;
+}
+
 #pragma mark - All Transactions
 
 - (void)cancelTransactionWithId:(NSNumber*)id_
@@ -319,6 +340,11 @@ performSelector:(SEL)selector
   return [self _numFromUint:res];
 }
 
+- (void)deleteTransactionWithId:(NSNumber*)id_
+{
+  gap_delete_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+}
+
 #pragma mark - Peer Transactions
 
 - (InfinitPeerTransaction*)peerTransactionById:(NSNumber*)id_
@@ -342,7 +368,7 @@ performSelector:(SEL)selector
            toRecipient:(id)recipient
            withMessage:(NSString*)message
 {
-  uint32_t res;
+  uint32_t res = 0;
   if ([recipient isKindOfClass:InfinitUser.class])
   {
     InfinitUser* user = recipient;
@@ -370,6 +396,16 @@ performSelector:(SEL)selector
 - (void)rejectTransactionWithId:(NSNumber*)id_
 {
   gap_reject_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+}
+
+#pragma mark - Connection Status
+
+- (void)setNetworkConnectionStatus:(InfinitNetworkStatus)status
+{
+  bool connected = false;
+  if (status == ReachableViaWiFi || status == ReachableViaWWAN)
+    connected = true;
+  gap_internet_connection(self.stateWrapper.state, connected);
 }
 
 #pragma mark - Conversions
@@ -568,6 +604,18 @@ void
 on_deleted_swagger(uint32_t user_id)
 {
   [[InfinitStateManager sharedInstance] _userDeleted:user_id];
+}
+
+- (void)_gotAvatarForUserWithId:(uint32_t)user_id
+{
+  [[InfinitAvatarManager sharedInstance] gotAvatarForUserWithId:[self _numFromUint:user_id]];
+}
+
+static
+void
+on_avatar(uint32_t user_id)
+{
+  [[InfinitStateManager sharedInstance] _gotAvatarForUserWithId:user_id];
 }
 
 @end

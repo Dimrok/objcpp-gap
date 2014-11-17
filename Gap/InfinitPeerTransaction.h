@@ -21,6 +21,7 @@
 @property (readonly) NSTimeInterval mtime;
 @property (readonly) InfinitUser* recipient;
 @property (readonly) BOOL receivable;
+@property (readonly) InfinitUser* other_user;
 @property (readonly) float progress;
 @property (readonly) gap_TransactionStatus status;
 @property (readonly) InfinitUser* sender;

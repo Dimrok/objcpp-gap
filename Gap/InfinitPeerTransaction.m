@@ -59,6 +59,14 @@
 
 #pragma mark - Public
 
+- (InfinitUser*)other_user
+{
+  if (self.sender.is_self)
+    return self.recipient;
+  else
+    return self.sender;
+}
+
 - (InfinitUser*)sender
 {
   return [[InfinitUserManager sharedInstance] userWithId:_sender_id];

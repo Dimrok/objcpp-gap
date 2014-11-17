@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "InfinitConnectionManager.h"
 #import "InfinitLinkTransaction.h"
 #import "InfinitPeerTransaction.h"
 #import "InfinitUser.h"
@@ -47,17 +48,20 @@ performSelector:(SEL)selector
 - (NSNumber*)self_id;
 - (NSString*)self_device_id;
 
+- (UIImage*)avatarForUserWithId:(NSNumber*)id_;
+
 #pragma mark - All Transactions
 - (void)cancelTransactionWithId:(NSNumber*)id_;
 - (float)transactionProgressForId:(NSNumber*)id_;
 
 #pragma mark - Link Transactions
-/// Link Transactions should be accessed using the Peer Transaction Manager.
+/// Link Transactions should be accessed using the Link Transaction Manager.
 - (NSArray*)linkTransactions;
 - (InfinitLinkTransaction*)linkTransactionById:(NSNumber*)id_;
 
 - (NSNumber*)createLinkWithFiles:(NSArray*)files
                      withMessage:(NSString*)message;
+- (void)deleteTransactionWithId:(NSNumber*)id_;
 
 #pragma mark - Peer Transactions
 /// Peer Transactions should be accessed using the Peer Transaction Manager.
@@ -70,5 +74,8 @@ performSelector:(SEL)selector
            withMessage:(NSString*)message;
 - (void)acceptTransactionWithId:(NSNumber*)id_;
 - (void)rejectTransactionWithId:(NSNumber*)id_;
+
+#pragma mark - Connection Status
+- (void)setNetworkConnectionStatus:(InfinitNetworkStatus)status;
 
 @end
