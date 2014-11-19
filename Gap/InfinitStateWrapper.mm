@@ -14,6 +14,7 @@ static InfinitStateWrapper* _wrapper_instance = nil;
 
 - (id)initWithState:(gap_State*)state
 {
+  NSCAssert(_wrapper_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
     _state = state;
@@ -21,7 +22,16 @@ static InfinitStateWrapper* _wrapper_instance = nil;
   return self;
 }
 
-+ (void)setLocalDev
+- (void)dealloc
+{
+  _wrapper_instance = nil;
+  if (_state != nullptr)
+    gap_free(_state);
+}
+
+#pragma mark - Set Environment Variables
+
++ (void)setEnvironmentVariables
 {
   setenv("INFINIT_META_PROTOCOL", "http", 0);
   setenv("INFINIT_META_HOST", "192.168.0.14", 0);
@@ -52,34 +62,90 @@ static InfinitStateWrapper* _wrapper_instance = nil;
   setenv("ELLE_LOG_TIME", "1", 0);
 }
 
+#pragma mark - Fetch Directories
+
++ (NSString*)downloadDirectory
+{
+  NSString* doc_dir =
+    NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+  NSString* res = [doc_dir stringByAppendingPathComponent:@"Downloads"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
+  {
+    [[NSFileManager defaultManager] createDirectoryAtPath:res
+                              withIntermediateDirectories:NO
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @NO}
+                                                    error:nil];
+  }
+  return res;
+}
+
++ (NSString*)persistentConfigDirectory
+{
+  NSString* app_support_dir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+                                                                  NSUserDomainMask,
+                                                                  YES).firstObject;
+  NSString* res = [app_support_dir stringByAppendingPathComponent:@"persistent"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
+  {
+    [[NSFileManager defaultManager] createDirectoryAtPath:res
+                              withIntermediateDirectories:YES
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @NO}
+                                                    error:nil];
+  }
+  return res;
+}
+
++ (NSString*)nonPersistentConfigDirectory
+{
+  NSString* app_support_dir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+                                                                  NSUserDomainMask,
+                                                                  YES).firstObject;
+  NSString* res = [app_support_dir stringByAppendingPathComponent:@"non-persistent"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
+  {
+    [[NSFileManager defaultManager] createDirectoryAtPath:res
+                              withIntermediateDirectories:NO
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
+                                                    error:nil];
+  }
+  return res;
+}
+
++ (NSString*)temporaryStorageDirectory
+{
+  NSString* cache_dir =
+    NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+  NSString* res = [cache_dir stringByAppendingPathComponent:@"storage"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
+  {
+    [[NSFileManager defaultManager] createDirectoryAtPath:res
+                              withIntermediateDirectories:YES
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
+                                                    error:nil];
+  }
+  return res;
+}
+
+#pragma mark - Setup Instace
+
 + (instancetype)sharedInstance
 {
   if (_wrapper_instance == nil)
   {
-    NSString* doc_dir =
-      NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-    NSString* download_dir = [doc_dir stringByAppendingPathComponent:@"Downloads"];
-    BOOL is_dir;
-    if (![[NSFileManager defaultManager] fileExistsAtPath:download_dir isDirectory:&is_dir])
-    {
-      [[NSFileManager defaultManager] createDirectoryAtPath:download_dir
-                                withIntermediateDirectories:NO
-                                                 attributes:nil
-                                                      error:nil];
-    }
     BOOL production = NO;
-    [InfinitStateWrapper setLocalDev];
+    [InfinitStateWrapper setEnvironmentVariables];
+    NSString* download_dir = [InfinitStateWrapper downloadDirectory];
+    NSString* persistent_config_dir = [InfinitStateWrapper persistentConfigDirectory];
+    NSString* non_persistent_config_dir = [InfinitStateWrapper nonPersistentConfigDirectory];
+    NSString* temp_storage_dir = [InfinitStateWrapper temporaryStorageDirectory];
     _wrapper_instance =
-    [[InfinitStateWrapper alloc] initWithState:gap_new(production, download_dir.UTF8String)];
+      [[InfinitStateWrapper alloc] initWithState:gap_new(production,
+                                                         download_dir.UTF8String,
+                                                         persistent_config_dir.UTF8String,
+                                                         non_persistent_config_dir.UTF8String,
+                                                         temp_storage_dir.UTF8String)];
   }
   return _wrapper_instance;
-}
-
-- (void)dealloc
-{
-  _wrapper_instance = nil;
-  if (_state != nullptr)
-    gap_free(_state);
 }
 
 @end
