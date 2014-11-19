@@ -28,6 +28,7 @@ static InfinitPeerTransactionManager* _instance = nil;
 
 - (id)init
 {
+  NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
     [self _fillTransactionMap];

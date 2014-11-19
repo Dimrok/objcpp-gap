@@ -47,6 +47,7 @@ static NSString* _self_device_id = nil;
 
 - (id)init
 {
+  NSCAssert(_manager_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
     _queue = [[NSOperationQueue alloc] init];
