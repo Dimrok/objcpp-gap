@@ -36,9 +36,15 @@ static InfinitAvatarManager* _instance = nil;
 
 #pragma mark - Public Functions
 
+#if TARGET_OS_IPHONE
 - (UIImage*)avatarForUser:(InfinitUser*)user
 {
   UIImage* avatar = [_avatar_map objectForKey:user.id_];
+#else
+- (NSImage*)avatarForUser:(InfinitUser*)user
+{
+  NSImage* avatar = [_avatar_map objectForKey:user.id_];
+#endif
   if (avatar == nil)
   {
     avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:user.id_];
@@ -52,7 +58,11 @@ static InfinitAvatarManager* _instance = nil;
 {
   @synchronized(_avatar_map)
   {
+#if TARGET_OS_IPHONE
     UIImage* avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:id_];
+#else
+    NSImage* avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:id_];
+#endif
     if (avatar != nil)
     {
       [_avatar_map setObject:avatar forKey:id_];

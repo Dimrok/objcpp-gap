@@ -7,7 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIImage.h>
+
+#if TARGET_OS_IPHONE
+# import <UIKit/UIImage.h>
+#else
+# import <AppKit/NSImage.h>
+#endif
 
 #import "InfinitUser.h"
 
@@ -15,7 +20,11 @@
 
 + (instancetype)sharedInstance;
 
+#if TARGET_OS_IPHONE
 - (UIImage*)avatarForUser:(InfinitUser*)user;
+#else
+- (NSImage*)avatarForUser:(InfinitUser*)user;
+#endif
 
 #pragma mark - State Manager Callback
 - (void)gotAvatarForUserWithId:(NSNumber*)id_;

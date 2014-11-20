@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		83568D851A136D7800766DA3 /* libGap-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83568D791A136D7700766DA3 /* libGap-iOS.a */; };
 		83568D9F1A136DEE00766DA3 /* InfinitStateWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568D9E1A136DEE00766DA3 /* InfinitStateWrapper.mm */; };
 		83568DA41A136DF600766DA3 /* InfinitUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA11A136DF600766DA3 /* InfinitUser.m */; };
 		83568DA51A136DF600766DA3 /* InfinitUserManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA31A136DF600766DA3 /* InfinitUserManager.mm */; };
@@ -19,6 +18,36 @@
 		836F5C801A165AE5007C9C4E /* InfinitConnectionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 836F5C7E1A165AE5007C9C4E /* InfinitConnectionManager.mm */; };
 		836F5C831A165B48007C9C4E /* InfinitReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 836F5C811A165B48007C9C4E /* InfinitReachability.h */; };
 		836F5C841A165B48007C9C4E /* InfinitReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 836F5C821A165B48007C9C4E /* InfinitReachability.m */; };
+		83F35D0D1A1CF08F00DF7F35 /* InfinitFeaturesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F35D0B1A1CF08F00DF7F35 /* InfinitFeaturesManager.h */; };
+		83F35D0E1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83F35D0C1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm */; };
+		83F35D3A1A1D03C300DF7F35 /* InfinitAvatarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FE9C911A1636FF00FC1CFD /* InfinitAvatarManager.m */; };
+		83F35D3B1A1D03C300DF7F35 /* InfinitConnectionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 836F5C7E1A165AE5007C9C4E /* InfinitConnectionManager.mm */; };
+		83F35D3C1A1D03C300DF7F35 /* InfinitReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 836F5C821A165B48007C9C4E /* InfinitReachability.m */; };
+		83F35D3D1A1D03C300DF7F35 /* InfinitFeaturesManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83F35D0C1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm */; };
+		83F35D3E1A1D03C300DF7F35 /* InfinitStateManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DAD1A136E1000766DA3 /* InfinitStateManager.mm */; };
+		83F35D3F1A1D03C300DF7F35 /* InfinitStateResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DAF1A136E1000766DA3 /* InfinitStateResult.m */; };
+		83F35D401A1D03C300DF7F35 /* InfinitStateWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568D9E1A136DEE00766DA3 /* InfinitStateWrapper.mm */; };
+		83F35D411A1D03C300DF7F35 /* InfinitLinkTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F72CA81A1513810088106E /* InfinitLinkTransaction.m */; };
+		83F35D421A1D03C300DF7F35 /* InfinitLinkTransactionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83F72CAC1A1513FA0088106E /* InfinitLinkTransactionManager.mm */; };
+		83F35D431A1D03C300DF7F35 /* InfinitPeerTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA71A136DFF00766DA3 /* InfinitPeerTransaction.m */; };
+		83F35D441A1D03C300DF7F35 /* InfinitPeerTransactionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA91A136DFF00766DA3 /* InfinitPeerTransactionManager.mm */; };
+		83F35D451A1D03C300DF7F35 /* InfinitUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA11A136DF600766DA3 /* InfinitUser.m */; };
+		83F35D461A1D03C300DF7F35 /* InfinitUserManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA31A136DF600766DA3 /* InfinitUserManager.mm */; };
+		83F35D471A1D03C300DF7F35 /* InfinitUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F4D0AB1A14CBC90068BEB2 /* InfinitUtilities.m */; };
+		83F35D481A1D03D600DF7F35 /* InfinitAvatarManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83FE9C901A1636FF00FC1CFD /* InfinitAvatarManager.h */; };
+		83F35D491A1D03D600DF7F35 /* InfinitConnectionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 836F5C7D1A165AE5007C9C4E /* InfinitConnectionManager.h */; };
+		83F35D4A1A1D03D600DF7F35 /* InfinitReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 836F5C811A165B48007C9C4E /* InfinitReachability.h */; };
+		83F35D4B1A1D03D600DF7F35 /* InfinitFeaturesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F35D0B1A1CF08F00DF7F35 /* InfinitFeaturesManager.h */; };
+		83F35D4C1A1D03D600DF7F35 /* InfinitStateManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DAC1A136E1000766DA3 /* InfinitStateManager.h */; };
+		83F35D4D1A1D03D600DF7F35 /* InfinitStateResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DAE1A136E1000766DA3 /* InfinitStateResult.h */; };
+		83F35D4E1A1D03D600DF7F35 /* InfinitStateWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568D9D1A136DEE00766DA3 /* InfinitStateWrapper.h */; };
+		83F35D4F1A1D03D600DF7F35 /* InfinitLinkTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F72CA71A1513810088106E /* InfinitLinkTransaction.h */; };
+		83F35D501A1D03D600DF7F35 /* InfinitLinkTransactionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F72CAB1A1513FA0088106E /* InfinitLinkTransactionManager.h */; };
+		83F35D511A1D03D600DF7F35 /* InfinitPeerTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA61A136DFF00766DA3 /* InfinitPeerTransaction.h */; };
+		83F35D521A1D03D600DF7F35 /* InfinitPeerTransactionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA81A136DFF00766DA3 /* InfinitPeerTransactionManager.h */; };
+		83F35D531A1D03D600DF7F35 /* InfinitUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA01A136DF600766DA3 /* InfinitUser.h */; };
+		83F35D541A1D03D600DF7F35 /* InfinitUserManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA21A136DF600766DA3 /* InfinitUserManager.h */; };
+		83F35D551A1D03D600DF7F35 /* InfinitUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F4D0AA1A14CBC90068BEB2 /* InfinitUtilities.h */; };
 		83F4D0131A136E3C0068BEB2 /* InfinitStateWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568D9D1A136DEE00766DA3 /* InfinitStateWrapper.h */; };
 		83F4D0141A136E3C0068BEB2 /* InfinitStateManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DAC1A136E1000766DA3 /* InfinitStateManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DAE1A136E1000766DA3 /* InfinitStateResult.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -36,16 +65,6 @@
 		83FE9C931A1636FF00FC1CFD /* InfinitAvatarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FE9C911A1636FF00FC1CFD /* InfinitAvatarManager.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		83568D861A136D7800766DA3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83568D6C1A136D5D00766DA3 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 83568D781A136D7700766DA3;
-			remoteInfo = "Gap-iOS";
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		83568D771A136D7700766DA3 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -60,8 +79,6 @@
 
 /* Begin PBXFileReference section */
 		83568D791A136D7700766DA3 /* libGap-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libGap-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		83568D841A136D7800766DA3 /* Gap-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Gap-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		83568D8A1A136D7800766DA3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		83568D9D1A136DEE00766DA3 /* InfinitStateWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitStateWrapper.h; sourceTree = "<group>"; };
 		83568D9E1A136DEE00766DA3 /* InfinitStateWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitStateWrapper.mm; sourceTree = "<group>"; };
 		83568DA01A136DF600766DA3 /* InfinitUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitUser.h; sourceTree = "<group>"; };
@@ -80,6 +97,13 @@
 		836F5C7E1A165AE5007C9C4E /* InfinitConnectionManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitConnectionManager.mm; sourceTree = "<group>"; };
 		836F5C811A165B48007C9C4E /* InfinitReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitReachability.h; sourceTree = "<group>"; };
 		836F5C821A165B48007C9C4E /* InfinitReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitReachability.m; sourceTree = "<group>"; };
+		83F35D0B1A1CF08F00DF7F35 /* InfinitFeaturesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitFeaturesManager.h; sourceTree = "<group>"; };
+		83F35D0C1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitFeaturesManager.mm; sourceTree = "<group>"; };
+		83F35D1F1A1D02EE00DF7F35 /* Gap-OSX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "Gap-OSX.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		83F35D221A1D02EE00DF7F35 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = "../Gap-OSX/Info.plist"; sourceTree = "<group>"; };
+		83F35D2F1A1D02EE00DF7F35 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		83F35D301A1D02EE00DF7F35 /* Gap_OSXTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Gap_OSXTests.m; sourceTree = "<group>"; };
+		83F35D561A1D07D400DF7F35 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = "Gap-iOS/Info.plist"; sourceTree = SOURCE_ROOT; };
 		83F4D0AA1A14CBC90068BEB2 /* InfinitUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitUtilities.h; sourceTree = "<group>"; };
 		83F4D0AB1A14CBC90068BEB2 /* InfinitUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitUtilities.m; sourceTree = "<group>"; };
 		83F72CA71A1513810088106E /* InfinitLinkTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitLinkTransaction.h; sourceTree = "<group>"; };
@@ -98,11 +122,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		83568D811A136D7800766DA3 /* Frameworks */ = {
+		83F35D1B1A1D02EE00DF7F35 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83568D851A136D7800766DA3 /* libGap-iOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,13 +136,16 @@
 			isa = PBXGroup;
 			children = (
 				83FE9C8E1A16367A00FC1CFD /* Avatars */,
-				836F5C7C1A165AD2007C9C4E /* Connection Manager */,
+				836F5C7C1A165AD2007C9C4E /* Connection */,
+				83F35D0A1A1CF07300DF7F35 /* Features */,
+				83568D9B1A136DDE00766DA3 /* Gap */,
 				83F72CA51A1513630088106E /* Link Transactions */,
 				83568D9C1A136DE300766DA3 /* Peer Transactions */,
 				83568D9A1A136DD900766DA3 /* Users */,
-				83568D9B1A136DDE00766DA3 /* Gap */,
 				83F4D0A91A14CB4C0068BEB2 /* Utilities */,
 				83568D881A136D7800766DA3 /* Gap-iOSTests */,
+				83568D891A136D7800766DA3 /* Supporting Files */,
+				83F35D2D1A1D02EE00DF7F35 /* Gap-OSXTests */,
 				83568D7A1A136D7700766DA3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -128,7 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				83568D791A136D7700766DA3 /* libGap-iOS.a */,
-				83568D841A136D7800766DA3 /* Gap-iOSTests.xctest */,
+				83F35D1F1A1D02EE00DF7F35 /* Gap-OSX.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -136,7 +162,6 @@
 		83568D881A136D7800766DA3 /* Gap-iOSTests */ = {
 			isa = PBXGroup;
 			children = (
-				83568D891A136D7800766DA3 /* Supporting Files */,
 			);
 			path = "Gap-iOSTests";
 			sourceTree = "<group>";
@@ -144,9 +169,11 @@
 		83568D891A136D7800766DA3 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				83568D8A1A136D7800766DA3 /* Info.plist */,
+				83F35D391A1D032F00DF7F35 /* OS X */,
+				83F35D381A1D032400DF7F35 /* iOS */,
 			);
 			name = "Supporting Files";
+			path = "Gap-iOSTests";
 			sourceTree = "<group>";
 		};
 		83568D9A1A136DD900766DA3 /* Users */ = {
@@ -184,7 +211,7 @@
 			name = "Peer Transactions";
 			sourceTree = "<group>";
 		};
-		836F5C7C1A165AD2007C9C4E /* Connection Manager */ = {
+		836F5C7C1A165AD2007C9C4E /* Connection */ = {
 			isa = PBXGroup;
 			children = (
 				836F5C7D1A165AE5007C9C4E /* InfinitConnectionManager.h */,
@@ -192,7 +219,49 @@
 				836F5C811A165B48007C9C4E /* InfinitReachability.h */,
 				836F5C821A165B48007C9C4E /* InfinitReachability.m */,
 			);
-			name = "Connection Manager";
+			name = Connection;
+			sourceTree = "<group>";
+		};
+		83F35D0A1A1CF07300DF7F35 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				83F35D0B1A1CF08F00DF7F35 /* InfinitFeaturesManager.h */,
+				83F35D0C1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm */,
+			);
+			name = Features;
+			sourceTree = "<group>";
+		};
+		83F35D2D1A1D02EE00DF7F35 /* Gap-OSXTests */ = {
+			isa = PBXGroup;
+			children = (
+				83F35D301A1D02EE00DF7F35 /* Gap_OSXTests.m */,
+				83F35D2E1A1D02EE00DF7F35 /* Supporting Files */,
+			);
+			path = "Gap-OSXTests";
+			sourceTree = "<group>";
+		};
+		83F35D2E1A1D02EE00DF7F35 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				83F35D2F1A1D02EE00DF7F35 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		83F35D381A1D032400DF7F35 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				83F35D561A1D07D400DF7F35 /* Info.plist */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		83F35D391A1D032F00DF7F35 /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				83F35D221A1D02EE00DF7F35 /* Info.plist */,
+			);
+			name = "OS X";
 			sourceTree = "<group>";
 		};
 		83F4D0A91A14CB4C0068BEB2 /* Utilities */ = {
@@ -231,19 +300,41 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83F4D0141A136E3C0068BEB2 /* InfinitStateManager.h in Headers */,
 				83FE9C921A1636FF00FC1CFD /* InfinitAvatarManager.h in Headers */,
 				836F5C831A165B48007C9C4E /* InfinitReachability.h in Headers */,
-				83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */,
 				83F4D0161A136E3C0068BEB2 /* InfinitPeerTransaction.h in Headers */,
 				83F4D0171A136E3C0068BEB2 /* InfinitPeerTransactionManager.h in Headers */,
 				83F4D0181A136E3C0068BEB2 /* InfinitUser.h in Headers */,
+				83F35D0D1A1CF08F00DF7F35 /* InfinitFeaturesManager.h in Headers */,
 				83F4D0AC1A14CBC90068BEB2 /* InfinitUtilities.h in Headers */,
 				836F5C7F1A165AE5007C9C4E /* InfinitConnectionManager.h in Headers */,
+				83F4D0141A136E3C0068BEB2 /* InfinitStateManager.h in Headers */,
+				83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */,
 				83F72CAD1A1513FA0088106E /* InfinitLinkTransactionManager.h in Headers */,
 				83F72CA91A1513810088106E /* InfinitLinkTransaction.h in Headers */,
 				83F4D0191A136E3C0068BEB2 /* InfinitUserManager.h in Headers */,
 				83F4D0131A136E3C0068BEB2 /* InfinitStateWrapper.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		83F35D1C1A1D02EE00DF7F35 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				83F35D481A1D03D600DF7F35 /* InfinitAvatarManager.h in Headers */,
+				83F35D491A1D03D600DF7F35 /* InfinitConnectionManager.h in Headers */,
+				83F35D4A1A1D03D600DF7F35 /* InfinitReachability.h in Headers */,
+				83F35D4B1A1D03D600DF7F35 /* InfinitFeaturesManager.h in Headers */,
+				83F35D4C1A1D03D600DF7F35 /* InfinitStateManager.h in Headers */,
+				83F35D4D1A1D03D600DF7F35 /* InfinitStateResult.h in Headers */,
+				83F35D4E1A1D03D600DF7F35 /* InfinitStateWrapper.h in Headers */,
+				83F35D4F1A1D03D600DF7F35 /* InfinitLinkTransaction.h in Headers */,
+				83F35D501A1D03D600DF7F35 /* InfinitLinkTransactionManager.h in Headers */,
+				83F35D511A1D03D600DF7F35 /* InfinitPeerTransaction.h in Headers */,
+				83F35D521A1D03D600DF7F35 /* InfinitPeerTransactionManager.h in Headers */,
+				83F35D531A1D03D600DF7F35 /* InfinitUser.h in Headers */,
+				83F35D541A1D03D600DF7F35 /* InfinitUserManager.h in Headers */,
+				83F35D551A1D03D600DF7F35 /* InfinitUtilities.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,23 +359,23 @@
 			productReference = 83568D791A136D7700766DA3 /* libGap-iOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		83568D831A136D7800766DA3 /* Gap-iOSTests */ = {
+		83F35D1E1A1D02EE00DF7F35 /* Gap-OSX */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 83568D8E1A136D7800766DA3 /* Build configuration list for PBXNativeTarget "Gap-iOSTests" */;
+			buildConfigurationList = 83F35D321A1D02EE00DF7F35 /* Build configuration list for PBXNativeTarget "Gap-OSX" */;
 			buildPhases = (
-				83568D801A136D7800766DA3 /* Sources */,
-				83568D811A136D7800766DA3 /* Frameworks */,
-				83568D821A136D7800766DA3 /* Resources */,
+				83F35D1A1A1D02EE00DF7F35 /* Sources */,
+				83F35D1B1A1D02EE00DF7F35 /* Frameworks */,
+				83F35D1C1A1D02EE00DF7F35 /* Headers */,
+				83F35D1D1A1D02EE00DF7F35 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				83568D871A136D7800766DA3 /* PBXTargetDependency */,
 			);
-			name = "Gap-iOSTests";
-			productName = "Gap-iOSTests";
-			productReference = 83568D841A136D7800766DA3 /* Gap-iOSTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
+			name = "Gap-OSX";
+			productName = "Gap-OSX";
+			productReference = 83F35D1F1A1D02EE00DF7F35 /* Gap-OSX.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -297,7 +388,7 @@
 					83568D781A136D7700766DA3 = {
 						CreatedOnToolsVersion = 6.1;
 					};
-					83568D831A136D7800766DA3 = {
+					83F35D1E1A1D02EE00DF7F35 = {
 						CreatedOnToolsVersion = 6.1;
 					};
 				};
@@ -315,13 +406,13 @@
 			projectRoot = "";
 			targets = (
 				83568D781A136D7700766DA3 /* Gap-iOS */,
-				83568D831A136D7800766DA3 /* Gap-iOSTests */,
+				83F35D1E1A1D02EE00DF7F35 /* Gap-OSX */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		83568D821A136D7800766DA3 /* Resources */ = {
+		83F35D1D1A1D02EE00DF7F35 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -345,28 +436,35 @@
 				83F4D0AD1A14CBC90068BEB2 /* InfinitUtilities.m in Sources */,
 				83568DB11A136E1000766DA3 /* InfinitStateResult.m in Sources */,
 				83568DAB1A136DFF00766DA3 /* InfinitPeerTransactionManager.mm in Sources */,
+				83F35D0E1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm in Sources */,
 				83568D9F1A136DEE00766DA3 /* InfinitStateWrapper.mm in Sources */,
 				83568DAA1A136DFF00766DA3 /* InfinitPeerTransaction.m in Sources */,
 				83568DA51A136DF600766DA3 /* InfinitUserManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		83568D801A136D7800766DA3 /* Sources */ = {
+		83F35D1A1A1D02EE00DF7F35 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83F35D3A1A1D03C300DF7F35 /* InfinitAvatarManager.m in Sources */,
+				83F35D3B1A1D03C300DF7F35 /* InfinitConnectionManager.mm in Sources */,
+				83F35D3C1A1D03C300DF7F35 /* InfinitReachability.m in Sources */,
+				83F35D3D1A1D03C300DF7F35 /* InfinitFeaturesManager.mm in Sources */,
+				83F35D3E1A1D03C300DF7F35 /* InfinitStateManager.mm in Sources */,
+				83F35D3F1A1D03C300DF7F35 /* InfinitStateResult.m in Sources */,
+				83F35D401A1D03C300DF7F35 /* InfinitStateWrapper.mm in Sources */,
+				83F35D411A1D03C300DF7F35 /* InfinitLinkTransaction.m in Sources */,
+				83F35D421A1D03C300DF7F35 /* InfinitLinkTransactionManager.mm in Sources */,
+				83F35D431A1D03C300DF7F35 /* InfinitPeerTransaction.m in Sources */,
+				83F35D441A1D03C300DF7F35 /* InfinitPeerTransactionManager.mm in Sources */,
+				83F35D451A1D03C300DF7F35 /* InfinitUser.m in Sources */,
+				83F35D461A1D03C300DF7F35 /* InfinitUserManager.mm in Sources */,
+				83F35D471A1D03C300DF7F35 /* InfinitUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		83568D871A136D7800766DA3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 83568D781A136D7700766DA3 /* Gap-iOS */;
-			targetProxy = 83568D861A136D7800766DA3 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		83568D701A136D5D00766DA3 /* Debug */ = {
@@ -450,6 +548,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = armv7;
 			};
 			name = Debug;
 		};
@@ -497,10 +596,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = armv7;
 			};
 			name = Release;
 		};
-		83568D8F1A136D7800766DA3 /* Debug */ = {
+		83F35D331A1D02EE00DF7F35 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -517,12 +617,16 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_VERSION = A;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -537,17 +641,33 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Gap-iOSTests/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../elle/elle/src,
+					../../../fist/src,
+					../../../oracles/src,
+					../../../_build/macosx64,
+					../../../_build/macosx64/fist/src,
+					../../../_build/macosx64/oracles/src,
+					../../../_build/macosx64/elle/boost/include,
+				);
+				INFOPLIST_FILE = "Gap-OSX/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				VALID_ARCHS = x86_64;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
-		83568D901A136D7800766DA3 /* Release */ = {
+		83F35D341A1D02EE00DF7F35 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -564,13 +684,17 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_VERSION = A;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -578,13 +702,28 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Gap-iOSTests/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../elle/elle/src,
+					../../../fist/src,
+					../../../oracles/src,
+					../../../_build/macosx64,
+					../../../_build/macosx64/fist/src,
+					../../../_build/macosx64/oracles/src,
+					../../../_build/macosx64/elle/boost/include,
+				);
+				INFOPLIST_FILE = "Gap-OSX/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				VALIDATE_PRODUCT = YES;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				VALID_ARCHS = x86_64;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
@@ -609,11 +748,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83568D8E1A136D7800766DA3 /* Build configuration list for PBXNativeTarget "Gap-iOSTests" */ = {
+		83F35D321A1D02EE00DF7F35 /* Build configuration list for PBXNativeTarget "Gap-OSX" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				83568D8F1A136D7800766DA3 /* Debug */,
-				83568D901A136D7800766DA3 /* Release */,
+				83F35D331A1D02EE00DF7F35 /* Debug */,
+				83F35D341A1D02EE00DF7F35 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

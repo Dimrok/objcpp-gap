@@ -24,6 +24,7 @@ static InfinitConnectionManager* _instance = nil;
 
 - (id)init
 {
+  NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -59,8 +60,8 @@ static InfinitConnectionManager* _instance = nil;
   {
     case NotReachable:
       return @"NotReachable";
-    case ReachableViaWiFi:
-      return @"ReachableViaWiFi";
+    case ReachableViaLAN:
+      return @"ReachableViaLAN";
     case ReachableViaWWAN:
       return @"ReachableViaWWAN";
     default:
@@ -75,7 +76,7 @@ static InfinitConnectionManager* _instance = nil;
     case __NotReachable:
       return NotReachable;
     case __ReachableViaWiFi:
-      return ReachableViaWiFi;
+      return ReachableViaLAN;
     case __ReachableViaWWAN:
       return ReachableViaWWAN;
 

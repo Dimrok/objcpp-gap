@@ -7,6 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#if TARGET_OS_IPHONE
+# import <UIKit/UIImage.h>
+#else
+# import <AppKit/NSImage.h>
+#endif
 
 #import "InfinitConnectionManager.h"
 #import "InfinitLinkTransaction.h"
@@ -17,22 +22,51 @@
 
 @property (readwrite) BOOL logged_in;
 
-+ (void)startState;
-+ (void)stopState;
 + (instancetype)sharedInstance;
 
++ (void)startState;
++ (void)stopState;
+
 #pragma mark - Register/Login/Logout
+/** Register a new user.
+ @param fullname
+  The user's fullname.
+ @param email
+  The user's email address.
+ @param password
+  The user's email password.
+ @param selector
+  Function to call when complete.
+ @param object
+  Calling object.
+ */
 - (void)registerFullname:(NSString*)fullname
                    email:(NSString*)email
                 password:(NSString*)password
          performSelector:(SEL)selector
                 onObject:(id)object;
 
+/** Log a user in.
+ @param email
+  The user's email address.
+ @param password
+  The user's email password.
+ @param selector
+  Function to call when complete.
+ @param object
+  Calling object.
+ */
 - (void)login:(NSString*)email
      password:(NSString*)password
 performSelector:(SEL)selector
      onObject:(id)object;
 
+/** Log the current user out.
+ @param selector
+  Function to call when complete.
+ @param object
+  Calling object.
+ */
 - (void)logoutPerformSelector:(SEL)selector
                      onObject:(id)object;
 
@@ -48,7 +82,11 @@ performSelector:(SEL)selector
 - (NSNumber*)self_id;
 - (NSString*)self_device_id;
 
+#if TARGET_OS_IPHONE
 - (UIImage*)avatarForUserWithId:(NSNumber*)id_;
+#else
+- (NSImage*)avatarForUserWithId:(NSNumber*)id_;
+#endif
 
 #pragma mark - All Transactions
 - (void)cancelTransactionWithId:(NSNumber*)id_;
@@ -77,5 +115,35 @@ performSelector:(SEL)selector
 
 #pragma mark - Connection Status
 - (void)setNetworkConnectionStatus:(InfinitNetworkStatus)status;
+
+#pragma mark - Features
+- (NSDictionary*)features;
+
+#pragma mark - Self
+- (NSString*)selfFullname;
+- (void)setSelfFullname:(NSString*)fullname
+        performSelector:(SEL)selector
+               onObject:(id)object;
+
+- (NSString*)selfHandle;
+- (void)setSelfHandle:(NSString*)handle
+      performSelector:(SEL)selector
+             onObject:(id)object;
+
+- (void)changeFromPassword:(NSString*)old_password
+                toPassword:(NSString*)new_password
+           performSelector:(SEL)selector
+                  onObject:(id)object;
+
+#if TARGET_OS_IPHONE
+- (void)setSelfAvatar:(UIImage*)image
+#else
+- (void)setSelfAvatar:(NSImage*)image
+#endif
+      performSelector:(SEL)selector
+             onObject:(id)object;
+
+#pragma mark - Search
+
 
 @end

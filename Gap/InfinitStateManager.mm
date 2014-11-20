@@ -7,20 +7,24 @@
 //
 
 #import "InfinitStateManager.h"
-#import "InfinitStateResult.h"
-#import "InfinitStateWrapper.h"
 
 #import "InfinitAvatarManager.h"
 #import "InfinitLinkTransaction.h"
 #import "InfinitLinkTransactionManager.h"
 #import "InfinitPeerTransaction.h"
 #import "InfinitPeerTransactionManager.h"
+#import "InfinitStateResult.h"
+#import "InfinitStateWrapper.h"
 #import "InfinitUser.h"
 #import "InfinitUserManager.h"
 
 #import <surface/gap/gap.hh>
 
-#import <UIKit/UIImage.h>
+#if TARGET_OS_IPHONE
+# import <UIKit/UIImage.h>
+#else
+# import <AppKit/NSImage.h>
+#endif
 
 #undef check
 #import <elle/log.hh>
@@ -241,12 +245,16 @@ performSelector:(SEL)selector
 
 - (InfinitUser*)userById:(NSNumber*)id_
 {
+  if (!self._loggedIn)
+    return nil;
   auto user = gap_user_by_id(self.stateWrapper.state, id_.unsignedIntValue);
   return [self _convertUser:user];
 }
 
 - (NSArray*)swaggers
 {
+  if (!self._loggedIn)
+    return nil;
   auto swaggers_ = gap_swaggers(self.stateWrapper.state);
   NSMutableArray* res = [NSMutableArray array];
   for (auto const& swagger: swaggers_)
@@ -266,6 +274,8 @@ performSelector:(SEL)selector
   {
     if (weak_self == nil)
       return gap_error;
+    if (!weak_self._loggedIn)
+      return gap_not_logged_in;
     auto user_ = gap_user_by_handle(weak_self.stateWrapper.state, handle.UTF8String);
     InfinitUser* user = [weak_self _convertUser:user_];
     data[@"user"] = user;
@@ -275,6 +285,8 @@ performSelector:(SEL)selector
 
 - (NSNumber*)self_id
 {
+  if (!self._loggedIn)
+    return nil;
   if (_self_id == nil)
     _self_id = [self _numFromUint:gap_self_id(self.stateWrapper.state)];
   return _self_id;
@@ -287,17 +299,32 @@ performSelector:(SEL)selector
   return _self_device_id;
 }
 
+#if TARGET_OS_IPHONE
 - (UIImage*)avatarForUserWithId:(NSNumber*)id_
+#else
+- (NSImage*)avatarForUserWithId:(NSNumber*)id_
+#endif
 {
+  if (!self._loggedIn)
+    return nil;
   void* gap_data;
   size_t size;
   gap_Status status = gap_avatar(self.stateWrapper.state, id_.unsignedIntValue, &gap_data, &size);
+#if TARGET_OS_IPHONE
   UIImage* res = nil;
   if (status == gap_ok && size > 0)
   {
-    NSData* data = [[NSData alloc] initWithBytes:gap_data length:size];;
+    NSData* data = [[NSData alloc] initWithBytes:gap_data length:size];
     res = [UIImage imageWithData:data];
   }
+#else
+  NSImage* res = nil;
+  if (status == gap_ok && size > 0)
+  {
+    NSData* data = [[NSData alloc] initWithBytes:gap_data length:size];
+    res = [[NSImage alloc] initWithData:data];
+  }
+#endif
   return res;
 }
 
@@ -305,11 +332,15 @@ performSelector:(SEL)selector
 
 - (void)cancelTransactionWithId:(NSNumber*)id_
 {
+  if (!self._loggedIn)
+    return;
   gap_cancel_transaction(self.stateWrapper.state, id_.unsignedIntValue);
 }
 
 - (float)transactionProgressForId:(NSNumber*)id_
 {
+  if (!self._loggedIn)
+    return 0.0f;
   return gap_transaction_progress(self.stateWrapper.state, id_.unsignedIntValue);
 }
 
@@ -317,12 +348,16 @@ performSelector:(SEL)selector
 
 - (InfinitLinkTransaction*)linkTransactionById:(NSNumber*)id_
 {
+  if (!self._loggedIn)
+    return nil;
   auto transaction = gap_link_transaction_by_id(self.stateWrapper.state, id_.unsignedIntValue);
   return [self _convertLinkTransaction:transaction];
 }
 
 - (NSArray*)linkTransactions
 {
+  if (!self._loggedIn)
+    return nil;
   auto transactions_ = gap_link_transactions(self.stateWrapper.state);
   NSMutableArray* res = [NSMutableArray array];
   for (auto const& transaction: transactions_)
@@ -335,14 +370,18 @@ performSelector:(SEL)selector
 - (NSNumber*)createLinkWithFiles:(NSArray*)files
                      withMessage:(NSString*)message
 {
+  if (!self._loggedIn)
+    return nil;
   uint32_t res = gap_create_link_transaction(self.stateWrapper.state,
-                                             [self _vectorFromNSArray:files],
+                                             [self _filesVectorFromNSArray:files],
                                              message.UTF8String);
   return [self _numFromUint:res];
 }
 
 - (void)deleteTransactionWithId:(NSNumber*)id_
 {
+  if (!self._loggedIn)
+    return;
   gap_delete_transaction(self.stateWrapper.state, id_.unsignedIntValue);
 }
 
@@ -350,12 +389,16 @@ performSelector:(SEL)selector
 
 - (InfinitPeerTransaction*)peerTransactionById:(NSNumber*)id_
 {
+  if (!self._loggedIn)
+    return nil;
   auto transaction = gap_peer_transaction_by_id(self.stateWrapper.state, id_.unsignedIntValue);
   return [self _convertPeerTransaction:transaction];
 }
 
 - (NSArray*)peerTransactions
 {
+  if (!self._loggedIn)
+    return nil;
   auto transactions_ = gap_peer_transactions(self.stateWrapper.state);
   NSMutableArray* res = [NSMutableArray array];
   for (auto const& transaction: transactions_)
@@ -369,21 +412,23 @@ performSelector:(SEL)selector
            toRecipient:(id)recipient
            withMessage:(NSString*)message
 {
+  if (!self._loggedIn)
+    return nil;
   uint32_t res = 0;
   if ([recipient isKindOfClass:InfinitUser.class])
   {
     InfinitUser* user = recipient;
     res = gap_send_files(self.stateWrapper.state,
-                                  user.id_.unsignedIntValue,
-                                  [self _vectorFromNSArray:files],
-                                  message.UTF8String);
+                         user.id_.unsignedIntValue,
+                         [self _filesVectorFromNSArray:files],
+                         message.UTF8String);
   }
   else if ([recipient isKindOfClass:NSString.class])
   {
     NSString* email = recipient;
     res = gap_send_files_by_email(self.stateWrapper.state,
                                   email.UTF8String,
-                                  [self _vectorFromNSArray:files], 
+                                  [self _filesVectorFromNSArray:files],
                                   message.UTF8String);
   }
   return [self _numFromUint:res];
@@ -391,11 +436,15 @@ performSelector:(SEL)selector
 
 - (void)acceptTransactionWithId:(NSNumber*)id_
 {
+  if (!self._loggedIn)
+    return;
   gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue);
 }
 
 - (void)rejectTransactionWithId:(NSNumber*)id_
 {
+  if (!self._loggedIn)
+    return;
   gap_reject_transaction(self.stateWrapper.state, id_.unsignedIntValue);
 }
 
@@ -404,19 +453,133 @@ performSelector:(SEL)selector
 - (void)setNetworkConnectionStatus:(InfinitNetworkStatus)status
 {
   bool connected = false;
-  if (status == ReachableViaWiFi || status == ReachableViaWWAN)
+  if (status == ReachableViaLAN || status == ReachableViaWWAN)
     connected = true;
   gap_internet_connection(self.stateWrapper.state, connected);
 }
 
+#pragma mark - Features
+
+- (NSDictionary*)features
+{
+  auto features_ = gap_fetch_features(self.stateWrapper.state);
+  NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+  for (std::pair<std::string, std::string> const& pair: features_)
+  {
+    NSString* key = [self _nsString:pair.first];
+    dict[key] = [self _nsString:pair.second];
+  }
+  return dict;
+}
+
+#pragma mark - Self
+
+- (BOOL)_loggedIn
+{
+  BOOL res = gap_logged_in(self.stateWrapper.state);
+  if (self.logged_in != res)
+    self.logged_in = res;
+  return res;
+}
+
+- (NSString*)selfFullname
+{
+  auto fullname = gap_self_fullname(self.stateWrapper.state);
+  return [self _nsString:fullname];
+}
+
+- (void)setSelfFullname:(NSString*)fullname
+        performSelector:(SEL)selector
+               onObject:(id)object
+{
+  __weak InfinitStateManager* weak_self = self;
+  [self _addOperation:^gap_Status(NSOperation*)
+   {
+     if (weak_self == nil)
+       return gap_error;
+     if (!weak_self._loggedIn)
+       return gap_not_logged_in;
+     return gap_set_self_fullname(weak_self.stateWrapper.state, fullname.UTF8String);
+   } performSelector:selector onObject:object];
+}
+
+- (NSString*)selfHandle
+{
+  if (!self._loggedIn)
+    return nil;
+  auto handle = gap_self_handle(self.stateWrapper.state);
+  return [self _nsString:handle];
+}
+
+- (void)setSelfHandle:(NSString*)handle
+      performSelector:(SEL)selector
+             onObject:(id)object
+{
+  __weak InfinitStateManager* weak_self = self;
+  [self _addOperation:^gap_Status(NSOperation*)
+   {
+     if (weak_self == nil)
+       return gap_error;
+     if (!weak_self._loggedIn)
+       return gap_not_logged_in;
+     return gap_set_self_handle(weak_self.stateWrapper.state, handle.UTF8String);
+   } performSelector:selector onObject:object];
+}
+
+- (void)changeFromPassword:(NSString*)old_password
+                toPassword:(NSString*)new_password
+           performSelector:(SEL)selector
+                  onObject:(id)object
+{
+  __weak InfinitStateManager* weak_self = self;
+  [self _addOperation:^gap_Status(NSOperation*)
+   {
+     if (weak_self == nil)
+       return gap_error;
+     if (!weak_self._loggedIn)
+       return gap_not_logged_in;
+     return gap_change_password(weak_self.stateWrapper.state,
+                                old_password.UTF8String,
+                                new_password.UTF8String);
+   } performSelector:selector onObject:object];
+}
+
+#if TARGET_OS_IPHONE
+- (void)setSelfAvatar:(UIImage*)image
+#else
+- (void)setSelfAvatar:(NSImage*)image
+#endif
+      performSelector:(SEL)selector
+             onObject:(id)object
+{
+  __weak InfinitStateManager* weak_self = self;
+  [self _addOperation:^gap_Status(NSOperation*)
+   {
+     if (weak_self == nil)
+       return gap_error;
+     if (!weak_self._loggedIn)
+       return gap_not_logged_in;
+#if TARGET_OS_IPHONE
+     NSData* image_data = UIImageJPEGRepresentation(image, 0.8f);
+#else
+     NSData* image_data = [image TIFFRepresentation];
+     NSBitmapImageRep* image_rep = [NSBitmapImageRep imageRepWithData:image_data];
+     NSDictionary* image_props = [NSDictionary dictionaryWithObject:@0.8f
+                                                             forKey:NSImageCompressionFactor];
+     image_data = [image_rep representationUsingType:NSJPEGFileType properties:image_props];
+#endif
+     return gap_update_avatar(weak_self.stateWrapper.state, image_data.bytes, image_data.length);
+   } performSelector:selector onObject:object];
+}
+
 #pragma mark - Conversions
 
-- (std::vector<std::string>)_vectorFromNSArray:(NSArray*)array
+- (std::vector<std::string>)_filesVectorFromNSArray:(NSArray*)array
 {
   std::vector<std::string> res;
   for (NSString* element in array)
   {
-    res.push_back(element.UTF8String);
+    res.push_back(element.fileSystemRepresentation);
   }
   return res;
 }

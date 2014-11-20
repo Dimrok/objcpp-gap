@@ -60,7 +60,7 @@ NSString *kReachabilityChangedNotification = @"kNetworkReachabilityChangedNotifi
 
 #pragma mark - Supporting functions
 
-#define kShouldPrintReachabilityFlags 1
+#define kShouldPrintReachabilityFlags 0
 
 static void PrintReachabilityFlags(SCNetworkReachabilityFlags flags, const char* comment)
 {
@@ -259,7 +259,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
       returnValue = __ReachableViaWiFi;
     }
   }
-
+#if TARGET_OS_IPHONE
   if ((flags & kSCNetworkReachabilityFlagsIsWWAN) == kSCNetworkReachabilityFlagsIsWWAN)
   {
     /*
@@ -267,6 +267,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
      */
     returnValue = __ReachableViaWWAN;
   }
+#endif
 
   return returnValue;
 }

@@ -7,6 +7,7 @@
 //
 
 #import "InfinitLinkTransaction.h"
+
 #import "InfinitStateManager.h"
 
 @implementation InfinitLinkTransaction

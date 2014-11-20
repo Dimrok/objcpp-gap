@@ -36,7 +36,11 @@
 
 #pragma mark - Public
 
+#if TARGET_OS_IPHONE
 - (UIImage*)avatar
+#else
+- (NSImage*)avatar
+#endif
 {
   return [[InfinitAvatarManager sharedInstance] avatarForUser:self];
 }

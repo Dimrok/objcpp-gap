@@ -7,6 +7,7 @@
 //
 
 #import "InfinitLinkTransactionManager.h"
+
 #import "InfinitStateManager.h"
 
 #undef check

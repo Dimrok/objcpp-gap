@@ -11,7 +11,7 @@
 typedef enum : NSInteger
 {
   NotReachable = 0,
-  ReachableViaWiFi,
+  ReachableViaLAN,
   ReachableViaWWAN
 } InfinitNetworkStatus;
 
