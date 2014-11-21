@@ -32,7 +32,7 @@
 ELLE_LOG_COMPONENT("iOS.StateManager");
 
 // Block type to queue gap operation
-typedef gap_Status(^gap_operation_t)(NSOperation*);
+typedef gap_Status(^gap_operation_t)(InfinitStateManager*, NSOperation*);
 
 static InfinitStateManager* _manager_instance = nil;
 static NSNumber* _self_id = nil;
@@ -143,23 +143,22 @@ static NSString* _self_device_id = nil;
          performSelector:(SEL)selector
                 onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
-  [self _addOperation:^gap_Status(NSOperation* op)
-   {
-     if (weak_self == nil)
-       return gap_error;
-     [weak_self _startPolling];
-     gap_Status res =
-       gap_register(weak_self.stateWrapper.state,
-                    fullname.UTF8String,
-                    email.UTF8String,
-                    password.UTF8String);
-     if (res == gap_ok)
-       weak_self.logged_in = YES;
-     else
-       [weak_self _stopPolling];
-     return res;
-   } performSelector:selector onObject:object];
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    gap_clean_state(manager.stateWrapper.state);
+    [manager _clearSelf];
+    [manager _startPolling];
+    gap_Status res =
+      gap_register(manager.stateWrapper.state,
+                   fullname.UTF8String,
+                   email.UTF8String,
+                   password.UTF8String);
+    if (res == gap_ok)
+      manager.logged_in = YES;
+    else
+      [manager _stopPolling];
+    return res;
+  } performSelector:selector onObject:object];
 }
 
 - (void)login:(NSString*)email
@@ -167,34 +166,28 @@ static NSString* _self_device_id = nil;
 performSelector:(SEL)selector
      onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
-  [self _addOperation:^gap_Status(NSOperation* op)
-    {
-      if (weak_self == nil)
-        return gap_error;
-      gap_clean_state(weak_self.stateWrapper.state);
-      [weak_self _clearSelf];
-      [weak_self _startPolling];
-      gap_Status res =
-        gap_login(weak_self.stateWrapper.state, email.UTF8String, password.UTF8String);
-      if (res == gap_ok)
-        weak_self.logged_in = YES;
-      else
-        [weak_self _stopPolling];
-      return res;
-    } performSelector:selector onObject:object];
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    gap_clean_state(manager.stateWrapper.state);
+    [manager _clearSelf];
+    [manager _startPolling];
+    gap_Status res =
+      gap_login(manager.stateWrapper.state, email.UTF8String, password.UTF8String);
+    if (res == gap_ok)
+      manager.logged_in = YES;
+    else
+      [manager _stopPolling];
+    return res;
+  } performSelector:selector onObject:object];
 }
 
 - (void)logoutPerformSelector:(SEL)selector
                      onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
-  [self _addOperation:^gap_Status(NSOperation*)
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
-    if (weak_self == nil)
-      return gap_error;
-    [weak_self _stopPolling];
-    gap_Status res = gap_logout(weak_self.stateWrapper.state);
+    [manager _stopPolling];
+    gap_Status res = gap_logout(manager.stateWrapper.state);
     return res;
   } performSelector:selector onObject:object];
 }
@@ -232,13 +225,12 @@ performSelector:(SEL)selector
 {
   if (!_polling)
     return;
-  __weak InfinitStateManager* weak_self = self;
-  [self _addOperation:^gap_Status(NSOperation*)
-    {
-      if (![weak_self _polling])
-        return gap_error;
-      return gap_poll(weak_self.stateWrapper.state);
-    }];
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    if (![manager _polling])
+      return gap_error;
+    return gap_poll(manager.stateWrapper.state);
+  }];
 }
 
 #pragma mark - User
@@ -269,15 +261,12 @@ performSelector:(SEL)selector
             onObject:(id)object
             withData:(id)data
 {
-  __weak InfinitStateManager* weak_self = self;
-  [self _addOperation:^gap_Status(NSOperation*)
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
-    if (weak_self == nil)
-      return gap_error;
-    if (!weak_self._loggedIn)
+    if (!manager._loggedIn)
       return gap_not_logged_in;
-    auto user_ = gap_user_by_handle(weak_self.stateWrapper.state, handle.UTF8String);
-    InfinitUser* user = [weak_self _convertUser:user_];
+    auto user_ = gap_user_by_handle(manager.stateWrapper.state, handle.UTF8String);
+    InfinitUser* user = [manager _convertUser:user_];
     data[@"user"] = user;
     return gap_ok;
   } performSelector:selector onObject:object withData:data];
@@ -492,15 +481,12 @@ performSelector:(SEL)selector
         performSelector:(SEL)selector
                onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
-  [self _addOperation:^gap_Status(NSOperation*)
-   {
-     if (weak_self == nil)
-       return gap_error;
-     if (!weak_self._loggedIn)
-       return gap_not_logged_in;
-     return gap_set_self_fullname(weak_self.stateWrapper.state, fullname.UTF8String);
-   } performSelector:selector onObject:object];
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    if (!manager._loggedIn)
+      return gap_not_logged_in;
+    return gap_set_self_fullname(manager.stateWrapper.state, fullname.UTF8String);
+  } performSelector:selector onObject:object];
 }
 
 - (NSString*)selfHandle
@@ -515,15 +501,12 @@ performSelector:(SEL)selector
       performSelector:(SEL)selector
              onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
-  [self _addOperation:^gap_Status(NSOperation*)
-   {
-     if (weak_self == nil)
-       return gap_error;
-     if (!weak_self._loggedIn)
-       return gap_not_logged_in;
-     return gap_set_self_handle(weak_self.stateWrapper.state, handle.UTF8String);
-   } performSelector:selector onObject:object];
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    if (!manager._loggedIn)
+      return gap_not_logged_in;
+    return gap_set_self_handle(manager.stateWrapper.state, handle.UTF8String);
+  } performSelector:selector onObject:object];
 }
 
 - (void)changeFromPassword:(NSString*)old_password
@@ -531,16 +514,13 @@ performSelector:(SEL)selector
            performSelector:(SEL)selector
                   onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
-  [self _addOperation:^gap_Status(NSOperation*)
-   {
-     if (weak_self == nil)
-       return gap_error;
-     if (!weak_self._loggedIn)
-       return gap_not_logged_in;
-     return gap_change_password(weak_self.stateWrapper.state,
-                                old_password.UTF8String,
-                                new_password.UTF8String);
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    if (!manager._loggedIn)
+      return gap_not_logged_in;
+    return gap_change_password(manager.stateWrapper.state,
+                               old_password.UTF8String,
+                               new_password.UTF8String);
    } performSelector:selector onObject:object];
 }
 
@@ -552,12 +532,9 @@ performSelector:(SEL)selector
       performSelector:(SEL)selector
              onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
-  [self _addOperation:^gap_Status(NSOperation*)
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
-     if (weak_self == nil)
-       return gap_error;
-     if (!weak_self._loggedIn)
+     if (!manager._loggedIn)
        return gap_not_logged_in;
 #if TARGET_OS_IPHONE
      NSData* image_data = UIImageJPEGRepresentation(image, 0.8f);
@@ -568,7 +545,7 @@ performSelector:(SEL)selector
                                                              forKey:NSImageCompressionFactor];
      image_data = [image_rep representationUsingType:NSJPEGFileType properties:image_props];
 #endif
-     return gap_update_avatar(weak_self.stateWrapper.state, image_data.bytes, image_data.length);
+     return gap_update_avatar(manager.stateWrapper.state, image_data.bytes, image_data.length);
    } performSelector:selector onObject:object];
 }
 
@@ -647,11 +624,14 @@ performSelector:(SEL)selector
 
 - (void)_addOperation:(gap_operation_t)operation
 {
+  __weak InfinitStateManager* weak_self = self;
   __block NSBlockOperation* block_operation = [NSBlockOperation blockOperationWithBlock:^(void)
     {
       if (block_operation.isCancelled)
         return;
-      operation(block_operation);
+      if (weak_self == nil)
+        return;
+      operation(weak_self, block_operation);
       if (block_operation.isCancelled)
       {
         ELLE_LOG("%s: cancelled operation", self.description.UTF8String);
@@ -674,11 +654,20 @@ performSelector:(SEL)selector
              onObject:(id)object
              withData:(id)data
 {
+  __weak InfinitStateManager* weak_self = self;
   __block NSBlockOperation* block_operation = [NSBlockOperation blockOperationWithBlock:^(void)
    {
      if (block_operation.isCancelled)
+     {
+       ELLE_LOG("%s: cancelled operation: %s.%s",
+                self.description.UTF8String,
+                [object description].UTF8String,
+                NSStringFromSelector(selector).UTF8String);
        return;
-     gap_Status result = operation(block_operation);
+     }
+     if (weak_self == nil)
+       return;
+     gap_Status result = operation(weak_self, block_operation);
      InfinitStateResult* operation_result = [[InfinitStateResult alloc] initWithStatus:result
                                                                                andData:data];
      if (block_operation.isCancelled)
