@@ -31,11 +31,13 @@
 @property (strong, readonly) NSString* meta_id;
 @property (readonly) BOOL is_self;
 @property (readwrite) BOOL status;
+@property (readonly) BOOL swagger;
 
 - (id)initWithId:(NSNumber*)id_
           status:(BOOL)status
         fullname:(NSString*)fullname
           handle:(NSString*)handle
+         swagger:(BOOL)swagger
          deleted:(BOOL)deleted
            ghost:(BOOL)ghost;
 @end

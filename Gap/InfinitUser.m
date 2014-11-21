@@ -19,6 +19,7 @@
           status:(BOOL)status
         fullname:(NSString*)fullname
           handle:(NSString*)handle
+         swagger:(BOOL)swagger
          deleted:(BOOL)deleted
            ghost:(BOOL)ghost
 {
@@ -28,6 +29,7 @@
     _status = status;
     _fullname = [fullname copy];
     _handle = [handle copy];
+    _swagger = swagger;
     _deleted = deleted;
     _ghost = ghost;
   }
@@ -57,7 +59,13 @@
 
 - (NSString*)description
 {
-  return [NSString stringWithFormat:@"%@: %@", self.fullname, self.status ? @"online" : @"offline"];
+  return [NSString stringWithFormat:@"%@: %@ %@%@: %@%@",
+          self.id_,
+          self.deleted ? @"deleted" : self.ghost ? @"ghost" : @"normal",
+          self.fullname,
+          self.handle.length > 0 ? [NSString stringWithFormat:@" (%@)", self.handle] : @"",
+          self.swagger ? @"is swagger, " : @"",
+          self.status ? @"online" : @"offline"];
 }
 
 @end
