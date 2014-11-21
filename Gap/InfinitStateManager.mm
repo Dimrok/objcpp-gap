@@ -668,6 +668,7 @@ performSelector:(SEL)selector
                                               status:user.status
                                             fullname:[self _nsString:user.fullname]
                                               handle:[self _nsString:user.handle]
+                                             swagger:user.swagger
                                              deleted:user.deleted
                                                ghost:user.ghost];
   return res;
