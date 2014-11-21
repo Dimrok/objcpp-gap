@@ -79,6 +79,14 @@ static NSString* _self_device_id = nil;
 
 - (void)_attachCallbacks
 {
+  if (gap_critical_callback(self.stateWrapper.state, on_critical_callback) != gap_ok)
+  {
+    ELLE_ERR("%s: unable to attach critical callback", self.description.UTF8String);
+  }
+  if (gap_connection_callback(self.stateWrapper.state, on_connection_callback) != gap_ok)
+  {
+    ELLE_ERR("%s: unable to attach connection callback", self.description.UTF8String);
+  }
   if (gap_peer_transaction_callback(self.stateWrapper.state, on_peer_transaction) != gap_ok)
   {
     ELLE_ERR("%s: unable to attach peer transaction callback", self.description.UTF8String);
@@ -687,6 +695,19 @@ performSelector:(SEL)selector
 }
 
 #pragma mark - Callbacks
+
+static
+void
+on_critical_callback()
+{
+  abort();
+}
+
+static
+void
+on_connection_callback(bool status, bool still_retrying, std::string const& last_error)
+{
+}
 
 - (void)_peerTransactionUpdated:(surface::gap::PeerTransaction const&)transaction_
 {
