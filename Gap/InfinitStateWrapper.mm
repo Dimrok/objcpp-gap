@@ -138,12 +138,14 @@ static InfinitStateWrapper* _wrapper_instance = nil;
     NSString* persistent_config_dir = [InfinitStateWrapper persistentConfigDirectory];
     NSString* non_persistent_config_dir = [InfinitStateWrapper nonPersistentConfigDirectory];
     NSString* temp_storage_dir = [InfinitStateWrapper temporaryStorageDirectory];
+    BOOL enable_mirroring = NO;
     _wrapper_instance =
       [[InfinitStateWrapper alloc] initWithState:gap_new(production,
                                                          download_dir.UTF8String,
                                                          persistent_config_dir.UTF8String,
                                                          non_persistent_config_dir.UTF8String,
-                                                         temp_storage_dir.UTF8String)];
+                                                         temp_storage_dir.UTF8String,
+                                                         enable_mirroring)];
   }
   return _wrapper_instance;
 }
