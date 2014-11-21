@@ -258,26 +258,8 @@ performSelector:(SEL)selector
   auto swaggers_ = gap_swaggers(self.stateWrapper.state);
   NSMutableArray* res = [NSMutableArray array];
   for (auto const& swagger: swaggers_)
-  {
     [res addObject:[self _convertUser:swagger]];
-  }
   return res;
-}
-
-- (void)userByHandle:(NSString*)handle
-     performSelector:(SEL)selector
-            onObject:(id)object
-            withData:(id)data
-{
-  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
-  {
-    if (!manager._loggedIn)
-      return gap_not_logged_in;
-    auto user_ = gap_user_by_handle(manager.stateWrapper.state, handle.UTF8String);
-    InfinitUser* user = [manager _convertUser:user_];
-    data[@"user"] = user;
-    return gap_ok;
-  } performSelector:selector onObject:object withData:data];
 }
 
 - (NSNumber*)self_id
@@ -555,6 +537,69 @@ performSelector:(SEL)selector
 #endif
      return gap_update_avatar(manager.stateWrapper.state, image_data.bytes, image_data.length);
    } performSelector:selector onObject:object];
+}
+
+#pragma mark - Search
+
+- (void)userByHandle:(NSString*)handle
+     performSelector:(SEL)selector
+            onObject:(id)object
+            withData:(NSMutableDictionary*)data
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     if (!manager._loggedIn)
+       return gap_not_logged_in;
+     auto user_ = gap_user_by_handle(manager.stateWrapper.state, handle.UTF8String);
+     InfinitUser* user = [manager _convertUser:user_];
+     data[@"user"] = user;
+     return gap_ok;
+   } performSelector:selector onObject:object withData:data];
+}
+
+- (void)textSearch:(NSString*)text
+   performSelector:(SEL)selector
+          onObject:(id)object
+          withData:(NSMutableDictionary*)data
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     if (!manager.logged_in)
+       return gap_not_logged_in;
+     auto results = gap_users_search(manager.stateWrapper.state, text.UTF8String);
+     NSMutableArray* res = [NSMutableArray array];
+     for (auto const& user: results)
+     {
+       [res addObject:[manager _convertUser:user]];
+     }
+     data[@"users"] = res;
+     return gap_ok;
+   } performSelector:selector onObject:object withData:data];
+}
+
+- (void)searchEmails:(NSArray*)emails
+     performSelector:(SEL)selector
+            onObject:(id)object
+            withData:(NSMutableDictionary*)data
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     if (!manager.logged_in)
+       return gap_not_logged_in;
+     std::vector<std::string> emails_;
+     for (NSString* email in emails)
+     {
+       emails_.push_back(email.UTF8String);
+     }
+     auto results = gap_users_by_emails(manager.stateWrapper.state, emails_);
+     NSMutableDictionary* res = [NSMutableDictionary dictionary];
+     for (auto const& result: results)
+     {
+       res[[manager _nsString:result.first]] = [manager _convertUser:result.second];
+     }
+     data[@"results"] = res;
+     return gap_ok;
+   } performSelector:selector onObject:object withData:data];
 }
 
 #pragma mark - Conversions

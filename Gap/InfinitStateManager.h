@@ -74,10 +74,6 @@ performSelector:(SEL)selector
 /// Users should be accessed using the User Manager.
 - (NSArray*)swaggers;
 - (InfinitUser*)userById:(NSNumber*)id_;
-- (void)userByHandle:(NSString*)handle
-     performSelector:(SEL)selector
-            onObject:(id)object
-            withData:(id)data;
 
 - (NSNumber*)self_id;
 - (NSString*)self_device_id;
@@ -144,6 +140,19 @@ performSelector:(SEL)selector
              onObject:(id)object;
 
 #pragma mark - Search
+- (void)userByHandle:(NSString*)handle
+     performSelector:(SEL)selector
+            onObject:(id)object
+            withData:(NSMutableDictionary*)data;
 
+- (void)textSearch:(NSString*)text
+   performSelector:(SEL)selector
+          onObject:(id)object
+          withData:(NSMutableDictionary*)data;
+
+- (void)searchEmails:(NSArray*)emails
+     performSelector:(SEL)selector
+            onObject:(id)object
+            withData:(NSMutableDictionary*)data;
 
 @end
