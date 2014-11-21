@@ -152,21 +152,21 @@ static NSString* _self_device_id = nil;
                 onObject:(id)object
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
-  {
-    gap_clean_state(manager.stateWrapper.state);
-    [manager _clearSelf];
-    [manager _startPolling];
-    gap_Status res =
-      gap_register(manager.stateWrapper.state,
-                   fullname.UTF8String,
-                   email.UTF8String,
-                   password.UTF8String);
-    if (res == gap_ok)
-      manager.logged_in = YES;
-    else
-      [manager _stopPolling];
-    return res;
-  } performSelector:selector onObject:object];
+   {
+     gap_clean_state(manager.stateWrapper.state);
+     [manager _clearSelf];
+     [manager _startPolling];
+     gap_Status res =
+     gap_register(manager.stateWrapper.state,
+                  fullname.UTF8String,
+                  email.UTF8String,
+                  password.UTF8String);
+     if (res == gap_ok)
+       manager.logged_in = YES;
+     else
+       [manager _stopPolling];
+     return res;
+   } performSelector:selector onObject:object];
 }
 
 - (void)login:(NSString*)email
@@ -175,29 +175,29 @@ performSelector:(SEL)selector
      onObject:(id)object
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
-  {
-    gap_clean_state(manager.stateWrapper.state);
-    [manager _clearSelf];
-    [manager _startPolling];
-    gap_Status res =
-      gap_login(manager.stateWrapper.state, email.UTF8String, password.UTF8String);
-    if (res == gap_ok)
-      manager.logged_in = YES;
-    else
-      [manager _stopPolling];
-    return res;
-  } performSelector:selector onObject:object];
+   {
+     gap_clean_state(manager.stateWrapper.state);
+     [manager _clearSelf];
+     [manager _startPolling];
+     gap_Status res =
+     gap_login(manager.stateWrapper.state, email.UTF8String, password.UTF8String);
+     if (res == gap_ok)
+       manager.logged_in = YES;
+     else
+       [manager _stopPolling];
+     return res;
+   } performSelector:selector onObject:object];
 }
 
 - (void)logoutPerformSelector:(SEL)selector
                      onObject:(id)object
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
-  {
-    [manager _stopPolling];
-    gap_Status res = gap_logout(manager.stateWrapper.state);
-    return res;
-  } performSelector:selector onObject:object];
+   {
+     [manager _stopPolling];
+     gap_Status res = gap_logout(manager.stateWrapper.state);
+     return res;
+   } performSelector:selector onObject:object];
 }
 
 #pragma mark - Polling
@@ -510,11 +510,11 @@ performSelector:(SEL)selector
              onObject:(id)object
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
-  {
-    if (!manager._loggedIn)
-      return gap_not_logged_in;
-    return gap_set_self_handle(manager.stateWrapper.state, handle.UTF8String);
-  } performSelector:selector onObject:object];
+   {
+     if (!manager._loggedIn)
+       return gap_not_logged_in;
+     return gap_set_self_handle(manager.stateWrapper.state, handle.UTF8String);
+   } performSelector:selector onObject:object];
 }
 
 - (void)changeFromPassword:(NSString*)old_password
@@ -523,12 +523,12 @@ performSelector:(SEL)selector
                   onObject:(id)object
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
-  {
-    if (!manager._loggedIn)
-      return gap_not_logged_in;
-    return gap_change_password(manager.stateWrapper.state,
-                               old_password.UTF8String,
-                               new_password.UTF8String);
+   {
+     if (!manager._loggedIn)
+       return gap_not_logged_in;
+     return gap_change_password(manager.stateWrapper.state,
+                                old_password.UTF8String,
+                                new_password.UTF8String);
    } performSelector:selector onObject:object];
 }
 
