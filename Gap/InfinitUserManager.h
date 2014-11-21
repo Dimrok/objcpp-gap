@@ -39,6 +39,34 @@
        performSelector:(SEL)selector
               onObject:(id)object;
 
+/** Asynchronously fetch users whose fullname or handle contains text.
+ When the results have been fetched, the selector of the object is called with an array of Users.
+ @param text
+  Text to search for.
+ @param selector
+  Function to call when complete.
+ @param object
+  Calling object.
+ */
+- (void)searchUsers:(NSString*)text
+    performSelector:(SEL)selector
+           onObject:(id)object;
+
+/** Asynchronously fetch users whose emails match those provided.
+ When the results have been fetched, the selector of the object is called with a dictionary:
+ {email_0: user_0, ... email_n: user_n}.
+ @param emails
+  A list of email addresses to search for.
+ @param selector
+  Function to call when complete.
+ @param object
+  Calling object.
+ */
+- (void)searchEmails:(NSArray*)emails
+     performSelector:(SEL)selector
+            onObject:(id)object;
+
+
 #pragma mark - State Manager Callbacks
 - (void)newUser:(InfinitUser*)user;
 - (void)userWithId:(NSNumber*)id_
