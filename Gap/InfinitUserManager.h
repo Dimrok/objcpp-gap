@@ -41,6 +41,7 @@
 
 /** Asynchronously fetch users whose fullname or handle contains text.
  When the results have been fetched, the selector of the object is called with an array of Users.
+ This will occur twice: the first time for local results and the second for remote.
  @param text
   Text to search for.
  @param selector
