@@ -13,7 +13,7 @@
 #undef check
 #import <elle/log.hh>
 
-ELLE_LOG_COMPONENT("iOS.LinkTransactionManager");
+ELLE_LOG_COMPONENT("Gap-ObjC++.LinkTransactionManager");
 
 static InfinitLinkTransactionManager* _instance = nil;
 

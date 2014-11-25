@@ -12,7 +12,7 @@
 #undef check
 #import <elle/log.hh>
 
-ELLE_LOG_COMPONENT("iOS.FeaturesManager");
+ELLE_LOG_COMPONENT("Gap-ObjC++.FeaturesManager");
 
 static InfinitFeaturesManager* _instance = nil;
 

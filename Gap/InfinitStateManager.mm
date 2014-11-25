@@ -29,7 +29,7 @@
 #undef check
 #import <elle/log.hh>
 
-ELLE_LOG_COMPONENT("iOS.StateManager");
+ELLE_LOG_COMPONENT("Gap-ObjC++.StateManager");
 
 // Block type to queue gap operation
 typedef gap_Status(^gap_operation_t)(InfinitStateManager*, NSOperation*);

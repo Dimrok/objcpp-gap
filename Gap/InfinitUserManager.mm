@@ -14,7 +14,7 @@
 #undef check
 #import <elle/log.hh>
 
-ELLE_LOG_COMPONENT("iOS.UserManager");
+ELLE_LOG_COMPONENT("Gap-ObjC++.UserManager");
 
 static InfinitUserManager* _instance = nil;
 

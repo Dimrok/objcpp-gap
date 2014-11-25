@@ -13,7 +13,7 @@
 #undef check
 #import <elle/log.hh>
 
-ELLE_LOG_COMPONENT("iOS.ConnectionManager");
+ELLE_LOG_COMPONENT("Gap-ObjC++.ConnectionManager");
 
 static InfinitConnectionManager* _instance = nil;
 

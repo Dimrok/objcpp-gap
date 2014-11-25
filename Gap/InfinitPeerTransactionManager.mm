@@ -14,7 +14,7 @@
 #undef check
 #import <elle/log.hh>
 
-ELLE_LOG_COMPONENT("iOS.PeerTransactionManager");
+ELLE_LOG_COMPONENT("Gap-ObjC++.PeerTransactionManager");
 
 static InfinitPeerTransactionManager* _instance = nil;
 
