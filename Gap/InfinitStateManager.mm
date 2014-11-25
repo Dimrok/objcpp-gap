@@ -77,6 +77,11 @@ static NSString* _self_device_id = nil;
   [[InfinitStateManager sharedInstance] _attachCallbacks];
 }
 
+- (uint64_t)max_mirror_size
+{
+  return self.stateWrapper.max_mirror_size;
+}
+
 - (void)_attachCallbacks
 {
   if (gap_critical_callback(self.stateWrapper.state, on_critical_callback) != gap_ok)
