@@ -111,21 +111,6 @@ static InfinitStateWrapper* _wrapper_instance = nil;
   return res;
 }
 
-+ (NSString*)temporaryStorageDirectory
-{
-  NSString* cache_dir =
-    NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-  NSString* res = [cache_dir stringByAppendingPathComponent:@"storage"];
-  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
-  {
-    [[NSFileManager defaultManager] createDirectoryAtPath:res
-                              withIntermediateDirectories:YES
-                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
-                                                    error:nil];
-  }
-  return res;
-}
-
 #pragma mark - Setup Instace
 
 + (instancetype)sharedInstance
@@ -137,14 +122,12 @@ static InfinitStateWrapper* _wrapper_instance = nil;
     NSString* download_dir = [InfinitStateWrapper downloadDirectory];
     NSString* persistent_config_dir = [InfinitStateWrapper persistentConfigDirectory];
     NSString* non_persistent_config_dir = [InfinitStateWrapper nonPersistentConfigDirectory];
-    NSString* temp_storage_dir = [InfinitStateWrapper temporaryStorageDirectory];
-    BOOL enable_mirroring = NO;
+    BOOL enable_mirroring = YES;
     _wrapper_instance =
       [[InfinitStateWrapper alloc] initWithState:gap_new(production,
                                                          download_dir.UTF8String,
                                                          persistent_config_dir.UTF8String,
                                                          non_persistent_config_dir.UTF8String,
-                                                         temp_storage_dir.UTF8String,
                                                          enable_mirroring)];
   }
   return _wrapper_instance;
