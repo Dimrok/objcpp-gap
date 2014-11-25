@@ -13,11 +13,13 @@ static InfinitStateWrapper* _wrapper_instance = nil;
 @implementation InfinitStateWrapper
 
 - (id)initWithState:(gap_State*)state
+   andMaxMirrorSize:(uint64_t)max_mirror_size
 {
   NSCAssert(_wrapper_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
     _state = state;
+    _max_mirror_size = max_mirror_size;
   }
   return self;
 }
@@ -123,12 +125,15 @@ static InfinitStateWrapper* _wrapper_instance = nil;
     NSString* persistent_config_dir = [InfinitStateWrapper persistentConfigDirectory];
     NSString* non_persistent_config_dir = [InfinitStateWrapper nonPersistentConfigDirectory];
     BOOL enable_mirroring = YES;
+    uint64_t max_mirror_size = 100 * 1024 * 1024;
     _wrapper_instance =
       [[InfinitStateWrapper alloc] initWithState:gap_new(production,
                                                          download_dir.UTF8String,
                                                          persistent_config_dir.UTF8String,
                                                          non_persistent_config_dir.UTF8String,
-                                                         enable_mirroring)];
+                                                         enable_mirroring,
+                                                         max_mirror_size)
+                                andMaxMirrorSize:max_mirror_size];
   }
   return _wrapper_instance;
 }

@@ -12,7 +12,8 @@
 
 @interface InfinitStateWrapper : NSObject
 
-@property (readonly) gap_State* state;
+@property (nonatomic, readonly) gap_State* state;
+@property (nonatomic, readonly) uint64_t max_mirror_size;
 
 + (instancetype)sharedInstance;
 
