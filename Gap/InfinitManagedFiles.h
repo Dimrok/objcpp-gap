@@ -14,5 +14,6 @@
 @property (nonatomic, readwrite) NSMutableOrderedSet* managed_paths;
 @property (nonatomic, readwrite) NSString* root_dir;
 @property (nonatomic, readwrite) NSNumber* transaction_id;
+@property (nonatomic, readwrite) NSNumber* total_size;
 
 @end
