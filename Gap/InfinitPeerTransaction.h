@@ -14,18 +14,18 @@
 
 @interface InfinitPeerTransaction : NSObject
 
-@property BOOL directory;
-@property (strong, readonly) NSArray* files;
-@property (strong, readonly) NSNumber* id_;
-@property (strong, readonly) NSString* message;
-@property (readonly) NSTimeInterval mtime;
-@property (readonly) InfinitUser* recipient;
-@property (readonly) BOOL receivable;
-@property (readonly) InfinitUser* other_user;
-@property (readonly) float progress;
-@property (readonly) gap_TransactionStatus status;
-@property (readonly) InfinitUser* sender;
-@property (strong, readonly) NSNumber* size;
+@property (nonatomic, readonly) BOOL directory;
+@property (nonatomic, readonly) NSArray* files;
+@property (nonatomic, readonly) NSNumber* id_;
+@property (nonatomic, readonly) NSString* message;
+@property (nonatomic, readonly) NSTimeInterval mtime;
+@property (nonatomic, readonly) InfinitUser* recipient;
+@property (nonatomic, readonly) BOOL receivable;
+@property (nonatomic, readonly) InfinitUser* other_user;
+@property (nonatomic, readonly) float progress;
+@property (nonatomic, readonly) gap_TransactionStatus status;
+@property (nonatomic, readonly) InfinitUser* sender;
+@property (nonatomic, readonly) NSNumber* size;
 
 - (id)initWithId:(NSNumber*)id_
           status:(gap_TransactionStatus)status

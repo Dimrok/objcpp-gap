@@ -12,13 +12,13 @@
 
 @interface InfinitLinkTransaction : NSObject
 
-@property (readonly) NSNumber* click_count;
-@property (strong, readonly) NSNumber* id_;
-@property (readonly) NSString* link;
-@property (readonly) NSTimeInterval mtime;
-@property (readonly) NSString* name;
-@property (readonly) float progress;
-@property (readonly) gap_TransactionStatus status;
+@property (nonatomic, readonly) NSNumber* click_count;
+@property (nonatomic, readonly) NSNumber* id_;
+@property (nonatomic, readonly) NSString* link;
+@property (nonatomic, readonly) NSTimeInterval mtime;
+@property (nonatomic, readonly) NSString* name;
+@property (nonatomic, readonly) float progress;
+@property (nonatomic, readonly) gap_TransactionStatus status;
 
 - (id)initWithId:(NSNumber*)id_
           status:(gap_TransactionStatus)status

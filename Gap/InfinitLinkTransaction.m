@@ -26,13 +26,13 @@
 {
   if (self = [super init])
   {
-    _id_ = [id_ copy];
+    _id_ = id_;
     _status = status;
-    _sender_device_id = [sender_device copy];
-    _name = [name copy];
+    _sender_device_id = sender_device;
+    _name = name;
     _mtime = mtime;
-    _link = [link copy];
-    _click_count = [click_count copy];
+    _link = link;
+    _click_count = click_count;
   }
   return self;
 }

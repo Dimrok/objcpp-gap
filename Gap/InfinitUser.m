@@ -25,10 +25,10 @@
 {
   if (self = [super init])
   {
-    _id_ = [id_ copy];
+    _id_ = id_;
     _status = status;
-    _fullname = [fullname copy];
-    _handle = [handle copy];
+    _fullname = fullname;
+    _handle = handle;
     _swagger = swagger;
     _deleted = deleted;
     _ghost = ghost;

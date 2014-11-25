@@ -34,14 +34,14 @@
 {
   if (self = [super init])
   {
-    _id_ = [id_ copy];
-    _sender_id = [sender_id copy];
-    _sender_device_id = [sender_device_id copy];
-    _recipient_id = [recipient_id copy];
-    _files = [files copy];
+    _id_ = id_;
+    _sender_id = sender_id;
+    _sender_device_id = sender_device_id;
+    _recipient_id = recipient_id;
+    _files = files;
     _mtime = mtime;
-    _message = [message copy];
-    _size = [size copy];
+    _message = message;
+    _size = size;
     _status = status;
     _directory = directory;
   }
