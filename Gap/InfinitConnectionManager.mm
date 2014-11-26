@@ -87,8 +87,16 @@ static InfinitConnectionManager* _instance = nil;
 
 - (void)setNetworkStatus:(InfinitNetworkStatus)status
 {
-  _network_status = status;
-  [[InfinitStateManager sharedInstance] setNetworkConnectionStatus:self.network_status];
+  if (_network_status != status)
+  {
+    _network_status = status;
+    [[InfinitStateManager sharedInstance] setNetworkConnectionStatus:self.network_status];
+    NSDictionary* user_info =
+      @{@"connection_type": [NSNumber numberWithInteger:self.network_status]};
+    [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_CONNECTION_TYPE_CHANGE
+                                                        object:self
+                                                      userInfo:user_info];
+  }
 }
 
 - (void)reachabilityChanged:(NSNotification*)notification
@@ -98,8 +106,19 @@ static InfinitConnectionManager* _instance = nil;
 
 #pragma mark - State Manager Callback
 - (void)setConnectedStatus:(BOOL)status
+               stillTrying:(BOOL)trying
+                 lastError:(NSString*)error
 {
-  _connected = status;
+  if (_connected != status)
+  {
+    _connected = status;
+    NSDictionary* user_info = @{@"status": [NSNumber numberWithBool:status],
+                                @"still_trying": [NSNumber numberWithBool:trying],
+                                @"last_error": error};
+    [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_CONNECTION_STATUS_CHANGE
+                                                        object:self
+                                                      userInfo:user_info];
+  }
 }
 
 @end
