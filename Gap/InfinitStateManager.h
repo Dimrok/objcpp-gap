@@ -86,6 +86,8 @@ performSelector:(SEL)selector
 #endif
 
 #pragma mark - All Transactions
+- (void)pauseTransactionWithId:(NSNumber*)id_;
+- (void)resumeTransactionWithId:(NSNumber*)id_;
 - (void)cancelTransactionWithId:(NSNumber*)id_;
 - (float)transactionProgressForId:(NSNumber*)id_;
 

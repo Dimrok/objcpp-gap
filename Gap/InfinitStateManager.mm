@@ -315,6 +315,20 @@ performSelector:(SEL)selector
 
 #pragma mark - All Transactions
 
+- (void)pauseTransactionWithId:(NSNumber*)id_
+{
+  if (!self._loggedIn)
+    return;
+  gap_pause_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+}
+
+- (void)resumeTransactionWithId:(NSNumber*)id_
+{
+  if (!self._loggedIn)
+    return;
+  gap_resume_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+}
+
 - (void)cancelTransactionWithId:(NSNumber*)id_
 {
   if (!self._loggedIn)
