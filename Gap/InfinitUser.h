@@ -13,6 +13,9 @@
 # import <AppKit/NSImage.h>
 #endif
 
+/** Notification sent when a user's avatar is ready.
+ Contains a dictionary with the user "id".
+ */
 #define INFINIT_USER_AVATAR_NOTIFICATION @"INFINIT_USER_AVATAR_NOTIFICATION"
 
 @interface InfinitUser : NSObject
