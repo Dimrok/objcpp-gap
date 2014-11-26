@@ -12,9 +12,9 @@
 
 @interface InfinitStateResult : NSObject
 
-@property (readonly) gap_Status status;
-@property (readonly) id data;
-@property (readonly) BOOL success;
+@property (nonatomic, readonly) gap_Status status;
+@property (nonatomic, readonly) id data;
+@property (nonatomic, readonly) BOOL success;
 
 - (id)initWithStatus:(gap_Status)status;
 - (id)initWithStatus:(gap_Status)status
