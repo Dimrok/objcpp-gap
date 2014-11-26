@@ -92,6 +92,16 @@ static InfinitLinkTransactionManager* _instance = nil;
   return res;
 }
 
+- (void)pauseTransaction:(InfinitLinkTransaction*)transaction
+{
+  [[InfinitStateManager sharedInstance] pauseTransactionWithId:transaction.id_];
+}
+
+- (void)resumeTransaction:(InfinitLinkTransaction*)transaction
+{
+  [[InfinitStateManager sharedInstance] resumeTransactionWithId:transaction.id_];
+}
+
 - (void)cancelTransaction:(InfinitLinkTransaction*)transaction
 {
   [[InfinitStateManager sharedInstance] cancelTransactionWithId:transaction.id_];

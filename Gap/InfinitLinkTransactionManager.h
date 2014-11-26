@@ -55,15 +55,27 @@
 - (NSNumber*)createLinkWithFiles:(NSArray*)files
                      withMessage:(NSString*)message;
 
+/** Pause a Transaction.
+ @param transaction
+  Transaction to pause.
+ */
+- (void)pauseTransaction:(InfinitLinkTransaction*)transaction;
+
+/** Resume a Transaction.
+ @param transaction
+  Transaction to resume.
+ */
+- (void)resumeTransaction:(InfinitLinkTransaction*)transaction;
+
 /** Cancel a Transaction.
  @param transaction
-  InfinitLinkTransaction object.
+  Transaction to cancel.
  */
 - (void)cancelTransaction:(InfinitLinkTransaction*)transaction;
 
 /** Delete a Transaction.
  @param transaction
-  InfinitLinkTransaction object.
+  Transaction to delete.
  */
 - (void)deleteTransaction:(InfinitLinkTransaction*)transaction;
 
