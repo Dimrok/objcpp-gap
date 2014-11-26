@@ -9,6 +9,7 @@
 #import "InfinitStateManager.h"
 
 #import "InfinitAvatarManager.h"
+#import "InfinitConnectionManager.h"
 #import "InfinitLinkTransaction.h"
 #import "InfinitLinkTransactionManager.h"
 #import "InfinitPeerTransaction.h"
@@ -758,6 +759,10 @@ static
 void
 on_connection_callback(bool status, bool still_retrying, std::string const& last_error)
 {
+  NSString* error = [NSString stringWithUTF8String:last_error.c_str()];
+  [[InfinitConnectionManager sharedInstance] setConnectedStatus:status
+                                                    stillTrying:still_retrying
+                                                      lastError:error];
 }
 
 - (void)_peerTransactionUpdated:(surface::gap::PeerTransaction const&)transaction_
