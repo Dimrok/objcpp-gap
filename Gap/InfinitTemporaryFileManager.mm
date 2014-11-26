@@ -152,6 +152,37 @@ static InfinitTemporaryFileManager* _instance = nil;
   [_transaction_map setObject:managed_files forKey:transaction_id];
 }
 
+- (void)addData:(NSData*)data
+   withFilename:(NSString*)filename
+ toManagedFiles:(NSString*)uuid
+{
+  if (data == nil)
+  {
+    ELLE_ERR("%s: unable to write file to %s, data is nil",
+             self.description.UTF8String, filename.UTF8String);
+    return;
+  }
+  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+  if (managed_files == nil)
+  {
+    ELLE_ERR("%s: unable to write file to %s, not in map",
+             self.description.UTF8String, uuid.UTF8String);
+    return;
+  }
+  NSString* path = [managed_files.root_dir stringByAppendingPathComponent:filename];
+  if (![self _pathExists:managed_files.root_dir])
+    [self _createDirectoryAtPath:managed_files.root_dir];
+  NSError* error;
+  if (![data writeToFile:path options:NSDataWritingAtomic error:&error])
+  {
+    ELLE_ERR("%s: unable to write file %s: %s", self.description.UTF8String,
+             path.UTF8String, error.description.UTF8String);
+    return;
+  }
+  [managed_files.managed_paths addObject:path];
+  managed_files.total_size = [self _folderSize:managed_files.root_dir];
+}
+
 - (void)addFiles:(NSArray*)files
   toManagedFiles:(NSString*)uuid
             copy:(BOOL)copy
