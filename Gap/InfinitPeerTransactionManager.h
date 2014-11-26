@@ -50,17 +50,31 @@
 
 /** Accept a Transaction.
  @param transaction
-  InfinitPeerTransaction object.
+  Transaction to accept.
  */
 - (void)acceptTransaction:(InfinitPeerTransaction*)transaction;
+
 /** Reject a Transaction.
  @param transaction
-  InfinitPeerTransaction object.
+  Transaction to reject.
  */
 - (void)rejectTransaction:(InfinitPeerTransaction*)transaction;
+
+/** Pause a Transaction.
+ @param transaction
+  Transaction to pause.
+ */
+- (void)pauseTransaction:(InfinitPeerTransaction*)transaction;
+
+/** Resume a Transaction.
+ @param transaction
+  Transaction to resume.
+ */
+- (void)resumeTransaction:(InfinitPeerTransaction*)transaction;
+
 /** Cancel a Transaction
  @param transaction
-  InfinitPeerTransaction object.
+  Transaction to cancel.
  */
 - (void)cancelTransaction:(InfinitPeerTransaction*)transaction;
 

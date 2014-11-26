@@ -121,6 +121,16 @@ static InfinitPeerTransactionManager* _instance = nil;
   [[InfinitStateManager sharedInstance] rejectTransactionWithId:transaction.id_];
 }
 
+- (void)pauseTransaction:(InfinitPeerTransaction*)transaction
+{
+  [[InfinitStateManager sharedInstance] pauseTransactionWithId:transaction.id_];
+}
+
+- (void)resumeTransaction:(InfinitPeerTransaction*)transaction
+{
+  [[InfinitStateManager sharedInstance] resumeTransactionWithId:transaction.id_];
+}
+
 - (void)cancelTransaction:(InfinitPeerTransaction*)transaction
 {
   [[InfinitStateManager sharedInstance] cancelTransactionWithId:transaction.id_];
