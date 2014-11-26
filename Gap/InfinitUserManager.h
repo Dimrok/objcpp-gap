@@ -10,8 +10,19 @@
 
 #import "InfinitUser.h"
 
+/** Notification sent when there is a new user added to the model.
+ Includes dictionary with the user "id".
+ */
 #define INFINIT_NEW_USER_NOTIFICATION     @"INFINIT_NEW_USER_NOTIFICATION"
+
+/** Notification sent when an existing user's status has changed.
+ Includes dictionary with the user "id".
+ */
 #define INFINIT_USER_STATUS_NOTIFICATION  @"INFINIT_USER_STATUS_NOTIFICATION"
+
+/** Notification sent when an existing user is deleted.
+ Includes dictionary with the user "id".
+ */
 #define INFINIT_USER_DELETED_NOTIFICATION @"INFINIT_USER_DELETED_NOTIFICATION"
 
 @interface InfinitUserManager : NSObject
