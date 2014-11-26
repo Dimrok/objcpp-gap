@@ -10,7 +10,14 @@
 
 #import "InfinitPeerTransaction.h"
 
+/** Notification sent when there is a new peer transaction.
+ Contains a dictionary with the transaction ID.
+*/
 #define INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION    @"INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION"
+
+/** Notification sent when an existing peer transaction has its status updated.
+ Contains a dictionary with the transaction ID.
+ */
 #define INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION @"INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION"
 
 @interface InfinitPeerTransactionManager : NSObject
