@@ -288,6 +288,8 @@ static InfinitTemporaryFileManager* _instance = nil;
   BOOL success;
   for (NSString* file in files)
   {
+    if (![self _pathExists:file])
+      continue;
     success = [[NSFileManager defaultManager] removeItemAtPath:file error:&error];
     if (!success)
     {
