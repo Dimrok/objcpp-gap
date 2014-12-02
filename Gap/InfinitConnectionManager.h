@@ -24,7 +24,9 @@ typedef enum : NSInteger
 {
   NotReachable = 0,
   ReachableViaLAN,
-  ReachableViaWWAN // iOS only.
+#if TARGET_OS_IPHONE
+  ReachableViaWWAN,
+#endif
 } InfinitNetworkStatus;
 
 @interface InfinitConnectionManager : NSObject
