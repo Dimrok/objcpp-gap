@@ -24,6 +24,24 @@
  */
 - (NSArray*)pathsForManagedFiles:(NSString*)uuid;
 
+/** Add a list of Asset Library URLs to be managed.
+ The expected URLs are of form: 
+  assets-library://asset/asset.JPG?id=1D8E0CAE-0A8E-4420-BC85-5E79814106A2&ext=JPG"
+ Files will be created for the associated assets.
+ @param list
+  List of Assets Library URLs as NSURLs.
+ @param uuid
+  The identifying UUID.
+ @param selector
+  The selector to call when the process has been completed.
+ @param object
+  The object on which to call the selector when done.
+ */
+- (void)addAssetsLibraryURLList:(NSArray*)list
+                forManagedFiles:(NSString*)uuid
+                performSelector:(SEL)selector
+                       onObject:(id)object;
+
 /** Add an NSData object to be managed.
  @param data
   Data with which to build file.

@@ -16,6 +16,8 @@
 #undef check
 #import <elle/log.hh>
 
+#import <AssetsLibrary/AssetsLibrary.h>
+
 ELLE_LOG_COMPONENT("Gap-ObjC++.TemporaryFileManager");
 
 static InfinitTemporaryFileManager* _instance = nil;
@@ -25,8 +27,14 @@ static InfinitTemporaryFileManager* _instance = nil;
 @private
   NSMutableDictionary* _files_map;
   NSMutableDictionary* _transaction_map;
+
   NSString* _managed_root;
+
   uint64_t _max_mirror_size;
+
+  ALAssetsLibrary* _library;
+
+  NSOperationQueue* _queue;
 }
 
 - (id)init
@@ -48,12 +56,16 @@ static InfinitTemporaryFileManager* _instance = nil;
                                              selector:@selector(_peerTransactionUpdated:)
                                                  name:INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION
                                                object:nil];
+    _library = nil;
+    _queue = nil;
   }
   return self;
 }
 
 - (void)dealloc
 {
+  _queue.suspended = YES;
+  [_queue cancelAllOperations];
   [self _deleteFiles:@[_managed_root]];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -63,6 +75,24 @@ static InfinitTemporaryFileManager* _instance = nil;
   if (_instance == nil)
     _instance = [[InfinitTemporaryFileManager alloc] init];
   return _instance;
+}
+
+- (ALAssetsLibrary*)_sharedLibrary
+{
+  if (_library == nil)
+    _library = [[ALAssetsLibrary alloc] init];
+  return _library;
+}
+
+- (NSOperationQueue*)_sharedQueue
+{
+  if (_queue == nil)
+  {
+    _queue = [[NSOperationQueue alloc] init];
+    _queue.name = @"TemporaryFileManagerQueue";
+    _queue.maxConcurrentOperationCount = 1;
+  }
+  return _queue;
 }
 
 #pragma mark - Transaction Callback
@@ -139,17 +169,59 @@ static InfinitTemporaryFileManager* _instance = nil;
   return managed_files.managed_paths.array;
 }
 
-- (void)setTransactionId:(NSNumber*)transaction_id
-         forManagedFiles:(NSString*)uuid
+- (void)addAssetsLibraryURLList:(NSArray*)list
+                forManagedFiles:(NSString*)uuid
+                performSelector:(SEL)selector
+                       onObject:(id)object
 {
   InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
   if (managed_files == nil)
   {
-    ELLE_ERR("%s: unable to set transaction_id, %s not in map",
+    ELLE_ERR("%s: unable to add asset list, %s not in map",
              self.description.UTF8String, uuid.UTF8String);
     return;
   }
-  [_transaction_map setObject:managed_files forKey:transaction_id];
+  __weak InfinitTemporaryFileManager* weak_self = self;
+  __block NSInvocation* callback =
+    [NSInvocation invocationWithMethodSignature:[object methodSignatureForSelector:selector]];
+  callback.target = object;
+  callback.selector = selector;
+  for (NSURL* object in list)
+  {
+    __block NSBlockOperation* block_operation = [NSBlockOperation blockOperationWithBlock:^
+    {
+      if (block_operation.cancelled || weak_self == nil)
+        return;
+      [[self _sharedLibrary] assetForURL:object resultBlock:^(ALAsset* asset)
+       {
+         NSUInteger asset_size = (NSUInteger)asset.defaultRepresentation.size;
+         Byte* buffer = (Byte*)malloc(asset_size);
+         NSUInteger buffered = [asset.defaultRepresentation getBytes:buffer
+                                                          fromOffset:0
+                                                              length:asset_size
+                                                               error:nil];
+         NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+         [[InfinitTemporaryFileManager sharedInstance] addData:data
+                                                  withFilename:asset.defaultRepresentation.filename
+                                                toManagedFiles:uuid];
+         if (block_operation.cancelled || weak_self == nil)
+           return;
+
+         if ([[weak_self _sharedQueue] operationCount] == 0)
+         {
+           if (callback.target == nil)
+             return;
+           [callback invoke];
+         }
+       } failureBlock:^(NSError* error)
+       {
+         ELLE_ERR("%s: unable to create file (%s): %s", self.description.UTF8String,
+                  object.absoluteString.UTF8String, error.description.UTF8String);
+       }];
+    }];
+
+    [[self _sharedQueue] addOperation:block_operation];
+  }
 }
 
 - (void)addData:(NSData*)data
@@ -223,6 +295,19 @@ static InfinitTemporaryFileManager* _instance = nil;
   }
   [self _deleteFiles:files];
   managed_files.total_size = [self _folderSize:managed_files.root_dir];
+}
+
+- (void)setTransactionId:(NSNumber*)transaction_id
+         forManagedFiles:(NSString*)uuid
+{
+  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+  if (managed_files == nil)
+  {
+    ELLE_ERR("%s: unable to set transaction_id, %s not in map",
+             self.description.UTF8String, uuid.UTF8String);
+    return;
+  }
+  [_transaction_map setObject:managed_files forKey:transaction_id];
 }
 
 - (void)deleteManagedFiles:(NSString*)uuid
