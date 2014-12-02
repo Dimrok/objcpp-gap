@@ -56,6 +56,7 @@ static NSString* _self_device_id = nil;
   if (self = [super init])
   {
     _queue = [[NSOperationQueue alloc] init];
+    _queue.name = @"StateManagerQueue";
     _queue.maxConcurrentOperationCount = 1;
   }
   return self;
@@ -133,6 +134,9 @@ static NSString* _self_device_id = nil;
 
 - (void)_stopState
 {
+  _manager_instance = nil;
+  [_poll_timer invalidate];
+  _queue.suspended = YES;
   [_queue cancelAllOperations];
   [self _clearSelf];
 }
@@ -144,9 +148,7 @@ static NSString* _self_device_id = nil;
 
 - (void)dealloc
 {
-  _polling = NO;
-  [_poll_timer invalidate];
-  [_queue cancelAllOperations];
+  [self _stopState];
 }
 
 #pragma mark - Register/Login/Logout
