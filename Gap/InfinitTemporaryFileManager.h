@@ -38,9 +38,18 @@
   The object on which to call the selector when done.
  */
 - (void)addAssetsLibraryURLList:(NSArray*)list
-                forManagedFiles:(NSString*)uuid
+                toManagedFiles:(NSString*)uuid
                 performSelector:(SEL)selector
                        onObject:(id)object;
+
+/** Remove a list of Asset Library URLs from managed files.
+ @param list
+  List of URLs to be removed as NSURLs.
+ @param uuid
+  The idetity of the managed files.
+ */
+- (void)removeAssetLibraryURLList:(NSArray*)list
+                 fromManagedFiles:(NSString*)uuid;
 
 /** Add an NSData object to be managed.
  @param data
@@ -49,10 +58,11 @@
   Name of file to be created (including extension).
  @param uuid
   The identifying UUID.
+ @return Path to created file.
  */
-- (void)addData:(NSData*)data
-   withFilename:(NSString*)filename
- toManagedFiles:(NSString*)uuid;
+- (NSString*)addData:(NSData*)data
+        withFilename:(NSString*)filename
+      toManagedFiles:(NSString*)uuid;
 
 /** Add files to be managed.
  @param files

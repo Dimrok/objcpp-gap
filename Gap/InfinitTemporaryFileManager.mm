@@ -170,11 +170,11 @@ static InfinitTemporaryFileManager* _instance = nil;
 }
 
 - (void)addAssetsLibraryURLList:(NSArray*)list
-                forManagedFiles:(NSString*)uuid
+                 toManagedFiles:(NSString*)uuid
                 performSelector:(SEL)selector
                        onObject:(id)object
 {
-  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+  __block InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
   if (managed_files == nil)
   {
     ELLE_ERR("%s: unable to add asset list, %s not in map",
@@ -186,13 +186,13 @@ static InfinitTemporaryFileManager* _instance = nil;
     [NSInvocation invocationWithMethodSignature:[object methodSignatureForSelector:selector]];
   callback.target = object;
   callback.selector = selector;
-  for (NSURL* object in list)
+  for (NSURL* url in list)
   {
     __block NSBlockOperation* block_operation = [NSBlockOperation blockOperationWithBlock:^
     {
       if (block_operation.cancelled || weak_self == nil)
         return;
-      [[self _sharedLibrary] assetForURL:object resultBlock:^(ALAsset* asset)
+      [[self _sharedLibrary] assetForURL:url resultBlock:^(ALAsset* asset)
        {
          NSUInteger asset_size = (NSUInteger)asset.defaultRepresentation.size;
          Byte* buffer = (Byte*)malloc(asset_size);
@@ -201,9 +201,11 @@ static InfinitTemporaryFileManager* _instance = nil;
                                                               length:asset_size
                                                                error:nil];
          NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
-         [[InfinitTemporaryFileManager sharedInstance] addData:data
-                                                  withFilename:asset.defaultRepresentation.filename
-                                                toManagedFiles:uuid];
+         NSString* path =
+          [[InfinitTemporaryFileManager sharedInstance] addData:data
+                                                   withFilename:asset.defaultRepresentation.filename
+                                                 toManagedFiles:uuid];
+         [managed_files.asset_map setObject:path forKey:url];
          if (block_operation.cancelled || weak_self == nil)
            return;
 
@@ -216,7 +218,7 @@ static InfinitTemporaryFileManager* _instance = nil;
        } failureBlock:^(NSError* error)
        {
          ELLE_ERR("%s: unable to create file (%s): %s", self.description.UTF8String,
-                  object.absoluteString.UTF8String, error.description.UTF8String);
+                  url.absoluteString.UTF8String, error.description.UTF8String);
        }];
     }];
 
@@ -224,22 +226,44 @@ static InfinitTemporaryFileManager* _instance = nil;
   }
 }
 
-- (void)addData:(NSData*)data
-   withFilename:(NSString*)filename
- toManagedFiles:(NSString*)uuid
+- (void)removeAssetLibraryURLList:(NSArray*)list
+                 fromManagedFiles:(NSString*)uuid
+{
+  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+  if (managed_files == nil)
+  {
+    ELLE_ERR("%s: unable to add asset list, %s not in map",
+             self.description.UTF8String, uuid.UTF8String);
+    return;
+  }
+  NSMutableArray* paths = [NSMutableArray array];
+  for (NSURL* url in list)
+  {
+    NSString* path = [managed_files.asset_map objectForKey:url];
+    if (path == nil)
+      continue;
+    [paths addObject:path];
+  }
+  [managed_files.asset_map removeObjectsForKeys:list];
+  [self removeFiles:paths fromManagedFiles:uuid];
+}
+
+- (NSString*)addData:(NSData*)data
+        withFilename:(NSString*)filename
+      toManagedFiles:(NSString*)uuid
 {
   if (data == nil)
   {
     ELLE_ERR("%s: unable to write file to %s, data is nil",
              self.description.UTF8String, filename.UTF8String);
-    return;
+    return nil;
   }
   InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
   if (managed_files == nil)
   {
     ELLE_ERR("%s: unable to write file to %s, not in map",
              self.description.UTF8String, uuid.UTF8String);
-    return;
+    return nil;
   }
   NSString* path = [managed_files.root_dir stringByAppendingPathComponent:filename];
   if (![self _pathExists:managed_files.root_dir])
@@ -249,10 +273,11 @@ static InfinitTemporaryFileManager* _instance = nil;
   {
     ELLE_ERR("%s: unable to write file %s: %s", self.description.UTF8String,
              path.UTF8String, error.description.UTF8String);
-    return;
+    return nil;
   }
   [managed_files.managed_paths addObject:path];
   managed_files.total_size = [self _folderSize:managed_files.root_dir];
+  return path;
 }
 
 - (void)addFiles:(NSArray*)files
@@ -282,6 +307,9 @@ static InfinitTemporaryFileManager* _instance = nil;
 - (void)removeFiles:(NSArray*)files
    fromManagedFiles:(NSString*)uuid
 {
+  if (files == nil || files.count == 0)
+    return;
+
   InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
   if (managed_files == nil)
   {
@@ -289,10 +317,7 @@ static InfinitTemporaryFileManager* _instance = nil;
              self.description.UTF8String, uuid.UTF8String);
     return;
   }
-  for (NSString* file in files)
-  {
-    [managed_files.managed_paths removeObject:file];
-  }
+  [managed_files.managed_paths removeObjectsInArray:files];
   [self _deleteFiles:files];
   managed_files.total_size = [self _folderSize:managed_files.root_dir];
 }
