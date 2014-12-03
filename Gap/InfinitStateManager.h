@@ -74,6 +74,9 @@ performSelector:(SEL)selector
 #pragma mark - User
 /// Users should be accessed using the User Manager.
 - (NSArray*)swaggers;
+- (NSArray*)favorites;
+- (void)addFavorite:(InfinitUser*)user;
+- (void)removeFavorite:(InfinitUser*)user;
 - (InfinitUser*)userById:(NSNumber*)id_;
 
 - (NSNumber*)self_id;
@@ -129,10 +132,17 @@ performSelector:(SEL)selector
       performSelector:(SEL)selector
              onObject:(id)object;
 
+- (NSString*)selfEmail;
+- (void)setSelfEmail:(NSString*)email
+            password:(NSString*)password
+     performSelector:(SEL)selector
+            onObject:(id)object;
+
 - (void)changeFromPassword:(NSString*)old_password
                 toPassword:(NSString*)new_password
            performSelector:(SEL)selector
                   onObject:(id)object;
+
 
 #if TARGET_OS_IPHONE
 - (void)setSelfAvatar:(UIImage*)image

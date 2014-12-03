@@ -270,6 +270,41 @@ performSelector:(SEL)selector
   return res;
 }
 
+- (NSArray*)favorites
+{
+  if (!self._loggedIn)
+    return nil;
+  auto favorites_ = gap_favorites(self.stateWrapper.state);
+  NSMutableArray* res = [NSMutableArray array];
+  for (uint32_t favorite: favorites_)
+    [res addObject:[self _numFromUint:favorite]];
+  return res;
+}
+
+- (void)addFavorite:(InfinitUser*)user
+{
+  if (!self._loggedIn)
+    return;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     if (!manager._loggedIn)
+       return gap_not_logged_in;
+     return gap_favorite(manager.stateWrapper.state, user.id_.unsignedIntValue);
+   }];
+}
+
+- (void)removeFavorite:(InfinitUser*)user
+{
+  if (!self._loggedIn)
+    return;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     if (!manager._loggedIn)
+       return gap_not_logged_in;
+     return gap_unfavorite(manager.stateWrapper.state, user.id_.unsignedIntValue);
+   }];
+}
+
 - (NSNumber*)self_id
 {
   if (!self._loggedIn)
@@ -494,11 +529,11 @@ performSelector:(SEL)selector
                onObject:(id)object
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
-  {
-    if (!manager._loggedIn)
-      return gap_not_logged_in;
-    return gap_set_self_fullname(manager.stateWrapper.state, fullname.UTF8String);
-  } performSelector:selector onObject:object];
+   {
+     if (!manager._loggedIn)
+       return gap_not_logged_in;
+     return gap_set_self_fullname(manager.stateWrapper.state, fullname.UTF8String);
+   } performSelector:selector onObject:object];
 }
 
 - (NSString*)selfHandle
@@ -518,6 +553,27 @@ performSelector:(SEL)selector
      if (!manager._loggedIn)
        return gap_not_logged_in;
      return gap_set_self_handle(manager.stateWrapper.state, handle.UTF8String);
+   } performSelector:selector onObject:object];
+}
+
+- (NSString*)selfEmail
+{
+  if (!self._loggedIn)
+    return nil;
+  auto email = gap_self_email(self.stateWrapper.state);
+  return [self _nsString:email];
+}
+
+- (void)setSelfEmail:(NSString*)email
+            password:(NSString*)password
+     performSelector:(SEL)selector
+            onObject:(id)object
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     if (!manager._loggedIn)
+       return gap_not_logged_in;
+     return gap_set_self_email(manager.stateWrapper.state, email.UTF8String, password.UTF8String);
    } performSelector:selector onObject:object];
 }
 
