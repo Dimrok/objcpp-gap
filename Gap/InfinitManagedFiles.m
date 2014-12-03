@@ -17,6 +17,7 @@
     _uuid = [NSUUID UUID].UUIDString;
     _managed_paths = [NSMutableOrderedSet orderedSet];
     _asset_map = [NSMutableDictionary dictionary];
+    _total_size = @0;
   }
   return self;
 }
