@@ -24,6 +24,13 @@
  */
 - (NSArray*)pathsForManagedFiles:(NSString*)uuid;
 
+/** Total size of managed files.
+ @param uuid
+  The identifying UUID.
+ @return Total size of managed files.
+ */
+- (NSNumber*)totalSizeOfManagedFiles:(NSString*)uuid;
+
 /** Add a list of Asset Library URLs to be managed.
  The expected URLs are of form: 
   assets-library://asset/asset.JPG?id=1D8E0CAE-0A8E-4420-BC85-5E79814106A2&ext=JPG"

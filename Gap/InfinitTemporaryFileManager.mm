@@ -169,6 +169,18 @@ static InfinitTemporaryFileManager* _instance = nil;
   return managed_files.managed_paths.array;
 }
 
+- (NSNumber*)totalSizeOfManagedFiles:(NSString*)uuid
+{
+  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+  if (managed_files == nil)
+  {
+    ELLE_ERR("%s: unable to get total size, %s not in map",
+             self.description.UTF8String, uuid.UTF8String);
+    return nil;
+  }
+  return managed_files.total_size;
+}
+
 - (void)addAssetsLibraryURLList:(NSArray*)list
                  toManagedFiles:(NSString*)uuid
                 performSelector:(SEL)selector
