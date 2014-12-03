@@ -101,7 +101,9 @@ static InfinitPeerTransactionManager* _instance = nil;
                                                                    toRecipient:recipient
                                                                    withMessage:message];
     [res addObject:transaction_id];
-    if (transaction_id.unsignedIntValue != 0)
+    // Only notify UI when it's an Infinit User. When sending to an email address, the user doesn't
+    // have an ID until Meta has replied.
+    if (transaction_id.unsignedIntValue != 0 && [recipient isKindOfClass:InfinitUser.class])
     {
       InfinitPeerTransaction* transaction =
         [[InfinitStateManager sharedInstance] peerTransactionById:transaction_id];
