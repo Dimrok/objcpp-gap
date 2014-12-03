@@ -26,7 +26,7 @@
 @property (nonatomic, readonly) NSImage* avatar;
 #endif
 @property (nonatomic, readwrite) BOOL deleted;
-@property (nonatomic, readonly) BOOL favorite;
+@property (nonatomic, readwrite) BOOL favorite;
 @property (nonatomic, readonly) NSString* fullname;
 @property (nonatomic, readonly) BOOL ghost;
 @property (nonatomic, readonly) NSString* handle;
