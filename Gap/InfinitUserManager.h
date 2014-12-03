@@ -29,6 +29,25 @@
 
 + (instancetype)sharedInstance;
 
+/** Return list of user's favorites.
+ @return An array of users.
+ */
+- (NSArray*)favorites;
+
+/** Add favorite.
+ Add a user as a favorite.
+ @param user
+  User to add as a favorite.
+ */
+- (void)addFavorite:(InfinitUser*)user;
+
+/** Remove favorite.
+ Remove a user as a favorite.
+ @param user
+ User to remove as a favorite.
+ */
+- (void)removeFavorite:(InfinitUser*)user;
+
 /** User with corresponding ID.
  @param id_
   User ID.

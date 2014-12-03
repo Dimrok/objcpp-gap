@@ -21,6 +21,7 @@ static InfinitUserManager* _instance = nil;
 @implementation InfinitUserManager
 {
   NSMutableDictionary* _user_map;
+  NSArray* _favorites;
 }
 
 #pragma mark - Init
@@ -31,6 +32,7 @@ static InfinitUserManager* _instance = nil;
   if (self = [super init])
   {
     [self _fillMapWithSwaggers];
+    [self _fetchFavorites];
   }
   return self;
 }
@@ -47,10 +49,50 @@ static InfinitUserManager* _instance = nil;
   _user_map = [NSMutableDictionary dictionary];
   NSArray* swaggers = [[InfinitStateManager sharedInstance] swaggers];
   for (InfinitUser* swagger in swaggers)
+  {
+    swagger.favorite = NO;
     [_user_map setObject:swagger forKey:swagger.id_];
+  }
+}
+
+- (void)_fetchFavorites
+{
+  _favorites = [[InfinitStateManager sharedInstance] favorites];
+  for (NSNumber* id_ in _favorites)
+  {
+    InfinitUser* user = [self userWithId:id_];
+    user.favorite = YES;
+    if ([_user_map objectForKey:id_] == nil)
+    {
+      [_user_map setObject:user forKeyedSubscript:id_];
+    }
+  }
 }
 
 #pragma mark - Public
+
+- (NSArray*)favorites
+{
+  NSMutableArray* res = [NSMutableArray array];
+  for (InfinitUser* user in _user_map.allValues)
+  {
+    if (user.favorite)
+      [res addObject:user];
+  }
+  return res;
+}
+
+- (void)addFavorite:(InfinitUser*)user
+{
+  user.favorite = YES;
+  [[InfinitStateManager sharedInstance] addFavorite:user];
+}
+
+- (void)removeFavorite:(InfinitUser*)user
+{
+  user.favorite = NO;
+  [[InfinitStateManager sharedInstance] removeFavorite:user];
+}
 
 - (InfinitUser*)userWithId:(NSNumber*)id_
 {
@@ -159,10 +201,13 @@ static InfinitUserManager* _instance = nil;
   NSUInteger handle_search_mask = (NSCaseInsensitiveSearch|
                                    NSAnchoredSearch|
                                    NSWidthInsensitiveSearch);
+  NSMutableArray* favorites = [NSMutableArray array];
   NSMutableArray* swaggers = [NSMutableArray array];
   NSMutableArray* handle_swaggers = [NSMutableArray array];
   for (InfinitUser* user in alpha_name_sorted)
   {
+    if (user.favorite)
+      [favorites addObject:user];
     if (user.swagger)
       [swaggers addObject:user];
     if ([user.handle rangeOfString:text options:handle_search_mask].location != NSNotFound)
@@ -171,6 +216,7 @@ static InfinitUserManager* _instance = nil;
         [handle_swaggers addObject:user];
     }
   }
+  [res addObjectsFromArray:favorites];
   [res addObjectsFromArray:handle_swaggers];
   [res addObjectsFromArray:swaggers];
   [res addObjectsFromArray:alpha_name_sorted];
