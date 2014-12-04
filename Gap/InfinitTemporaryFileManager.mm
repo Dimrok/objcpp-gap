@@ -33,8 +33,6 @@ static InfinitTemporaryFileManager* _instance = nil;
   uint64_t _max_mirror_size;
 
   ALAssetsLibrary* _library;
-
-  NSOperationQueue* _queue;
 }
 
 - (id)init
@@ -57,15 +55,12 @@ static InfinitTemporaryFileManager* _instance = nil;
                                                  name:INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION
                                                object:nil];
     _library = nil;
-    _queue = nil;
   }
   return self;
 }
 
 - (void)dealloc
 {
-  _queue.suspended = YES;
-  [_queue cancelAllOperations];
   [self _deleteFiles:@[_managed_root]];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -82,17 +77,6 @@ static InfinitTemporaryFileManager* _instance = nil;
   if (_library == nil)
     _library = [[ALAssetsLibrary alloc] init];
   return _library;
-}
-
-- (NSOperationQueue*)_sharedQueue
-{
-  if (_queue == nil)
-  {
-    _queue = [[NSOperationQueue alloc] init];
-    _queue.name = @"TemporaryFileManagerQueue";
-    _queue.maxConcurrentOperationCount = 1;
-  }
-  return _queue;
 }
 
 #pragma mark - Transaction Callback
@@ -188,56 +172,51 @@ static InfinitTemporaryFileManager* _instance = nil;
                 performSelector:(SEL)selector
                        onObject:(id)object
 {
-  __block InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
-  if (managed_files == nil)
+  dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  dispatch_async(queue, ^
   {
-    ELLE_ERR("%s: unable to add asset list, %s not in map",
-             self.description.UTF8String, uuid.UTF8String);
-    return;
-  }
-  __weak InfinitTemporaryFileManager* weak_self = self;
-  __block NSInvocation* callback =
-    [NSInvocation invocationWithMethodSignature:[object methodSignatureForSelector:selector]];
-  callback.target = object;
-  callback.selector = selector;
-  for (NSURL* url in list)
-  {
-    __block NSBlockOperation* block_operation = [NSBlockOperation blockOperationWithBlock:^
+    InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+    if (managed_files == nil)
     {
-      if (block_operation.cancelled || weak_self == nil)
-        return;
-      [[self _sharedLibrary] assetForURL:url resultBlock:^(ALAsset* asset)
-       {
-         NSUInteger asset_size = (NSUInteger)asset.defaultRepresentation.size;
-         Byte* buffer = (Byte*)malloc(asset_size);
-         NSUInteger buffered = [asset.defaultRepresentation getBytes:buffer
-                                                          fromOffset:0
-                                                              length:asset_size
-                                                               error:nil];
-         NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
-         NSString* path =
-          [[InfinitTemporaryFileManager sharedInstance] addData:data
-                                                   withFilename:asset.defaultRepresentation.filename
-                                                 toManagedFiles:uuid];
-         [managed_files.asset_map setObject:path forKey:url];
-         if (block_operation.cancelled || weak_self == nil)
-           return;
-
-         if ([[weak_self _sharedQueue] operationCount] == 0)
-         {
-           if (callback.target == nil)
-             return;
-           [callback invoke];
-         }
-       } failureBlock:^(NSError* error)
-       {
-         ELLE_ERR("%s: unable to create file (%s): %s", self.description.UTF8String,
-                  url.absoluteString.UTF8String, error.description.UTF8String);
-       }];
-    }];
-
-    [[self _sharedQueue] addOperation:block_operation];
-  }
+      ELLE_ERR("%s: unable to add asset list, %s not in map",
+               self.description.UTF8String, uuid.UTF8String);
+      return;
+    }
+    NSMethodSignature* method_signature = [object methodSignatureForSelector:selector];
+    NSInvocation* callback = [NSInvocation invocationWithMethodSignature:method_signature];
+    callback.target = object;
+    callback.selector = selector;
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    for (NSURL* url in list)
+    {
+       [[self _sharedLibrary] assetForURL:url
+                              resultBlock:^(ALAsset* asset)
+        {
+          NSUInteger asset_size = (NSUInteger)asset.defaultRepresentation.size;
+          Byte* buffer = (Byte*)malloc(asset_size);
+          NSUInteger buffered = [asset.defaultRepresentation getBytes:buffer
+                                                           fromOffset:0
+                                                               length:asset_size
+                                                                error:nil];
+          NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+          NSString* filename = asset.defaultRepresentation.filename;
+          NSString* path =
+            [[InfinitTemporaryFileManager sharedInstance] addData:data
+                                                     withFilename:filename
+                                                   toManagedFiles:uuid];
+          [managed_files.asset_map setObject:path forKey:url];
+          dispatch_semaphore_signal(sema);
+        }
+                             failureBlock:^(NSError* error)
+        {
+          ELLE_ERR("%s: unable to create file (%s): %s", self.description.UTF8String,
+                   url.absoluteString.UTF8String, error.description.UTF8String);
+          dispatch_semaphore_signal(sema);
+        }];
+      dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    }
+    [callback invoke];
+  });
 }
 
 - (void)removeAssetLibraryURLList:(NSArray*)list
