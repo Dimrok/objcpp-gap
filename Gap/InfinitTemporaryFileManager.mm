@@ -126,8 +126,9 @@ static InfinitTemporaryFileManager* _instance = nil;
   if (managed_files.total_size.unsignedIntegerValue < _max_mirror_size ||
       ![self _transactionFilesNeededForStatus:transaction.status])
   {
-    [self deleteManagedFiles:managed_files.uuid];
     [_transaction_map removeObjectForKey:id_];
+    if([_transaction_map allKeysForObject:managed_files].count == 0)
+      [self deleteManagedFiles:managed_files.uuid];
   }
 }
 
@@ -142,8 +143,9 @@ static InfinitTemporaryFileManager* _instance = nil;
   if (managed_files.total_size.unsignedIntegerValue < _max_mirror_size ||
       ![self _transactionFilesNeededForStatus:transaction.status])
   {
-    [self deleteManagedFiles:managed_files.uuid];
     [_transaction_map removeObjectForKey:id_];
+    if([_transaction_map allKeysForObject:managed_files].count == 0)
+      [self deleteManagedFiles:managed_files.uuid];
   }
 }
 
@@ -334,8 +336,8 @@ static InfinitTemporaryFileManager* _instance = nil;
   managed_files.total_size = [self _folderSize:managed_files.root_dir];
 }
 
-- (void)setTransactionId:(NSNumber*)transaction_id
-         forManagedFiles:(NSString*)uuid
+- (void)setTransactionIds:(NSArray*)transaction_ids
+          forManagedFiles:(NSString*)uuid
 {
   InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
   if (managed_files == nil)
@@ -344,7 +346,10 @@ static InfinitTemporaryFileManager* _instance = nil;
              self.description.UTF8String, uuid.UTF8String);
     return;
   }
-  [_transaction_map setObject:managed_files forKey:transaction_id];
+  for (NSNumber* id_ in transaction_ids)
+  {
+    [_transaction_map setObject:managed_files forKey:id_];
+  }
 }
 
 - (void)deleteManagedFiles:(NSString*)uuid

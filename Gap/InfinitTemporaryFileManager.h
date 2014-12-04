@@ -93,15 +93,15 @@
 - (void)removeFiles:(NSArray*)files
    fromManagedFiles:(NSString*)uuid;
 
-/** Set a transaction ID for the managed files.
- They will then automatically be deleted when they're no longer needed.
- @param transaction_id
-  Transaction ID to track.
+/** Set the transaction IDs for the managed files.
+ The files will then automatically be deleted when they're no longer needed.
+ @param transaction_ids
+  Array of transaction IDs (as NSNumbers) to track.
  @param uuid
   The identifying UUID.
  */
-- (void)setTransactionId:(NSNumber*)transaction_id
-         forManagedFiles:(NSString*)uuid;
+- (void)setTransactionIds:(NSArray*)transaction_ids
+          forManagedFiles:(NSString*)uuid;
 
 /** Delete the managed files corresponding to the UUID. 
  This would be required if they managed files are never given a transaction ID to track.
