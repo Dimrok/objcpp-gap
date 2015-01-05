@@ -71,6 +71,17 @@ static InfinitUserManager* _instance = nil;
 
 #pragma mark - Public
 
+- (NSArray*)swaggers
+{
+  NSMutableArray* res = [NSMutableArray array];
+  for (InfinitUser* user in _user_map.allValues)
+  {
+    if (user.swagger)
+      [res addObject:user];
+  }
+  return res;
+}
+
 - (NSArray*)favorites
 {
   NSMutableArray* res = [NSMutableArray array];

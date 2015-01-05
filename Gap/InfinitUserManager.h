@@ -29,6 +29,12 @@
 
 + (instancetype)sharedInstance;
 
+/** Return list of users that the user has previously been involved in a share with.
+ @return An array of users.
+ */
+- (NSArray*)swaggers;
+
+
 /** Return list of user's favorites.
  @return An array of users.
  */
