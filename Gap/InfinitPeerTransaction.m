@@ -173,6 +173,8 @@
       return @"rejected";
     case gap_transaction_deleted:
       return @"deleted";
+    case gap_transaction_paused:
+      return @"paused";
     default:
       return @"unknown";
   }
