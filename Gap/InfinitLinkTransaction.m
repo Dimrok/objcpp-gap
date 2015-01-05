@@ -99,4 +99,46 @@
   return NSOrderedSame;
 }
 
+#pragma mark - Description
+
+- (NSString*)statusText
+{
+  switch (self.status)
+  {
+    case gap_transaction_new:
+      return @"new";
+    case gap_transaction_on_other_device:
+      return @"on_other_device";
+    case gap_transaction_waiting_accept:
+      return @"waiting_accept";
+    case gap_transaction_waiting_data:
+      return @"waiting_data";
+    case gap_transaction_connecting:
+      return @"connecting";
+    case gap_transaction_transferring:
+      return @"transferring";
+    case gap_transaction_cloud_buffered:
+      return @"cloud_buffered";
+    case gap_transaction_finished:
+      return @"finished";
+    case gap_transaction_failed:
+      return @"failed";
+    case gap_transaction_canceled:
+      return @"canceled";
+    case gap_transaction_rejected:
+      return @"rejected";
+    case gap_transaction_deleted:
+      return @"deleted";
+    case gap_transaction_paused:
+      return @"paused";
+    default:
+      return @"unknown";
+  }
+}
+
+- (NSString*)description
+{
+  return [NSString stringWithFormat:@"%@: %@", self.id_, [self statusText]];
+}
+
 @end
