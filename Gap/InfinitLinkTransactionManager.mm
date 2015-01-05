@@ -47,9 +47,7 @@ static InfinitLinkTransactionManager* _instance = nil;
   NSArray* transactions = [[InfinitStateManager sharedInstance] linkTransactions];
   for (InfinitLinkTransaction* transaction in transactions)
   {
-    if (transaction.status != gap_transaction_canceled &&
-        transaction.status != gap_transaction_deleted &&
-        transaction.status != gap_transaction_failed)
+    if (![self _ignoredStatus:transaction])
     {
       [_transaction_map setObject:transaction forKey:transaction.id_];
     }
@@ -131,9 +129,7 @@ static InfinitLinkTransactionManager* _instance = nil;
       {
         [self sendTransactionDataNotification:existing];
       }
-      else if (existing.status == gap_transaction_canceled ||
-               existing.status == gap_transaction_deleted ||
-               existing.status == gap_transaction_failed)
+      else if ([self _ignoredStatus:existing])
       {
         [self sendTransactionDeletedNotification:existing];
         [_transaction_map removeObjectForKey:existing.id_];
@@ -143,6 +139,22 @@ static InfinitLinkTransactionManager* _instance = nil;
         [self sendTransactionStatusNotification:existing];
       }
     }
+  }
+}
+
+#pragma mark - Helpers
+
+- (BOOL)_ignoredStatus:(InfinitLinkTransaction*)transaction
+{
+  switch (transaction.status)
+  {
+    case gap_transaction_canceled:
+    case gap_transaction_deleted:
+    case gap_transaction_failed:
+      return YES;
+
+    default:
+      return NO;
   }
 }
 
