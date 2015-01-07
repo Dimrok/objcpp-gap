@@ -159,16 +159,29 @@ static NSString* _self_device_id = nil;
          performSelector:(SEL)selector
                 onObject:(id)object
 {
+  __weak InfinitStateManager* weak_self = self;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
      gap_clean_state(manager.stateWrapper.state);
      [manager _clearSelf];
      [manager _startPolling];
-     gap_Status res =
-     gap_register(manager.stateWrapper.state,
-                  fullname.UTF8String,
-                  email.UTF8String,
-                  password.UTF8String);
+     gap_Status res;
+     if (weak_self.push_token != nil && weak_self.push_token.length > 0)
+     {
+       std::string device_push_token = weak_self.push_token.UTF8String;
+       res = gap_register(manager.stateWrapper.state,
+                          fullname.UTF8String,
+                          email.UTF8String,
+                          password.UTF8String,
+                          device_push_token);
+     }
+     else
+     {
+       res = gap_register(manager.stateWrapper.state,
+                          fullname.UTF8String,
+                          email.UTF8String,
+                          password.UTF8String);
+     }
      if (res == gap_ok)
        manager.logged_in = YES;
      else
@@ -182,13 +195,25 @@ static NSString* _self_device_id = nil;
 performSelector:(SEL)selector
      onObject:(id)object
 {
+  __weak InfinitStateManager* weak_self = self;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
      gap_clean_state(manager.stateWrapper.state);
      [manager _clearSelf];
      [manager _startPolling];
-     gap_Status res =
-     gap_login(manager.stateWrapper.state, email.UTF8String, password.UTF8String);
+     gap_Status res;
+     if (weak_self.push_token != nil && weak_self.push_token.length > 0)
+     {
+       std::string device_push_token = weak_self.push_token.UTF8String;
+       res = gap_login(manager.stateWrapper.state,
+                       email.UTF8String,
+                       password.UTF8String,
+                       device_push_token);
+     }
+     else
+     {
+       res = gap_login(manager.stateWrapper.state, email.UTF8String, password.UTF8String);
+     }
      if (res == gap_ok)
        manager.logged_in = YES;
      else

@@ -22,6 +22,7 @@
 
 @property (nonatomic, readwrite) BOOL logged_in;
 @property (nonatomic, readonly) uint64_t max_mirror_size;
+@property (nonatomic, readwrite) NSString* push_token;
 
 + (instancetype)sharedInstance;
 
