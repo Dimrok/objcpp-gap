@@ -186,35 +186,59 @@ static InfinitTemporaryFileManager* _instance = nil;
     NSInvocation* callback = [NSInvocation invocationWithMethodSignature:method_signature];
     callback.target = object;
     callback.selector = selector;
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    for (NSURL* url in list)
+    dispatch_semaphore_t test_sema = dispatch_semaphore_create(0);
+    dispatch_semaphore_t copy_sema = dispatch_semaphore_create(0);
+    __block BOOL asset_nil_bug = NO;
+
+    [[self _sharedLibrary] assetForURL:list[0] resultBlock:^(ALAsset* asset)
     {
-       [[self _sharedLibrary] assetForURL:url
-                              resultBlock:^(ALAsset* asset)
+      if (asset == nil)
+        asset_nil_bug = YES;
+      dispatch_semaphore_signal(test_sema);
+    } failureBlock:^(NSError *error)
+    {
+      dispatch_semaphore_signal(test_sema);
+    }];
+    dispatch_semaphore_wait(test_sema, DISPATCH_TIME_FOREVER);
+
+    if (!asset_nil_bug)
+    {
+      for (NSURL* url in list)
+      {
+        [[self _sharedLibrary] assetForURL:url resultBlock:^(ALAsset* asset)
         {
-          NSUInteger asset_size = (NSUInteger)asset.defaultRepresentation.size;
-          Byte* buffer = (Byte*)malloc(asset_size);
-          NSUInteger buffered = [asset.defaultRepresentation getBytes:buffer
-                                                           fromOffset:0
-                                                               length:asset_size
-                                                                error:nil];
-          NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
-          NSString* filename = asset.defaultRepresentation.filename;
-          NSString* path =
-            [[InfinitTemporaryFileManager sharedInstance] addData:data
-                                                     withFilename:filename
-                                                   toManagedFiles:uuid];
-          [managed_files.asset_map setObject:path forKey:url];
-          dispatch_semaphore_signal(sema);
-        }
-                             failureBlock:^(NSError* error)
+          [self _foundAsset:asset withURL:url forManagedFiles:managed_files];
+          dispatch_semaphore_signal(copy_sema);
+        } failureBlock:^(NSError *error)
         {
           ELLE_ERR("%s: unable to create file (%s): %s", self.description.UTF8String,
                    url.absoluteString.UTF8String, error.description.UTF8String);
-          dispatch_semaphore_signal(sema);
+          dispatch_semaphore_signal(copy_sema);
         }];
-      dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+      }
     }
+    else
+    {
+      [[self _sharedLibrary] enumerateGroupsWithTypes:ALAssetsGroupAll
+                                           usingBlock:^(ALAssetsGroup* group, BOOL* stop)
+       {
+         [group enumerateAssetsWithOptions:NSEnumerationReverse
+                                usingBlock:^(ALAsset* result, NSUInteger index, BOOL* stop)
+          {
+            NSURL* url = result.defaultRepresentation.url;
+            if ([list containsObject:url])
+            {
+              [self _foundAsset:result withURL:url forManagedFiles:managed_files];
+              dispatch_semaphore_signal(copy_sema);
+            }
+          }];
+       } failureBlock:^(NSError *error)
+       {
+         dispatch_semaphore_signal(copy_sema);
+       }];
+    }
+    for (NSUInteger i = 0; i < list.count; i++)
+      dispatch_semaphore_wait(copy_sema, DISPATCH_TIME_FOREVER);
     [callback invoke];
   });
 }
@@ -455,6 +479,25 @@ static InfinitTemporaryFileManager* _instance = nil;
     res += temp_size.unsignedIntegerValue;
   }
   return [NSNumber numberWithUnsignedInteger:res];
+}
+
+- (void)_foundAsset:(ALAsset*)asset
+            withURL:(NSURL*)url
+    forManagedFiles:(InfinitManagedFiles*)managed_files
+{
+  NSUInteger asset_size = (NSUInteger)asset.defaultRepresentation.size;
+  Byte* buffer = (Byte*)malloc(asset_size);
+  NSUInteger buffered = [asset.defaultRepresentation getBytes:buffer
+                                                   fromOffset:0
+                                                       length:asset_size
+                                                        error:nil];
+  NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+  NSString* filename = asset.defaultRepresentation.filename;
+  NSString* path =
+  [[InfinitTemporaryFileManager sharedInstance] addData:data
+                                           withFilename:filename
+                                         toManagedFiles:managed_files.uuid];
+  [managed_files.asset_map setObject:path forKey:url];
 }
 
 @end
