@@ -53,12 +53,12 @@ static InfinitStateWrapper* _wrapper_instance = nil;
     "frete.Frete:TRACE,"
     "infinit.surface.gap.Rounds:DEBUG,"
     "*meta*:TRACE,"
-    "OSX*:DUMP,"
     "reactor.fsm.*:TRACE,"
     "reactor.network.upnp:DEBUG,"
     "station.Station:DEBUG,"
     "surface.gap.*:TRACE,"
     "surface.gap.TransferMachine:DEBUG,"
+    "Gap-ObjC++*:DEBUG,"
     "*trophonius*:DEBUG";
   setenv("ELLE_LOG_LEVEL", log_level.c_str(), 0);
   setenv("ELLE_LOG_TIME", "1", 0);
