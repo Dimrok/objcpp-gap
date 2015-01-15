@@ -9,7 +9,8 @@
 #import "InfinitPeerTransactionManager.h"
 
 #import "InfinitStateManager.h"
-#import "InfinitUtilities.h"
+
+#import "NSString+email.h"
 
 #undef check
 #import <elle/log.hh>
@@ -31,9 +32,23 @@ static InfinitPeerTransactionManager* _instance = nil;
   NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(clearModel:)
+                                                 name:INFINIT_CLEAR_MODEL_NOTIFICATION
+                                               object:nil];
     [self _fillTransactionMap];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)clearModel:(NSNotification*)notification
+{
+  _instance = nil;
 }
 
 + (instancetype)sharedInstance
@@ -89,7 +104,7 @@ static InfinitPeerTransactionManager* _instance = nil;
     if ([recipient isKindOfClass:NSString.class])
     {
       NSString* string = recipient;
-      if (![InfinitUtilities stringIsEmail:string])
+      if (!string.isEmail)
       {
         ELLE_ERR("%s: unable to send, string is not valid email: %s",
                  self.description.UTF8String, string.UTF8String);
