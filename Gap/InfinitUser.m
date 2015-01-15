@@ -68,4 +68,15 @@
           self.status ? @"online" : @"offline"];
 }
 
+#pragma mark - Comparison
+
+- (BOOL)isEqual:(id)object
+{
+  if (![object isKindOfClass:self.class])
+    return NO;
+  if ([self.id_ isEqualToNumber:[object id_]])
+    return YES;
+  return NO;
+}
+
 @end
