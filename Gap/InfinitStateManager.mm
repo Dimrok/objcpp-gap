@@ -126,10 +126,17 @@ static NSString* _self_device_id = nil;
 
 #pragma mark - Stop
 
-- (void)_clearSelf
+- (void)_clearSelfAndModel:(BOOL)clear_model
 {
+  if (clear_model)
+    [self _clearModels];
   _self_id = nil;
   _self_device_id = nil;
+}
+
+- (void)_clearSelf
+{
+  [self _clearSelfAndModel:YES];
 }
 
 - (void)_stopState
@@ -138,12 +145,12 @@ static NSString* _self_device_id = nil;
   [_poll_timer invalidate];
   _queue.suspended = YES;
   [_queue cancelAllOperations];
-  [self _clearSelf];
 }
 
 + (void)stopState
 {
   [[InfinitStateManager sharedInstance] _stopState];
+  [[InfinitStateManager sharedInstance] _clearSelfAndModel:NO];
 }
 
 - (void)dealloc
@@ -841,6 +848,15 @@ performSelector:(SEL)selector
                              waitUntilDone:NO];
    }];
   [_queue addOperation:block_operation];
+}
+
+#pragma mark - Helpers
+
+- (void)_clearModels
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_CLEAR_MODEL_NOTIFICATION
+                                                      object:self
+                                                    userInfo:nil];
 }
 
 #pragma mark - Callbacks

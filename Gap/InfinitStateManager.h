@@ -18,6 +18,11 @@
 #import "InfinitPeerTransaction.h"
 #import "InfinitUser.h"
 
+/** Notification sent when the model needs to be cleared. 
+ This is generally sent when a new user logs in.
+ */
+#define INFINIT_CLEAR_MODEL_NOTIFICATION     @"INFINIT_CLEAR_MODEL_NOTIFICATION"
+
 @interface InfinitStateManager : NSObject
 
 @property (nonatomic, readwrite) BOOL logged_in;
