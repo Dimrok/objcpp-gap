@@ -29,6 +29,11 @@
 
 + (instancetype)sharedInstance;
 
+/** Returns currently logged in user.
+ @return Currently logged in user.
+ */
+- (InfinitUser*)me;
+
 /** Return list of users that the user has previously been involved in a share with.
  @return An array of users.
  */

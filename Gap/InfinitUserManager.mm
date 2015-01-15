@@ -10,6 +10,7 @@
 
 #import "InfinitStateManager.h"
 #import "InfinitStateResult.h"
+#import "InfinitPeerTransactionManager.h"
 
 #undef check
 #import <elle/log.hh>
@@ -22,6 +23,7 @@ static InfinitUserManager* _instance = nil;
 {
   NSMutableDictionary* _user_map;
   NSArray* _favorites;
+  InfinitUser* _me;
 }
 
 #pragma mark - Init
@@ -31,10 +33,25 @@ static InfinitUserManager* _instance = nil;
   NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(clearModel:)
+                                                 name:INFINIT_CLEAR_MODEL_NOTIFICATION
+                                               object:nil];
+    _me = nil;
     [self _fillMapWithSwaggers];
     [self _fetchFavorites];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)clearModel:(NSNotification*)notification
+{
+  _instance = nil;
 }
 
 + (instancetype)sharedInstance
@@ -71,15 +88,33 @@ static InfinitUserManager* _instance = nil;
 
 #pragma mark - Public
 
+- (InfinitUser*)me
+{
+  if (_me == nil)
+  {
+    _me = [self userWithId:[[InfinitStateManager sharedInstance] self_id]];
+  }
+  return _me;
+}
+
 - (NSArray*)swaggers
 {
-  NSMutableArray* res = [NSMutableArray array];
-  for (InfinitUser* user in _user_map.allValues)
+  NSMutableOrderedSet* res = [NSMutableOrderedSet orderedSet];
+  [res addObject:[self me]];
+  [res addObjectsFromArray:[self favorites]];
+  NSArray* reversed_transactions = [[InfinitPeerTransactionManager sharedInstance] transactions];
+  for (InfinitPeerTransaction* transaction in reversed_transactions)
+  {
+    if (!transaction.other_user.is_self)
+      [res addObject:transaction.other_user];
+  }
+  NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"fullname" ascending:YES];
+  for (InfinitUser* user in [_user_map.allValues sortedArrayUsingDescriptors:@[sort]])
   {
     if (user.swagger)
       [res addObject:user];
   }
-  return res;
+  return res.array;
 }
 
 - (NSArray*)favorites
