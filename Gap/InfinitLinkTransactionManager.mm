@@ -37,8 +37,22 @@ static InfinitLinkTransactionManager* _instance = nil;
 + (instancetype)sharedInstance
 {
   if (_instance == nil)
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(clearModel:)
+                                                 name:INFINIT_CLEAR_MODEL_NOTIFICATION
+                                               object:nil];
     _instance = [[InfinitLinkTransactionManager alloc] init];
   return _instance;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)clearModel:(NSNotification*)notification
+{
+  _instance = nil;
 }
 
 - (void)_fillTransactionMap
