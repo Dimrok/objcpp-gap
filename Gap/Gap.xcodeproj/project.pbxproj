@@ -16,6 +16,11 @@
 		83568DB11A136E1000766DA3 /* InfinitStateResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DAF1A136E1000766DA3 /* InfinitStateResult.m */; };
 		836D394F1A67F19200892206 /* NSString+email.h in Headers */ = {isa = PBXBuildFile; fileRef = 836D394D1A67F19200892206 /* NSString+email.h */; };
 		836D39501A67F19200892206 /* NSString+email.m in Sources */ = {isa = PBXBuildFile; fileRef = 836D394E1A67F19200892206 /* NSString+email.m */; };
+		836D39851A690DFF00892206 /* libCrashReporter-iphoneos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 836D39841A690DFF00892206 /* libCrashReporter-iphoneos.a */; };
+		836D398A1A690E2A00892206 /* InfinitCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 836D39881A690E2A00892206 /* InfinitCrashReporter.h */; };
+		836D398B1A690E2A00892206 /* InfinitCrashReporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 836D39891A690E2A00892206 /* InfinitCrashReporter.mm */; };
+		836D39A51A694E5500892206 /* InfinitLogManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 836D39A31A694E5500892206 /* InfinitLogManager.h */; };
+		836D39A61A694E5500892206 /* InfinitLogManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 836D39A41A694E5500892206 /* InfinitLogManager.mm */; };
 		836F5C7F1A165AE5007C9C4E /* InfinitConnectionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 836F5C7D1A165AE5007C9C4E /* InfinitConnectionManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		836F5C801A165AE5007C9C4E /* InfinitConnectionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 836F5C7E1A165AE5007C9C4E /* InfinitConnectionManager.mm */; };
 		836F5C831A165B48007C9C4E /* InfinitReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 836F5C811A165B48007C9C4E /* InfinitReachability.h */; };
@@ -67,6 +72,100 @@
 		83FE9C931A1636FF00FC1CFD /* InfinitAvatarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FE9C911A1636FF00FC1CFD /* InfinitAvatarManager.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		83ECE6F41A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05E731F30EFA1AAB005EDFB7;
+			remoteInfo = "CrashReporter-MacOSX-Static";
+		};
+		83ECE6F61A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = "CrashReporter-MacOSX";
+		};
+		83ECE6F81A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 058812B91040582D009128FB;
+			remoteInfo = "CrashReporter-iOS";
+		};
+		83ECE6FA1A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05CD31520EE936A9000FDE88;
+			remoteInfo = "CrashReporter-iOS-Device";
+		};
+		83ECE6FC1A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05CD31630EE93905000FDE88;
+			remoteInfo = "CrashReporter-iOS-Simulator";
+		};
+		83ECE6FE1A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05E731E30EFA1A3E005EDFB7;
+			remoteInfo = plcrashutil;
+		};
+		83ECE7001A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05CD32690EE93DC3000FDE88;
+			remoteInfo = "Tests-MacOSX";
+		};
+		83ECE7021A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05CD32A90EE94062000FDE88;
+			remoteInfo = "Tests-iOS-Simulator";
+		};
+		83ECE7041A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05CD33240EE94439000FDE88;
+			remoteInfo = "Tests-iOS-Device";
+		};
+		83ECE7061A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05F40CE70EF7AB80008050CF;
+			remoteInfo = DemoCrash;
+		};
+		83ECE7081A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 052A45CF136353FB00987004;
+			remoteInfo = "DemoCrash-iOS-Device";
+		};
+		83ECE70A1A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 052A464F136355FD00987004;
+			remoteInfo = "DemoCrash-iOS-Simulator";
+		};
+		83ECE70C1A69618D000081A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 050DE24D0F61B80B00152ED3;
+			remoteInfo = "Fuzz Testing";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		83568D771A136D7700766DA3 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -97,6 +196,11 @@
 		83568DAF1A136E1000766DA3 /* InfinitStateResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitStateResult.m; sourceTree = "<group>"; };
 		836D394D1A67F19200892206 /* NSString+email.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+email.h"; sourceTree = "<group>"; };
 		836D394E1A67F19200892206 /* NSString+email.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+email.m"; sourceTree = "<group>"; };
+		836D39841A690DFF00892206 /* libCrashReporter-iphoneos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libCrashReporter-iphoneos.a"; path = "../../ios/plcrashreporter/build/Debug-iphoneos/libCrashReporter-iphoneos.a"; sourceTree = "<group>"; };
+		836D39881A690E2A00892206 /* InfinitCrashReporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitCrashReporter.h; sourceTree = "<group>"; };
+		836D39891A690E2A00892206 /* InfinitCrashReporter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitCrashReporter.mm; sourceTree = "<group>"; };
+		836D39A31A694E5500892206 /* InfinitLogManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitLogManager.h; sourceTree = "<group>"; };
+		836D39A41A694E5500892206 /* InfinitLogManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitLogManager.mm; sourceTree = "<group>"; };
 		836F5C7D1A165AE5007C9C4E /* InfinitConnectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitConnectionManager.h; sourceTree = "<group>"; };
 		836F5C7E1A165AE5007C9C4E /* InfinitConnectionManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitConnectionManager.mm; sourceTree = "<group>"; };
 		836F5C811A165B48007C9C4E /* InfinitReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitReachability.h; sourceTree = "<group>"; };
@@ -105,6 +209,7 @@
 		8396106B1A2479A40044B874 /* InfinitTemporaryFileManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitTemporaryFileManager.mm; sourceTree = "<group>"; };
 		8396106E1A2479B50044B874 /* InfinitManagedFiles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitManagedFiles.h; sourceTree = "<group>"; };
 		8396106F1A2479B50044B874 /* InfinitManagedFiles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitManagedFiles.m; sourceTree = "<group>"; };
+		83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CrashReporter.xcodeproj; path = ../plcrashreporter/CrashReporter.xcodeproj; sourceTree = "<group>"; };
 		83F35D0B1A1CF08F00DF7F35 /* InfinitFeaturesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitFeaturesManager.h; sourceTree = "<group>"; };
 		83F35D0C1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitFeaturesManager.mm; sourceTree = "<group>"; };
 		83F35D1F1A1D02EE00DF7F35 /* Gap-OSX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "Gap-OSX.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +230,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				836D39851A690DFF00892206 /* libCrashReporter-iphoneos.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,6 +247,9 @@
 		83568D6B1A136D5D00766DA3 = {
 			isa = PBXGroup;
 			children = (
+				836D39A21A694E3900892206 /* Log Manager */,
+				836D39871A690E1100892206 /* Libraries */,
+				836D39861A690E0800892206 /* Crash Reporter */,
 				83FE9C8E1A16367A00FC1CFD /* Avatars */,
 				836F5C7C1A165AD2007C9C4E /* Connection */,
 				83F35D0A1A1CF07300DF7F35 /* Features */,
@@ -154,6 +263,7 @@
 				83568D891A136D7800766DA3 /* Supporting Files */,
 				83F35D2D1A1D02EE00DF7F35 /* Gap-OSXTests */,
 				83568D7A1A136D7700766DA3 /* Products */,
+				83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -227,6 +337,32 @@
 			name = Utilities;
 			sourceTree = "<group>";
 		};
+		836D39861A690E0800892206 /* Crash Reporter */ = {
+			isa = PBXGroup;
+			children = (
+				836D39881A690E2A00892206 /* InfinitCrashReporter.h */,
+				836D39891A690E2A00892206 /* InfinitCrashReporter.mm */,
+			);
+			name = "Crash Reporter";
+			sourceTree = "<group>";
+		};
+		836D39871A690E1100892206 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				836D39841A690DFF00892206 /* libCrashReporter-iphoneos.a */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		836D39A21A694E3900892206 /* Log Manager */ = {
+			isa = PBXGroup;
+			children = (
+				836D39A31A694E5500892206 /* InfinitLogManager.h */,
+				836D39A41A694E5500892206 /* InfinitLogManager.mm */,
+			);
+			name = "Log Manager";
+			sourceTree = "<group>";
+		};
 		836F5C7C1A165AD2007C9C4E /* Connection */ = {
 			isa = PBXGroup;
 			children = (
@@ -247,6 +383,26 @@
 				8396106F1A2479B50044B874 /* InfinitManagedFiles.m */,
 			);
 			name = "Temporary Files";
+			sourceTree = "<group>";
+		};
+		83ECE6E21A69618C000081A6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				83ECE6F51A69618D000081A6 /* libCrashReporter-MacOSX-Static.a */,
+				83ECE6F71A69618D000081A6 /* CrashReporter.framework */,
+				83ECE6F91A69618D000081A6 /* CrashReporter.framework */,
+				83ECE6FB1A69618D000081A6 /* libCrashReporter-iphoneos.a */,
+				83ECE6FD1A69618D000081A6 /* libCrashReporter-iphonesimulator.a */,
+				83ECE6FF1A69618D000081A6 /* plcrashutil */,
+				83ECE7011A69618D000081A6 /* Tests-MacOSX.octest */,
+				83ECE7031A69618D000081A6 /* Tests-iOS-Simulator.app */,
+				83ECE7051A69618D000081A6 /* Tests-iOS-Device.app */,
+				83ECE7071A69618D000081A6 /* DemoCrash.app */,
+				83ECE7091A69618D000081A6 /* DemoCrash-iOS-Device.app */,
+				83ECE70B1A69618D000081A6 /* DemoCrash-iOS-Simulator.app */,
+				83ECE70D1A69618D000081A6 /* Fuzz Testing */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		83F35D0A1A1CF07300DF7F35 /* Features */ = {
@@ -325,6 +481,7 @@
 				83F4D0171A136E3C0068BEB2 /* InfinitPeerTransactionManager.h in Headers */,
 				83F4D0181A136E3C0068BEB2 /* InfinitUser.h in Headers */,
 				83F35D0D1A1CF08F00DF7F35 /* InfinitFeaturesManager.h in Headers */,
+				836D398A1A690E2A00892206 /* InfinitCrashReporter.h in Headers */,
 				836F5C7F1A165AE5007C9C4E /* InfinitConnectionManager.h in Headers */,
 				83F4D0141A136E3C0068BEB2 /* InfinitStateManager.h in Headers */,
 				83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */,
@@ -332,6 +489,7 @@
 				83F72CAD1A1513FA0088106E /* InfinitLinkTransactionManager.h in Headers */,
 				839610701A2479B50044B874 /* InfinitManagedFiles.h in Headers */,
 				83F72CA91A1513810088106E /* InfinitLinkTransaction.h in Headers */,
+				836D39A51A694E5500892206 /* InfinitLogManager.h in Headers */,
 				83F4D0191A136E3C0068BEB2 /* InfinitUserManager.h in Headers */,
 				83F4D0131A136E3C0068BEB2 /* InfinitStateWrapper.h in Headers */,
 			);
@@ -422,6 +580,12 @@
 			mainGroup = 83568D6B1A136D5D00766DA3;
 			productRefGroup = 83568D7A1A136D7700766DA3 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 83ECE6E21A69618C000081A6 /* Products */;
+					ProjectRef = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				83568D781A136D7700766DA3 /* Gap-iOS */,
@@ -429,6 +593,100 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		83ECE6F51A69618D000081A6 /* libCrashReporter-MacOSX-Static.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libCrashReporter-MacOSX-Static.a";
+			remoteRef = 83ECE6F41A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE6F71A69618D000081A6 /* CrashReporter.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CrashReporter.framework;
+			remoteRef = 83ECE6F61A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE6F91A69618D000081A6 /* CrashReporter.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CrashReporter.framework;
+			remoteRef = 83ECE6F81A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE6FB1A69618D000081A6 /* libCrashReporter-iphoneos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libCrashReporter-iphoneos.a";
+			remoteRef = 83ECE6FA1A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE6FD1A69618D000081A6 /* libCrashReporter-iphonesimulator.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libCrashReporter-iphonesimulator.a";
+			remoteRef = 83ECE6FC1A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE6FF1A69618D000081A6 /* plcrashutil */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = plcrashutil;
+			remoteRef = 83ECE6FE1A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE7011A69618D000081A6 /* Tests-MacOSX.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Tests-MacOSX.octest";
+			remoteRef = 83ECE7001A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE7031A69618D000081A6 /* Tests-iOS-Simulator.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Tests-iOS-Simulator.app";
+			remoteRef = 83ECE7021A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE7051A69618D000081A6 /* Tests-iOS-Device.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Tests-iOS-Device.app";
+			remoteRef = 83ECE7041A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE7071A69618D000081A6 /* DemoCrash.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = DemoCrash.app;
+			remoteRef = 83ECE7061A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE7091A69618D000081A6 /* DemoCrash-iOS-Device.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "DemoCrash-iOS-Device.app";
+			remoteRef = 83ECE7081A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE70B1A69618D000081A6 /* DemoCrash-iOS-Simulator.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "DemoCrash-iOS-Simulator.app";
+			remoteRef = 83ECE70A1A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		83ECE70D1A69618D000081A6 /* Fuzz Testing */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "Fuzz Testing";
+			remoteRef = 83ECE70C1A69618D000081A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		83F35D1D1A1D02EE00DF7F35 /* Resources */ = {
@@ -454,8 +712,10 @@
 				836D39501A67F19200892206 /* NSString+email.m in Sources */,
 				836F5C801A165AE5007C9C4E /* InfinitConnectionManager.mm in Sources */,
 				836F5C841A165B48007C9C4E /* InfinitReachability.m in Sources */,
+				836D398B1A690E2A00892206 /* InfinitCrashReporter.mm in Sources */,
 				83568DB11A136E1000766DA3 /* InfinitStateResult.m in Sources */,
 				83568DAB1A136DFF00766DA3 /* InfinitPeerTransactionManager.mm in Sources */,
+				836D39A61A694E5500892206 /* InfinitLogManager.mm in Sources */,
 				8396106D1A2479A40044B874 /* InfinitTemporaryFileManager.mm in Sources */,
 				83F35D0E1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm in Sources */,
 				83568D9F1A136DEE00766DA3 /* InfinitStateWrapper.mm in Sources */,
@@ -560,15 +820,20 @@
 					../../../_build/ios/fist/src,
 					../../../_build/ios/elle/boost/include,
 					../../../_build/ios/oracles/src,
+					../plcrashreporter/Source,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/chris/sandbox/ios-infinit/surface/ios/plcrashreporter/build/Debug-iphoneos",
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "$(ARCHS_STANDARD)";
+				VALID_ARCHS = "$(ARCHS_STANDARD) armv7s";
 			};
 			name = Debug;
 		};
@@ -608,8 +873,13 @@
 					../../../_build/ios/fist/src,
 					../../../_build/ios/elle/boost/include,
 					../../../_build/ios/oracles/src,
+					../plcrashreporter/Source,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/chris/sandbox/ios-infinit/surface/ios/plcrashreporter/build/Debug-iphoneos",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
@@ -617,7 +887,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "$(ARCHS_STANDARD)";
+				VALID_ARCHS = "$(ARCHS_STANDARD) armv7s";
 			};
 			name = Release;
 		};
