@@ -9,6 +9,12 @@
 #import "InfinitAvatarManager.h"
 #import "InfinitStateManager.h"
 
+#import "NSString+email.h"
+
+#if TARGET_OS_IPHONE
+# import <UIKit/UIKit.h>
+#endif
+
 static InfinitAvatarManager* _instance = nil;
 
 @implementation InfinitAvatarManager
@@ -62,9 +68,59 @@ static InfinitAvatarManager* _instance = nil;
   if (avatar == nil)
   {
     avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:user.id_];
+    if (avatar == nil)
+      avatar = [self generateAvatarForUser:user];
   }
   return avatar;
 }
+
+#pragma mark - Generate Avatar
+
+#if TARGET_OS_IPHONE
+- (UIImage*)generateAvatarForUser:(InfinitUser*)user
+{
+  UIColor* fill = [UIColor colorWithRed:43.0f/255.0f
+                                  green:190.0f/255.0f
+                                   blue:189.0f/255.0f
+                                  alpha:1.0f];
+  CGFloat scale = [[UIScreen mainScreen] scale];
+  CGRect rect = CGRectMake(0.0f, 0.0f, 40.0f * scale, 40.0f * scale);
+  UIImage* res = [[UIImage alloc] init];
+  UIGraphicsBeginImageContext(rect.size);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  [fill setFill];
+  CGContextFillRect(context, rect);
+  [[UIColor whiteColor] set];
+  NSMutableString* text = [[NSMutableString alloc] init];
+  if (user.fullname.length == 0)
+    [text appendFormat:@" "];
+  else if (user.fullname.isEmail)
+    [text appendFormat:@"@"];
+  else
+  {
+    NSUInteger letters = 0;
+    for (NSString* component in [user.fullname componentsSeparatedByString:@" "])
+    {
+      if (component.length > 0)
+      {
+        [text appendFormat:@"%c", [component characterAtIndex:0]];
+        letters++;
+        if (letters >= 2)
+          break;
+      }
+    }
+  }
+  NSDictionary* attrs = @{NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-Light"
+                                                               size:(17.0f * scale)],
+                          NSForegroundColorAttributeName: [UIColor whiteColor]};
+  NSAttributedString* str = [[NSAttributedString alloc] initWithString:text attributes:attrs];
+  [str drawAtPoint:CGPointMake(round((rect.size.width - str.size.width) / 2.0f),
+                               round((rect.size.height - str.size.height) / 2.0f))];
+  res = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return res;
+}
+#endif
 
 #pragma mark - State Manager Callback
 
