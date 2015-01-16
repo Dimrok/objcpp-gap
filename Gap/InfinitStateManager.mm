@@ -10,6 +10,7 @@
 
 #import "InfinitAvatarManager.h"
 #import "InfinitConnectionManager.h"
+#import "InfinitCrashReporter.h"
 #import "InfinitLinkTransaction.h"
 #import "InfinitLinkTransactionManager.h"
 #import "InfinitPeerTransaction.h"
@@ -39,6 +40,12 @@ static InfinitStateManager* _manager_instance = nil;
 static NSNumber* _self_id = nil;
 static NSString* _self_device_id = nil;
 
+@interface InfinitStateManager ()
+
+@property (nonatomic, readwrite) NSString* current_user;
+
+@end
+
 @implementation InfinitStateManager
 {
 @private
@@ -58,6 +65,7 @@ static NSString* _self_device_id = nil;
     _queue = [[NSOperationQueue alloc] init];
     _queue.name = @"StateManagerQueue";
     _queue.maxConcurrentOperationCount = 1;
+    _current_user = nil;
   }
   return self;
 }
@@ -77,6 +85,7 @@ static NSString* _self_device_id = nil;
 + (void)startState
 {
   [[InfinitStateManager sharedInstance] _attachCallbacks];
+  [InfinitCrashReporter sharedInstance];
 }
 
 - (uint64_t)max_mirror_size
@@ -132,6 +141,7 @@ static NSString* _self_device_id = nil;
     [self _clearModels];
   _self_id = nil;
   _self_device_id = nil;
+  _current_user = nil;
 }
 
 - (void)_clearSelf
@@ -190,7 +200,11 @@ static NSString* _self_device_id = nil;
                           password.UTF8String);
      }
      if (res == gap_ok)
+     {
        manager.logged_in = YES;
+       [weak_self setCurrent_user:email];
+       [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
+     }
      else
        [manager _stopPolling];
      return res;
@@ -222,7 +236,11 @@ performSelector:(SEL)selector
        res = gap_login(manager.stateWrapper.state, email.UTF8String, password.UTF8String);
      }
      if (res == gap_ok)
+     {
        manager.logged_in = YES;
+       [weak_self setCurrent_user:email];
+       [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
+     }
      else
        [manager _stopPolling];
      return res;
@@ -710,6 +728,27 @@ performSelector:(SEL)selector
      data[@"results"] = res;
      return gap_ok;
    } performSelector:selector onObject:object withData:data];
+}
+
+#pragma mark - Crash Reporting
+
+- (void)sendLastCrashLog:(NSString*)crash_log
+            withStateLog:(NSString*)state_log
+         performSelector:(SEL)selector
+                onObject:(id)object
+{
+  __weak InfinitStateManager* weak_self = self;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    std::string username = "unknown";
+    if (weak_self.current_user != nil && weak_self.current_user.length > 0)
+      username = weak_self.current_user.UTF8String;
+    return gap_send_last_crash_logs(manager.stateWrapper.state,
+                                    username,
+                                    crash_log.UTF8String,
+                                    state_log.UTF8String,
+                                    "");
+  } performSelector:selector onObject:object];
 }
 
 #pragma mark - Conversions

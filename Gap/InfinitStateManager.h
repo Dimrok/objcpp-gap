@@ -174,4 +174,11 @@ performSelector:(SEL)selector
             onObject:(id)object
             withData:(NSMutableDictionary*)data;
 
+#pragma mark - Crash Reporting
+
+- (void)sendLastCrashLog:(NSString*)crash_log
+            withStateLog:(NSString*)state_log
+         performSelector:(SEL)selector
+                onObject:(id)object;
+
 @end
