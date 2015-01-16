@@ -8,6 +8,8 @@
 
 #import "InfinitStateWrapper.h"
 
+#import "InfinitLogManager.h"
+
 static InfinitStateWrapper* _wrapper_instance = nil;
 
 @implementation InfinitStateWrapper
@@ -35,6 +37,11 @@ static InfinitStateWrapper* _wrapper_instance = nil;
 
 + (void)setEnvironmentVariables
 {
+
+  NSString* log_file = [[InfinitLogManager sharedInstance] currentLogPath];
+  if (log_file != nil && log_file.length > 0)
+    setenv("INFINIT_LOG_FILE", log_file.UTF8String, 0);
+
   setenv("INFINIT_META_PROTOCOL", "http", 0);
   setenv("INFINIT_META_HOST", "192.168.0.14", 0);
   setenv("INFINIT_META_PORT", "8080", 0);
