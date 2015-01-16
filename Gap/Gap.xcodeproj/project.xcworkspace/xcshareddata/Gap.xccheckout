@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>CACE18EF-42ED-4AB1-8C3F-DF47A93FE606</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Gap</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>0ABE5A79E60A41543B3649DEF8DC6A02FA5B6819</key>
+		<string>git.infinit.io:objc++-gap</string>
+		<key>2CBF2714414E477DC39C05184AC31F1B27BA1EA3</key>
+		<string>git.infinit.io:infinit</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Gap/Gap.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>0ABE5A79E60A41543B3649DEF8DC6A02FA5B6819</key>
+		<string>../../..</string>
+		<key>2CBF2714414E477DC39C05184AC31F1B27BA1EA3</key>
+		<string>../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>git.infinit.io:objc++-gap</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>0ABE5A79E60A41543B3649DEF8DC6A02FA5B6819</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>2CBF2714414E477DC39C05184AC31F1B27BA1EA3</string>
+			<key>IDESourceControlWCCName</key>
+			<string>..</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>0ABE5A79E60A41543B3649DEF8DC6A02FA5B6819</string>
+			<key>IDESourceControlWCCName</key>
+			<string>objcpp-gap</string>
+		</dict>
+	</array>
+</dict>
+</plist>
