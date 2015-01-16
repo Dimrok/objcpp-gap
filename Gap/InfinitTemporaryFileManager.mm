@@ -13,10 +13,10 @@
 #import "InfinitPeerTransactionManager.h"
 #import "InfinitStateManager.h"
 
+#import <AssetsLibrary/AssetsLibrary.h>
+
 #undef check
 #import <elle/log.hh>
-
-#import <AssetsLibrary/AssetsLibrary.h>
 
 ELLE_LOG_COMPONENT("Gap-ObjC++.TemporaryFileManager");
 
