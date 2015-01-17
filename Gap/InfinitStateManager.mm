@@ -785,7 +785,9 @@ performSelector:(SEL)selector
                                           name:[self _nsString:transaction.name]
                                          mtime:transaction.mtime
                                           link:link
-                                   click_count:[self _numFromUint:transaction.click_count]];
+                                   click_count:[self _numFromUint:transaction.click_count]
+                                       message:[self _nsString:transaction.message]
+                                          size:@0];
   return res;
 }
 
