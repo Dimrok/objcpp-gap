@@ -84,7 +84,7 @@ static InfinitAvatarManager* _instance = nil;
                                    blue:189.0f/255.0f
                                   alpha:1.0f];
   CGFloat scale = [[UIScreen mainScreen] scale];
-  CGRect rect = CGRectMake(0.0f, 0.0f, 40.0f * scale, 40.0f * scale);
+  CGRect rect = CGRectMake(0.0f, 0.0f, 120.0f * scale, 120.0f * scale);
   UIImage* res = [[UIImage alloc] init];
   UIGraphicsBeginImageContext(rect.size);
   CGContextRef context = UIGraphicsGetCurrentContext();
@@ -111,7 +111,7 @@ static InfinitAvatarManager* _instance = nil;
     }
   }
   NSDictionary* attrs = @{NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-Light"
-                                                               size:(17.0f * scale)],
+                                                               size:(51.0f * scale)],
                           NSForegroundColorAttributeName: [UIColor whiteColor]};
   NSAttributedString* str = [[NSAttributedString alloc] initWithString:text attributes:attrs];
   [str drawAtPoint:CGPointMake(round((rect.size.width - str.size.width) / 2.0f),
@@ -136,13 +136,14 @@ static InfinitAvatarManager* _instance = nil;
     if (avatar != nil)
     {
       [_avatar_map setObject:avatar forKey:id_];
+      [self sendAvatarNotificationForUserId:id_];
     }
   }
 }
 
-- (void)sendAvatarNotificationForUser:(InfinitUser*)user
+- (void)sendAvatarNotificationForUserId:(NSNumber*)id_
 {
-  NSDictionary* user_info = @{@"id": user.id_};
+  NSDictionary* user_info = @{@"id": id_};
   [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_USER_AVATAR_NOTIFICATION
                                                       object:self
                                                     userInfo:user_info];
