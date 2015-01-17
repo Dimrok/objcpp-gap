@@ -8,17 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-#import <surface/gap/enums.hh>
+#import "InfinitTransaction.h"
 
-@interface InfinitLinkTransaction : NSObject
+@interface InfinitLinkTransaction : InfinitTransaction
 
 @property (nonatomic, readonly) NSNumber* click_count;
-@property (nonatomic, readonly) NSNumber* id_;
 @property (nonatomic, readonly) NSString* link;
-@property (nonatomic, readonly) NSTimeInterval mtime;
 @property (nonatomic, readonly) NSString* name;
-@property (nonatomic, readonly) float progress;
-@property (nonatomic, readonly) gap_TransactionStatus status;
 
 - (id)initWithId:(NSNumber*)id_
           status:(gap_TransactionStatus)status
@@ -26,7 +22,9 @@
             name:(NSString*)name
            mtime:(NSTimeInterval)mtime
             link:(NSString*)link
-     click_count:(NSNumber*)click_count;
+     click_count:(NSNumber*)click_count
+         message:(NSString*)message
+            size:(NSNumber*)size;
 
 - (void)updateWithTransaction:(InfinitLinkTransaction*)transaction;
 
