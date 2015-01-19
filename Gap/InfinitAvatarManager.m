@@ -149,4 +149,11 @@ static InfinitAvatarManager* _instance = nil;
                                                     userInfo:user_info];
 }
 
+#pragma mark - Clear Cache
+
+- (void)clearCachedAvatars
+{
+  [_avatar_map removeAllObjects];
+}
+
 @end

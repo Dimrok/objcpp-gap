@@ -29,4 +29,6 @@
 #pragma mark - State Manager Callback
 - (void)gotAvatarForUserWithId:(NSNumber*)id_;
 
+- (void)clearCachedAvatars;
+
 @end
