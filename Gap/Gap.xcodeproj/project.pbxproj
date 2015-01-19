@@ -74,7 +74,7 @@
 		83F72CAA1A1513810088106E /* InfinitLinkTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F72CA81A1513810088106E /* InfinitLinkTransaction.m */; };
 		83F72CAD1A1513FA0088106E /* InfinitLinkTransactionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F72CAB1A1513FA0088106E /* InfinitLinkTransactionManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83F72CAE1A1513FA0088106E /* InfinitLinkTransactionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83F72CAC1A1513FA0088106E /* InfinitLinkTransactionManager.mm */; };
-		83FE9C921A1636FF00FC1CFD /* InfinitAvatarManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83FE9C901A1636FF00FC1CFD /* InfinitAvatarManager.h */; };
+		83FE9C921A1636FF00FC1CFD /* InfinitAvatarManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83FE9C901A1636FF00FC1CFD /* InfinitAvatarManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83FE9C931A1636FF00FC1CFD /* InfinitAvatarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FE9C911A1636FF00FC1CFD /* InfinitAvatarManager.m */; };
 /* End PBXBuildFile section */
 
@@ -500,7 +500,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83FE9C921A1636FF00FC1CFD /* InfinitAvatarManager.h in Headers */,
 				836D394F1A67F19200892206 /* NSString+email.h in Headers */,
 				836F5C831A165B48007C9C4E /* InfinitReachability.h in Headers */,
 				83F4D0161A136E3C0068BEB2 /* InfinitPeerTransaction.h in Headers */,
@@ -512,6 +511,7 @@
 				83E0AC221A6A61CD003F60C6 /* InfinitTransaction.h in Headers */,
 				83F4D0141A136E3C0068BEB2 /* InfinitStateManager.h in Headers */,
 				830AD1DF1A6A8D2400E2B058 /* InfinitTime.h in Headers */,
+				83FE9C921A1636FF00FC1CFD /* InfinitAvatarManager.h in Headers */,
 				830AD1E31A6A943D00E2B058 /* InfinitDataSize.h in Headers */,
 				83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */,
 				8396106C1A2479A40044B874 /* InfinitTemporaryFileManager.h in Headers */,
