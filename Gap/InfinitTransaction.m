@@ -34,7 +34,10 @@ sender_device_id:(NSString *)sender_device_id
   {
     _id_ = id_;
     _status = status;
-    _mtime = mtime;
+    if (mtime == 0.0f)
+      _mtime = [NSDate date].timeIntervalSince1970;
+    else
+      _mtime = mtime;
     _message = message;
     _size = size;
     _sender_device_id = sender_device_id;
@@ -96,7 +99,7 @@ sender_device_id:(NSString *)sender_device_id
 
 - (void)updateTimeRemainingWithCurrentProgress:(CGFloat)current_progress
 {
-  NSTimeInterval current_time = [NSDate timeIntervalSinceReferenceDate];
+  NSTimeInterval current_time = [NSDate date].timeIntervalSince1970;
   NSTimeInterval time_interval = current_time - _last_time;
   double rate = (current_progress - _last_progress) / time_interval;
   if (_data_points.count < 30)
