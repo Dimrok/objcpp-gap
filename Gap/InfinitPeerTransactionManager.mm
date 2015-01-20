@@ -167,8 +167,15 @@ static InfinitPeerTransactionManager* _instance = nil;
     }
     else
     {
-      [existing updateWithTransaction:transaction];
-      [self sendTransactionStatusNotification:existing];
+      if (existing.status != transaction.status)
+      {
+        [existing updateWithTransaction:transaction];
+        [self sendTransactionStatusNotification:existing];
+      }
+      else
+      {
+        [existing updateWithTransaction:transaction];
+      }
     }
   }
 }
