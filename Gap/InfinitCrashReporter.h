@@ -13,7 +13,7 @@
 + (instancetype)sharedInstance;
 
 - (void)sendExistingCrashReport;
-- (void)sendUserReportWithMessage:(NSString*)message
-                             file:(NSString*)file;
+- (void)reportAProblem:(NSString*)problem
+                  file:(NSString*)file;
 
 @end
