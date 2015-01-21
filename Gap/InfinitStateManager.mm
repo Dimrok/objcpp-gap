@@ -751,6 +751,24 @@ performSelector:(SEL)selector
   } performSelector:selector onObject:object];
 }
 
+- (void)reportAProblem:(NSString*)problem
+               andFile:(NSString*)file
+       performSelector:(SEL)selector
+              onObject:(id)object
+{
+  __weak InfinitStateManager* weak_self = self;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     std::string username = "unknown";
+     if (weak_self.current_user != nil && weak_self.current_user.length > 0)
+       username = weak_self.current_user.UTF8String;
+     return gap_send_user_report(manager.stateWrapper.state,
+                                 username,
+                                 problem.UTF8String,
+                                 file.UTF8String);
+   } performSelector:selector onObject:object];
+}
+
 #pragma mark - Conversions
 
 - (std::vector<std::string>)_filesVectorFromNSArray:(NSArray*)array

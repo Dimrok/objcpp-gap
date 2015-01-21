@@ -181,4 +181,9 @@ performSelector:(SEL)selector
          performSelector:(SEL)selector
                 onObject:(id)object;
 
+- (void)reportAProblem:(NSString*)problem
+               andFile:(NSString*)file
+       performSelector:(SEL)selector
+              onObject:(id)object;
+
 @end
