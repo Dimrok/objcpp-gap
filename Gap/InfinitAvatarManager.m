@@ -69,7 +69,10 @@ static InfinitAvatarManager* _instance = nil;
   {
     avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:user.id_];
     if (avatar == nil)
+    {
       avatar = [self generateAvatarForUser:user];
+      [_avatar_map setObject:avatar forKey:user.id_];
+    }
   }
   return avatar;
 }
