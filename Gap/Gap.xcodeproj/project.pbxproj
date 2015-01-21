@@ -21,7 +21,7 @@
 		836D394F1A67F19200892206 /* NSString+email.h in Headers */ = {isa = PBXBuildFile; fileRef = 836D394D1A67F19200892206 /* NSString+email.h */; };
 		836D39501A67F19200892206 /* NSString+email.m in Sources */ = {isa = PBXBuildFile; fileRef = 836D394E1A67F19200892206 /* NSString+email.m */; };
 		836D39851A690DFF00892206 /* libCrashReporter-iphoneos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 836D39841A690DFF00892206 /* libCrashReporter-iphoneos.a */; };
-		836D398A1A690E2A00892206 /* InfinitCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 836D39881A690E2A00892206 /* InfinitCrashReporter.h */; };
+		836D398A1A690E2A00892206 /* InfinitCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 836D39881A690E2A00892206 /* InfinitCrashReporter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		836D398B1A690E2A00892206 /* InfinitCrashReporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 836D39891A690E2A00892206 /* InfinitCrashReporter.mm */; };
 		836D39A51A694E5500892206 /* InfinitLogManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 836D39A31A694E5500892206 /* InfinitLogManager.h */; };
 		836D39A61A694E5500892206 /* InfinitLogManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 836D39A41A694E5500892206 /* InfinitLogManager.mm */; };
@@ -506,7 +506,6 @@
 				83F4D0171A136E3C0068BEB2 /* InfinitPeerTransactionManager.h in Headers */,
 				83F4D0181A136E3C0068BEB2 /* InfinitUser.h in Headers */,
 				83F35D0D1A1CF08F00DF7F35 /* InfinitFeaturesManager.h in Headers */,
-				836D398A1A690E2A00892206 /* InfinitCrashReporter.h in Headers */,
 				836F5C7F1A165AE5007C9C4E /* InfinitConnectionManager.h in Headers */,
 				83E0AC221A6A61CD003F60C6 /* InfinitTransaction.h in Headers */,
 				83F4D0141A136E3C0068BEB2 /* InfinitStateManager.h in Headers */,
@@ -514,6 +513,7 @@
 				83FE9C921A1636FF00FC1CFD /* InfinitAvatarManager.h in Headers */,
 				830AD1E31A6A943D00E2B058 /* InfinitDataSize.h in Headers */,
 				83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */,
+				836D398A1A690E2A00892206 /* InfinitCrashReporter.h in Headers */,
 				8396106C1A2479A40044B874 /* InfinitTemporaryFileManager.h in Headers */,
 				83F72CAD1A1513FA0088106E /* InfinitLinkTransactionManager.h in Headers */,
 				839610701A2479B50044B874 /* InfinitManagedFiles.h in Headers */,
