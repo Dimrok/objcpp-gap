@@ -44,10 +44,25 @@
  @param object
   The object on which to call the selector when done.
  */
-- (void)addAssetsLibraryURLList:(NSArray*)list
-                toManagedFiles:(NSString*)uuid
-                performSelector:(SEL)selector
-                       onObject:(id)object;
+- (void)addALAssetsLibraryURLList:(NSArray*)list
+                   toManagedFiles:(NSString*)uuid
+                  performSelector:(SEL)selector
+                         onObject:(id)object;
+
+/** Add a list of PHAssets to be managed.
+ @param list
+  List of PHAssets.
+ @param uuid
+  The identifying UUID.
+ @param selector
+  The selector to call when the process has been completed.
+ @param object
+  The object on which to call the selector when done.
+ */
+- (void)addPHAssetsLibraryURLList:(NSArray*)list
+                   toManagedFiles:(NSString*)uuid
+                  performSelector:(SEL)selector
+                         onObject:(id)object;
 
 /** Remove a list of Asset Library URLs from managed files.
  @param list
@@ -55,8 +70,8 @@
  @param uuid
   The idetity of the managed files.
  */
-- (void)removeAssetLibraryURLList:(NSArray*)list
-                 fromManagedFiles:(NSString*)uuid;
+- (void)removeALAssetLibraryURLList:(NSArray*)list
+                   fromManagedFiles:(NSString*)uuid;
 
 /** Add an NSData object to be managed.
  @param data

@@ -14,6 +14,7 @@
 #import "InfinitStateManager.h"
 
 #import <AssetsLibrary/AssetsLibrary.h>
+#import <Photos/Photos.h>
 
 #undef check
 #import <elle/log.hh>
@@ -167,10 +168,10 @@ static InfinitTemporaryFileManager* _instance = nil;
   return managed_files.total_size;
 }
 
-- (void)addAssetsLibraryURLList:(NSArray*)list
-                 toManagedFiles:(NSString*)uuid
-                performSelector:(SEL)selector
-                       onObject:(id)object
+- (void)addALAssetsLibraryURLList:(NSArray*)list
+                   toManagedFiles:(NSString*)uuid
+                  performSelector:(SEL)selector
+                         onObject:(id)object
 {
   dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
   dispatch_async(queue, ^
@@ -243,8 +244,35 @@ static InfinitTemporaryFileManager* _instance = nil;
   });
 }
 
-- (void)removeAssetLibraryURLList:(NSArray*)list
-                 fromManagedFiles:(NSString*)uuid
+- (void)addPHAssetsLibraryURLList:(NSArray*)list
+                   toManagedFiles:(NSString*)uuid
+                  performSelector:(SEL)selector
+                         onObject:(id)object
+{
+  dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  dispatch_async(queue, ^
+  {
+    InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+    if (managed_files == nil)
+    {
+      ELLE_ERR("%s: unable to add asset list, %s not in map",
+               self.description.UTF8String, uuid.UTF8String);
+      return;
+    }
+    NSMethodSignature* method_signature = [object methodSignatureForSelector:selector];
+    NSInvocation* callback = [NSInvocation invocationWithMethodSignature:method_signature];
+    callback.target = object;
+    callback.selector = selector;
+    for (PHAsset* asset in list)
+    {
+      [self _addPHAsset:asset toManagedFiles:managed_files];
+    }
+    [callback invoke];
+  });
+}
+
+- (void)removeALAssetLibraryURLList:(NSArray*)list
+                   fromManagedFiles:(NSString*)uuid
 {
   InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
   if (managed_files == nil)
@@ -494,10 +522,56 @@ static InfinitTemporaryFileManager* _instance = nil;
   NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
   NSString* filename = asset.defaultRepresentation.filename;
   NSString* path =
-  [[InfinitTemporaryFileManager sharedInstance] addData:data
-                                           withFilename:filename
-                                         toManagedFiles:managed_files.uuid];
+    [[InfinitTemporaryFileManager sharedInstance] addData:data
+                                             withFilename:filename
+                                           toManagedFiles:managed_files.uuid];
   [managed_files.asset_map setObject:path forKey:url];
+}
+
+- (void)_addPHAsset:(PHAsset*)asset
+     toManagedFiles:(InfinitManagedFiles*)managed_files
+{
+  if (asset.mediaType == PHAssetMediaTypeVideo)
+  {
+    dispatch_semaphore_t copy_sema = dispatch_semaphore_create(0);
+    PHVideoRequestOptions* options = [[PHVideoRequestOptions alloc] init];
+    options.networkAccessAllowed = NO;
+    [[PHImageManager defaultManager] requestAVAssetForVideo:asset
+                                                    options:options
+                                              resultHandler:^(AVAsset* asset,
+                                                              AVAudioMix* audioMix,
+                                                              NSDictionary* info)
+    {
+      if ([asset isKindOfClass:AVURLAsset.class])
+      {
+        NSURL* url = [(AVURLAsset*)asset URL];
+        [self addFiles:@[url.path] toManagedFiles:managed_files.uuid copy:YES];
+      }
+      dispatch_semaphore_signal(copy_sema);
+    }];
+    dispatch_semaphore_wait(copy_sema, DISPATCH_TIME_FOREVER);
+  }
+  else if (asset.mediaType == PHAssetMediaTypeImage)
+  {
+    PHImageRequestOptions* options = [[PHImageRequestOptions alloc] init];
+    options.networkAccessAllowed = NO;
+    options.synchronous = YES;
+    [[PHImageManager defaultManager] requestImageDataForAsset:asset
+                                                      options:options
+                                                resultHandler:^(NSData* imageData,
+                                                                NSString* dataUTI,
+                                                                UIImageOrientation orientation,
+                                                                NSDictionary* info)
+    {
+      NSURL* url = info[@"PHImageFileURLKey"];
+      NSString* filename = url.lastPathComponent;
+      NSString* path =
+        [[InfinitTemporaryFileManager sharedInstance] addData:imageData
+                                                 withFilename:filename
+                                               toManagedFiles:managed_files.uuid];
+      [managed_files.asset_map setObject:path forKey:url];
+    }];
+  }
 }
 
 @end
