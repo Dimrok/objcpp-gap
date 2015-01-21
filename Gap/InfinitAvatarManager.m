@@ -79,9 +79,9 @@ static InfinitAvatarManager* _instance = nil;
 #if TARGET_OS_IPHONE
 - (UIImage*)generateAvatarForUser:(InfinitUser*)user
 {
-  UIColor* fill = [UIColor colorWithRed:43.0f/255.0f
-                                  green:190.0f/255.0f
-                                   blue:189.0f/255.0f
+  UIColor* fill = [UIColor colorWithRed:202.0f/255.0f
+                                  green:217.0f/255.0f
+                                   blue:223.0f/255.0f
                                   alpha:1.0f];
   CGFloat scale = [[UIScreen mainScreen] scale];
   CGRect rect = CGRectMake(0.0f, 0.0f, 120.0f * scale, 120.0f * scale);
