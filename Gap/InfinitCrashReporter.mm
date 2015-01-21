@@ -120,4 +120,25 @@ static InfinitCrashReporter* _instance = nil;
   }
 }
 
+- (void)reportAProblem:(NSString*)problem
+                  file:(NSString*)file
+{
+  [[InfinitStateManager sharedInstance] reportAProblem:problem
+                                               andFile:file
+                                       performSelector:@selector(reportAProblemCallback:)
+                                              onObject:self];
+}
+
+- (void)reportAProblemCallback:(InfinitStateResult*)result
+{
+  if (result.success)
+  {
+    ELLE_LOG("%s: successfully reported a problem", self.description.UTF8String);
+  }
+  else
+  {
+    ELLE_ERR("%s: unable to report a problem: %d", self.description.UTF8String, result.status);
+  }
+}
+
 @end
