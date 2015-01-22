@@ -8,6 +8,7 @@
 
 #import "InfinitAvatarManager.h"
 #import "InfinitStateManager.h"
+#import "InfinitUserManager.h"
 
 #import "NSString+email.h"
 
@@ -15,11 +16,23 @@
 # import <UIKit/UIKit.h>
 #endif
 
+#undef check
+#import <elle/log.hh>
+
+ELLE_LOG_COMPONENT("Gap-ObjC++.AvatarManager");
+
 static InfinitAvatarManager* _instance = nil;
+
+@interface InfinitAvatarManager ()
+
+@property (readonly) NSString* avatar_dir;
+
+@end
 
 @implementation InfinitAvatarManager
 {
   NSMutableDictionary* _avatar_map;
+  NSMutableSet* _requested_avatars;
 }
 
 #pragma mark - Init
@@ -33,6 +46,7 @@ static InfinitAvatarManager* _instance = nil;
                                                  name:INFINIT_CLEAR_MODEL_NOTIFICATION
                                                object:nil];
     _avatar_map = [NSMutableDictionary dictionary];
+    _requested_avatars = [NSMutableSet set];
   }
   return self;
 }
@@ -54,24 +68,100 @@ static InfinitAvatarManager* _instance = nil;
   return _instance;
 }
 
+- (NSString*)avatar_dir
+{
+  NSString* cache_dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
+                                                            NSUserDomainMask,
+                                                            YES).firstObject;
+  NSString* avatar_dir = [cache_dir stringByAppendingPathComponent:@"avatar_cache"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:avatar_dir isDirectory:NULL])
+  {
+    NSError* error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:avatar_dir
+                              withIntermediateDirectories:YES
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
+                                                    error:&error];
+    if (error)
+    {
+      ELLE_ERR("%s: unable to create avatar cache folder: %s",
+               self.description.UTF8String, error.description.UTF8String);
+      return nil;
+    }
+  }
+  return avatar_dir;
+}
+
+- (NSString*)pathForUser:(InfinitUser*)user
+{
+  NSString* res = [self.avatar_dir stringByAppendingPathComponent:user.meta_id];
+  return [res stringByAppendingPathExtension:@"jpg"];
+}
+
+- (void)writeUser:(InfinitUser*)user
+avatarToDiskCache:(UIImage*)avatar
+{
+  NSError* error = nil;
+  [UIImageJPEGRepresentation(avatar, 0.8f) writeToFile:[self pathForUser:user]
+                                               options:NSDataWritingAtomic
+                                                 error:&error];
+  if (error)
+  {
+    ELLE_ERR("%s: unable to write avatar (%s) to disk: %s",
+             self.description.UTF8String, user.meta_id.UTF8String, error.description.UTF8String);
+  }
+}
+
+- (UIImage*)diskCacheAvatarForUser:(InfinitUser*)user
+{
+  NSError* error = nil;
+  NSArray* cached_files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:self.avatar_dir
+                                                                              error:&error];
+  if (error)
+  {
+    ELLE_ERR("%s: unable to fetch avatar cache directory contents: %s",
+             self.description.UTF8String, error.description.UTF8String);
+    return nil;
+  }
+  for (NSString* item in cached_files)
+  {
+    NSString* user_id = [item stringByDeletingPathExtension];
+    if ([user_id isEqualToString:user.meta_id])
+    {
+      NSString* path = [self.avatar_dir stringByAppendingPathComponent:item];
+      UIImage* avatar = [UIImage imageWithContentsOfFile:path];
+      if (avatar != nil)
+      {
+        [_avatar_map setObject:avatar forKey:user_id];
+        return avatar;
+      }
+    }
+  }
+  return nil;
+}
+
 #pragma mark - Public Functions
 
 #if TARGET_OS_IPHONE
 - (UIImage*)avatarForUser:(InfinitUser*)user
 {
-  UIImage* avatar = [_avatar_map objectForKey:user.id_];
+  UIImage* avatar = [_avatar_map objectForKey:user.meta_id];
 #else
 - (NSImage*)avatarForUser:(InfinitUser*)user
 {
-  NSImage* avatar = [_avatar_map objectForKey:user.id_];
+  NSImage* avatar = [_avatar_map objectForKey:user.meta_id];
 #endif
+  if (![_requested_avatars containsObject:user.meta_id])
+  {
+    [_requested_avatars addObject:user.meta_id];
+    avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:user.id_];
+  }
   if (avatar == nil)
   {
-    avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:user.id_];
+    avatar = [self diskCacheAvatarForUser:user];
     if (avatar == nil)
     {
       avatar = [self generateAvatarForUser:user];
-      [_avatar_map setObject:avatar forKey:user.id_];
+      [_avatar_map setObject:avatar forKey:user.meta_id];
     }
   }
   return avatar;
@@ -138,15 +228,17 @@ static InfinitAvatarManager* _instance = nil;
 #endif
     if (avatar != nil)
     {
-      [_avatar_map setObject:avatar forKey:id_];
-      [self sendAvatarNotificationForUserId:id_];
+      InfinitUser* user = [[InfinitUserManager sharedInstance] userWithId:id_];
+      [_avatar_map setObject:avatar forKey:user.meta_id];
+      [self sendAvatarNotificationForUser:user];
+      [self writeUser:user avatarToDiskCache:avatar];
     }
   }
 }
 
-- (void)sendAvatarNotificationForUserId:(NSNumber*)id_
+- (void)sendAvatarNotificationForUser:(InfinitUser*)user
 {
-  NSDictionary* user_info = @{@"id": id_};
+  NSDictionary* user_info = @{@"id": user.id_};
   [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_USER_AVATAR_NOTIFICATION
                                                       object:self
                                                     userInfo:user_info];
