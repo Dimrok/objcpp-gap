@@ -268,14 +268,14 @@ performSelector:(SEL)selector
 - (void)_startPolling
 {
   _polling = YES;
-  _poll_timer = [NSTimer timerWithTimeInterval:2.0f
+  _poll_timer = [NSTimer timerWithTimeInterval:1.0f
                                         target:self
                                       selector:@selector(_poll)
                                       userInfo:nil
                                        repeats:YES];
   if ([_poll_timer respondsToSelector:@selector(tolerance)])
   {
-    _poll_timer.tolerance = 5.0;
+    _poll_timer.tolerance = 1.0f;
   }
   [[NSRunLoop mainRunLoop] addTimer:_poll_timer forMode:NSDefaultRunLoopMode];
 }
@@ -839,7 +839,8 @@ performSelector:(SEL)selector
                                               handle:[self _nsString:user.handle]
                                              swagger:user.swagger
                                              deleted:user.deleted
-                                               ghost:user.ghost];
+                                               ghost:user.ghost
+                                             meta_id:[self _nsString:user.meta_id]];
   return res;
 }
 
