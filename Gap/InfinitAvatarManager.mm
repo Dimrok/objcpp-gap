@@ -129,7 +129,7 @@ avatarToDiskCache:(UIImage*)avatar
     {
       NSString* path = [self.avatar_dir stringByAppendingPathComponent:item];
       UIImage* avatar = [UIImage imageWithContentsOfFile:path];
-      if (avatar != nil)
+      if (avatar != nil && user_id != nil)
       {
         [_avatar_map setObject:avatar forKey:user_id];
         return avatar;
