@@ -22,6 +22,7 @@
          swagger:(BOOL)swagger
          deleted:(BOOL)deleted
            ghost:(BOOL)ghost
+         meta_id:(NSString*)meta_id
 {
   if (self = [super init])
   {
@@ -32,6 +33,7 @@
     _swagger = swagger;
     _deleted = deleted;
     _ghost = ghost;
+    _meta_id = meta_id;
   }
   return self;
 }

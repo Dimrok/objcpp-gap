@@ -42,5 +42,6 @@
           handle:(NSString*)handle
          swagger:(BOOL)swagger
          deleted:(BOOL)deleted
-           ghost:(BOOL)ghost;
+           ghost:(BOOL)ghost
+         meta_id:(NSString*)meta_id;
 @end
