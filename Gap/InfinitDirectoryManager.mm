@@ -1,0 +1,170 @@
+//
+//  InfinitDirectoryManager.m
+//  Gap
+//
+//  Created by Christopher Crone on 24/01/15.
+//
+//
+
+#import "InfinitDirectoryManager.h"
+
+#undef check
+#import <elle/log.hh>
+
+ELLE_LOG_COMPONENT("Gap-ObjC++.DirectoryManager");
+
+static InfinitDirectoryManager* _instance = nil;
+
+@implementation InfinitDirectoryManager
+
+- (id)init
+{
+  NSCAssert(_instance == nil, @"Use the sharedInstance");
+  if (self = [super init])
+  {
+  }
+  return self;
+}
+
++ (instancetype)sharedInstance
+{
+  if (_instance == nil)
+    _instance = [[InfinitDirectoryManager alloc] init];
+  return _instance;
+}
+
+#pragma mark - Directory Handling
+
+- (NSString*)avatar_cache_directory
+{
+  NSString* cache_dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
+                                                            NSUserDomainMask,
+                                                            YES).firstObject;
+  NSString* avatar_dir = [cache_dir stringByAppendingPathComponent:@"avatar_cache"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:avatar_dir isDirectory:NULL])
+  {
+    NSError* error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:avatar_dir
+                              withIntermediateDirectories:YES
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
+                                                    error:&error];
+    if (error)
+    {
+      ELLE_ERR("%s: unable to create avatar cache folder: %s",
+               self.description.UTF8String, error.description.UTF8String);
+      return nil;
+    }
+  }
+  return avatar_dir;
+}
+
+- (NSString*)download_directory
+{
+  NSString* doc_dir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                          NSUserDomainMask,
+                                                          YES).firstObject;
+  NSString* res = [doc_dir stringByAppendingPathComponent:@"Downloads"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
+  {
+    NSError* error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:res
+                              withIntermediateDirectories:NO
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @NO}
+                                                    error:&error];
+    if (error)
+    {
+      ELLE_ERR("%s: unable to create download folder: %s",
+               self.description.UTF8String, error.description.UTF8String);
+      return nil;
+    }
+  }
+  return res;
+}
+
+- (NSString*)log_directory
+{
+  NSString* res = [self.non_persistent_directory stringByAppendingPathComponent:@"logs"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
+  {
+    NSError* error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:res
+                              withIntermediateDirectories:YES
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
+                                                    error:&error];
+    if (error)
+    {
+      ELLE_ERR("%s: unable to create log folder: %s",
+               self.description.UTF8String, error.description.UTF8String);
+      return nil;
+    }
+  }
+  return res;
+}
+
+- (NSString*)persistent_directory
+{
+  NSString* app_support_dir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+                                                                  NSUserDomainMask,
+                                                                  YES).firstObject;
+  NSString* res = [app_support_dir stringByAppendingPathComponent:@"persistent"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
+  {
+    NSError* error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:res
+                              withIntermediateDirectories:YES
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @NO}
+                                                    error:&error];
+    if (error)
+    {
+      ELLE_ERR("%s: unable to create persistent folder: %s",
+               self.description.UTF8String, error.description.UTF8String);
+      return nil;
+    }
+  }
+  return res;
+}
+
+- (NSString*)non_persistent_directory
+{
+  NSString* app_support_dir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+                                                                  NSUserDomainMask,
+                                                                  YES).firstObject;
+  NSString* res = [app_support_dir stringByAppendingPathComponent:@"non-persistent"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
+  {
+    NSError* error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:res
+                              withIntermediateDirectories:NO
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
+                                                    error:&error];
+    if (error)
+    {
+      ELLE_ERR("%s: unable to create non-persistent folder: %s",
+               self.description.UTF8String, error.description.UTF8String);
+      return nil;
+    }
+  }
+  return res;
+}
+
+- (NSString*)temporary_files_directory
+{
+  NSString* res = [NSTemporaryDirectory() stringByAppendingPathComponent:@"managed_files"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
+  {
+    NSError* error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:res
+                              withIntermediateDirectories:NO
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
+                                                    error:&error];
+    if (error)
+    {
+      ELLE_ERR("%s: unable to create temporary managed files folder: %s",
+               self.description.UTF8String, error.description.UTF8String);
+      return nil;
+    }
+  }
+  return res;
+}
+
+@end
