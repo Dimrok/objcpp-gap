@@ -8,6 +8,7 @@
 
 #import "InfinitStateWrapper.h"
 
+#import "InfinitDirectoryManager.h"
 #import "InfinitLogManager.h"
 
 static InfinitStateWrapper* _wrapper_instance = nil;
@@ -37,8 +38,7 @@ static InfinitStateWrapper* _wrapper_instance = nil;
 
 + (void)setEnvironmentVariables
 {
-
-  NSString* log_file = [[InfinitLogManager sharedInstance] currentLogPath];
+  NSString* log_file = [[InfinitLogManager sharedInstance] current_log_path];
   if (log_file != nil && log_file.length > 0)
     setenv("INFINIT_LOG_FILE", log_file.UTF8String, 0);
 
@@ -66,58 +66,9 @@ static InfinitStateWrapper* _wrapper_instance = nil;
     "surface.gap.*:TRACE,"
     "surface.gap.TransferMachine:DEBUG,"
     "Gap-ObjC++*:DEBUG,"
-    "*trophonius*:DEBUG";
+    "*trophonius*:TRACE";
   setenv("ELLE_LOG_LEVEL", log_level.c_str(), 0);
   setenv("ELLE_LOG_TIME", "1", 0);
-}
-
-#pragma mark - Fetch Directories
-
-+ (NSString*)downloadDirectory
-{
-  NSString* doc_dir =
-    NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-  NSString* res = [doc_dir stringByAppendingPathComponent:@"Downloads"];
-  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
-  {
-    [[NSFileManager defaultManager] createDirectoryAtPath:res
-                              withIntermediateDirectories:NO
-                                               attributes:@{NSURLIsExcludedFromBackupKey: @NO}
-                                                    error:nil];
-  }
-  return res;
-}
-
-+ (NSString*)persistentConfigDirectory
-{
-  NSString* app_support_dir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-                                                                  NSUserDomainMask,
-                                                                  YES).firstObject;
-  NSString* res = [app_support_dir stringByAppendingPathComponent:@"persistent"];
-  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
-  {
-    [[NSFileManager defaultManager] createDirectoryAtPath:res
-                              withIntermediateDirectories:YES
-                                               attributes:@{NSURLIsExcludedFromBackupKey: @NO}
-                                                    error:nil];
-  }
-  return res;
-}
-
-+ (NSString*)nonPersistentConfigDirectory
-{
-  NSString* app_support_dir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-                                                                  NSUserDomainMask,
-                                                                  YES).firstObject;
-  NSString* res = [app_support_dir stringByAppendingPathComponent:@"non-persistent"];
-  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
-  {
-    [[NSFileManager defaultManager] createDirectoryAtPath:res
-                              withIntermediateDirectories:NO
-                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
-                                                    error:nil];
-  }
-  return res;
 }
 
 #pragma mark - Setup Instace
@@ -128,9 +79,10 @@ static InfinitStateWrapper* _wrapper_instance = nil;
   {
     BOOL production = NO;
     [InfinitStateWrapper setEnvironmentVariables];
-    NSString* download_dir = [InfinitStateWrapper downloadDirectory];
-    NSString* persistent_config_dir = [InfinitStateWrapper persistentConfigDirectory];
-    NSString* non_persistent_config_dir = [InfinitStateWrapper nonPersistentConfigDirectory];
+    InfinitDirectoryManager* dir_manager = [InfinitDirectoryManager sharedInstance];
+    NSString* download_dir = dir_manager.download_directory;
+    NSString* persistent_config_dir = dir_manager.persistent_directory;
+    NSString* non_persistent_config_dir = dir_manager.non_persistent_directory;
     BOOL enable_mirroring = YES;
     uint64_t max_mirror_size = 100 * 1024 * 1024;
     _wrapper_instance =
