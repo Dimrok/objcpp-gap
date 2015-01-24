@@ -8,6 +8,8 @@
 
 #import "InfinitLogManager.h"
 
+#import "InfinitDirectoryManager.h"
+
 #undef check
 #import <elle/log.hh>
 
@@ -42,17 +44,17 @@ static InfinitLogManager* _instance = nil;
 
 #pragma mark - General
 
-- (NSString*)crashReportPath
+- (NSString*)crash_report_path
 {
   return [[self logFolder] stringByAppendingPathComponent:@"last_crash.log"];
 }
 
-- (NSString*)currentLogPath
+- (NSString*)current_log_path
 {
   return [[self logFolder] stringByAppendingPathComponent:@"current_state.log"];
 }
 
-- (NSString*)lastLogPath
+- (NSString*)last_log_path
 {
   return [[self logFolder] stringByAppendingPathComponent:@"last_state.log"];
 }
@@ -61,46 +63,33 @@ static InfinitLogManager* _instance = nil;
 
 - (void)rollLogs
 {
-  if ([[NSFileManager defaultManager] fileExistsAtPath:[self lastLogPath]])
+  if ([[NSFileManager defaultManager] fileExistsAtPath:self.last_log_path])
   {
     NSError* error = nil;
-    [[NSFileManager defaultManager] removeItemAtPath:[self lastLogPath] error:&error];
+    [[NSFileManager defaultManager] removeItemAtPath:self.last_log_path error:&error];
     if (error != nil)
     {
       ELLE_ERR("%s: unable to remove existing log: %s",
-               self.description.UTF8String, [self lastLogPath].UTF8String);
+               self.description.UTF8String, self.last_log_path.UTF8String);
     }
   }
-  if ([[NSFileManager defaultManager] fileExistsAtPath:[self currentLogPath]])
+  if ([[NSFileManager defaultManager] fileExistsAtPath:self.current_log_path])
   {
     NSError* error = nil;
-    [[NSFileManager defaultManager] moveItemAtPath:[self currentLogPath]
-                                            toPath:[self lastLogPath]
+    [[NSFileManager defaultManager] moveItemAtPath:self.current_log_path
+                                            toPath:self.last_log_path
                                              error:&error];
     if (error != nil)
     {
       ELLE_ERR("%s: unable to move existing log: %s",
-               self.description.UTF8String, [self currentLogPath].UTF8String);
+               self.description.UTF8String, self.current_log_path.UTF8String);
     }
   }
 }
 
 - (NSString*)logFolder
 {
-  NSString* app_support_dir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-                                                                  NSUserDomainMask,
-                                                                  YES).firstObject;
-  NSString* log_folder = [[app_support_dir stringByAppendingPathComponent:@"non-persistent"]
-                                           stringByAppendingPathComponent:@"logs"];
-
-  if (![[NSFileManager defaultManager] fileExistsAtPath:log_folder])
-  {
-    [[NSFileManager defaultManager] createDirectoryAtPath:log_folder
-                              withIntermediateDirectories:YES
-                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
-                                                    error:nil];
-  }
-  return log_folder;
+  return [InfinitDirectoryManager sharedInstance].log_directory;
 }
 
 @end

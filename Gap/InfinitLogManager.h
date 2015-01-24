@@ -10,10 +10,10 @@
 
 @interface InfinitLogManager : NSObject
 
-+ (instancetype)sharedInstance;
+@property (nonatomic, readonly) NSString* crash_report_path;
+@property (nonatomic, readonly) NSString* current_log_path;
+@property (nonatomic, readonly) NSString* last_log_path;
 
-- (NSString*)crashReportPath;
-- (NSString*)currentLogPath;
-- (NSString*)lastLogPath;
++ (instancetype)sharedInstance;
 
 @end
