@@ -75,7 +75,7 @@ static InfinitCrashReporter* _instance = nil;
   PLCrashReportTextFormat format = PLCrashReportTextFormatiOS;
   NSString* report = [PLCrashReportTextFormatter stringValueForCrashReport:crash_log
                                                             withTextFormat:format];
-  NSString* crash_log_path = [[InfinitLogManager sharedInstance] crashReportPath];
+  NSString* crash_log_path = [InfinitLogManager sharedInstance].crash_report_path;
   [report writeToFile:crash_log_path
            atomically:YES
              encoding:NSUTF8StringEncoding
@@ -85,7 +85,7 @@ static InfinitCrashReporter* _instance = nil;
     ELLE_ERR("%s: unable to write crash report: %@", self.description.UTF8String, error);
     return;
   }
-  NSString* state_log = [[InfinitLogManager sharedInstance] lastLogPath];
+  NSString* state_log = [InfinitLogManager sharedInstance].last_log_path;
   [[InfinitStateManager sharedInstance] sendLastCrashLog:crash_log_path
                                             withStateLog:state_log 
                                          performSelector:@selector(sendCrashLogsCallback:)
@@ -108,7 +108,7 @@ static InfinitCrashReporter* _instance = nil;
   {
     ELLE_ERR("%s: unable to purge last crash report", self.description.UTF8String);
   }
-  NSString* report_path = [[InfinitLogManager sharedInstance] crashReportPath];
+  NSString* report_path = [InfinitLogManager sharedInstance].crash_report_path;
   if ([[NSFileManager defaultManager] fileExistsAtPath:report_path])
   {
     error = nil;
