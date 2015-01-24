@@ -8,8 +8,9 @@
 
 #import "InfinitTemporaryFileManager.h"
 
-#import "InfinitManagedFiles.h"
+#import "InfinitDirectoryManager.h"
 #import "InfinitLinkTransactionManager.h"
+#import "InfinitManagedFiles.h"
 #import "InfinitPeerTransactionManager.h"
 #import "InfinitStateManager.h"
 
@@ -44,7 +45,7 @@ static InfinitTemporaryFileManager* _instance = nil;
     _max_mirror_size = [[InfinitStateManager sharedInstance] max_mirror_size];
     _files_map = [NSMutableDictionary dictionary];
     _transaction_map = [NSMutableDictionary dictionary];
-    _managed_root = [NSTemporaryDirectory() stringByAppendingPathComponent:@"managed_files"];
+    _managed_root = [InfinitDirectoryManager sharedInstance].temporary_files_directory;
     [self _deleteFiles:@[_managed_root]];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_linkTransactionUpdated:)
