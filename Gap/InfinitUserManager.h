@@ -66,6 +66,18 @@
  */
 - (InfinitUser*)userWithId:(NSNumber*)id_;
 
+/** User with corresponding Meta ID.
+ @param meta_id
+  User's Meta ID.
+ @param selector
+  Function to call when complete.
+ @param object
+  Calling object.
+ */
+- (void)userWithMetaId:(NSString*)meta_id
+       performSelector:(SEL)selector
+              onObject:(id)object;
+
 /** Asynchronously fetch user with corresponding handle.
  When the result has been fetched, the selector of the object is called with a user object or nil
  if none was found.

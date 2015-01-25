@@ -162,12 +162,12 @@ static InfinitUserManager* _instance = nil;
   {
     if ([user.handle isEqualToString:handle])
     {
-      [object performSelector:selector withObject:user afterDelay:0];
+      [object performSelector:selector withObject:user afterDelay:0.0f];
       return;
     }
   }
   NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"selector": [NSString stringWithUTF8String:sel_getName(selector)],
+    @"selector": NSStringFromSelector(selector),
     @"object": object
   }];
   [[InfinitStateManager sharedInstance] userByHandle:handle
@@ -196,14 +196,14 @@ static InfinitUserManager* _instance = nil;
     }
     [object performSelector:selector
                  withObject:user
-                 afterDelay:0];
+                 afterDelay:0.0f];
   }
   else
   {
     ELLE_TRACE("%s: user not found by handle", self.description.UTF8String);
     [object performSelector:selector
                  withObject:nil
-                 afterDelay:0];
+                 afterDelay:0.0f];
   }
 }
 
@@ -274,12 +274,12 @@ static InfinitUserManager* _instance = nil;
            onObject:(id)object
 {
   NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"selector": [NSString stringWithUTF8String:sel_getName(selector)],
+    @"selector": NSStringFromSelector(selector),
     @"object": object
     }];
   NSArray* local_results = [self _localResultsForText:text];
   if (local_results.count > 0)
-    [object performSelector:selector withObject:local_results afterDelay:0];
+    [object performSelector:selector withObject:local_results afterDelay:0.0f];
   [[InfinitStateManager sharedInstance] textSearch:text
                                    performSelector:@selector(searchUsersCallback:)
                                           onObject:self
@@ -307,7 +307,7 @@ static InfinitUserManager* _instance = nil;
   }
   [object performSelector:selector
                withObject:users
-               afterDelay:0];
+               afterDelay:0.0f];
 }
 
 - (void)searchEmails:(NSArray*)emails
@@ -315,7 +315,7 @@ static InfinitUserManager* _instance = nil;
             onObject:(id)object
 {
   NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"selector": [NSString stringWithUTF8String:sel_getName(selector)],
+    @"selector": NSStringFromSelector(selector),
     @"object": object
     }];
   [[InfinitStateManager sharedInstance] searchEmails:emails
@@ -343,7 +343,7 @@ static InfinitUserManager* _instance = nil;
   {
     ELLE_TRACE("%s: unable to search by emails: %d", self.description.UTF8String, result.status);
   }
-  [object performSelector:selector withObject:results afterDelay:0];
+  [object performSelector:selector withObject:results afterDelay:0.0f];
 }
 
 #pragma mark - Helpers
@@ -381,6 +381,58 @@ static InfinitUserManager* _instance = nil;
     return;
   user.status = status;
   [self sendUserStatusNotification:user];
+}
+
+- (void)userWithMetaId:(NSString*)meta_id
+       performSelector:(SEL)selector
+              onObject:(id)object
+{
+  for (InfinitUser* user in _user_map.allValues)
+  {
+    if ([user.meta_id isEqualToString:meta_id] && [object respondsToSelector:selector])
+    {
+      [object performSelector:selector withObject:user afterDelay:0.0f];
+      return;
+    }
+  }
+  NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithDictionary:@{
+    @"selector": NSStringFromSelector(selector),
+    @"object": object}];
+  [[InfinitStateManager sharedInstance] userByMetaId:meta_id
+                                     performSelector:@selector(userWithMetaIdCallback:)
+                                            onObject:self
+                                            withData:dict];
+}
+
+- (void)userWithMetaIdCallback:(InfinitStateResult*)result
+{
+  NSDictionary* dict = result.data;
+  id object = dict[@"object"];
+  SEL selector = NSSelectorFromString(dict[@"selector"]);
+  if (![object respondsToSelector:selector])
+  {
+    ELLE_ERR("%s: invalid selector", self.description.UTF8String);
+    return;
+  }
+  if (result.success)
+  {
+    InfinitUser* user = dict[@"user"];
+    @synchronized(_user_map)
+    {
+      if (_user_map[user.id_] == nil)
+        [_user_map setObject:user forKey:user.id_];
+    }
+    [object performSelector:selector
+                 withObject:user
+                 afterDelay:0.0f];
+  }
+  else
+  {
+    ELLE_TRACE("%s: user not found by meta ID", self.description.UTF8String);
+    [object performSelector:selector
+                 withObject:nil
+                 afterDelay:0.0f];
+  }
 }
 
 - (void)userDeletedWithId:(NSNumber*)id_
