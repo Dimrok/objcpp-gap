@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "InfinitTransaction.h"
+
 @interface InfinitDirectoryManager : NSObject
 
 @property (nonatomic, readonly) NSString* avatar_cache_directory;
@@ -18,5 +20,7 @@
 @property (nonatomic, readonly) NSString* temporary_files_directory;
 
 + (instancetype)sharedInstance;
+
+- (NSString*)downloadDirectoryForTransaction:(InfinitTransaction*)transaction;
 
 @end

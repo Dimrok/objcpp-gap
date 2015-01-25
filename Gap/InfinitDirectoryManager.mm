@@ -33,6 +33,28 @@ static InfinitDirectoryManager* _instance = nil;
   return _instance;
 }
 
+#pragma mark - Transaction
+
+- (NSString*)downloadDirectoryForTransaction:(InfinitTransaction*)transaction
+{
+  NSString* res = [self.download_directory stringByAppendingPathComponent:transaction.meta_id];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
+  {
+    NSError* error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:res
+                              withIntermediateDirectories:NO
+                                               attributes:nil
+                                                    error:&error];
+    if (error)
+    {
+      ELLE_ERR("%s: unable to create transaction download folder: %s",
+               self.description.UTF8String, error.description.UTF8String);
+      return nil;
+    }
+  }
+  return res;
+}
+
 #pragma mark - Directory Handling
 
 - (NSString*)avatar_cache_directory
