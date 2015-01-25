@@ -13,6 +13,7 @@
 @implementation InfinitLinkTransaction
 
 - (id)initWithId:(NSNumber*)id_
+         meta_id:(NSString*)meta_id
           status:(gap_TransactionStatus)status
    sender_device:(NSString*)sender_device
             name:(NSString*)name
@@ -23,6 +24,7 @@
             size:(NSNumber*)size
 {
   if (self = [super initWithId:id_
+                       meta_id:meta_id
                         status:status
                          mtime:mtime
                        message:message

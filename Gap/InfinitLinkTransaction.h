@@ -17,6 +17,7 @@
 @property (nonatomic, readonly) NSString* name;
 
 - (id)initWithId:(NSNumber*)id_
+         meta_id:(NSString*)meta_id
           status:(gap_TransactionStatus)status
    sender_device:(NSString*)sender_device
             name:(NSString*)name
