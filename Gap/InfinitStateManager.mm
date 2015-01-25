@@ -305,17 +305,23 @@ performSelector:(SEL)selector
 {
   if (!self._loggedIn)
     return nil;
-  auto user = gap_user_by_id(self.stateWrapper.state, id_.unsignedIntValue);
-  return [self _convertUser:user];
+  surface::gap::User res;
+  gap_Status status = gap_user_by_id(self.stateWrapper.state, id_.unsignedIntValue, res);
+  if (status != gap_ok)
+    return nil;
+  return [self _convertUser:res];
 }
 
 - (NSArray*)swaggers
 {
   if (!self._loggedIn)
     return nil;
-  auto swaggers_ = gap_swaggers(self.stateWrapper.state);
+  std::vector<surface::gap::User> res_;
+  gap_Status status = gap_swaggers(self.stateWrapper.state, res_);
+  if (status != gap_ok)
+    return nil;
   NSMutableArray* res = [NSMutableArray array];
-  for (auto const& swagger: swaggers_)
+  for (auto const& swagger: res_)
     [res addObject:[self _convertUser:swagger]];
   return res;
 }
@@ -324,9 +330,12 @@ performSelector:(SEL)selector
 {
   if (!self._loggedIn)
     return nil;
-  auto favorites_ = gap_favorites(self.stateWrapper.state);
+  std::vector<uint32_t> res_;
+  gap_Status status = gap_favorites(self.stateWrapper.state, res_);
+  if (status != gap_ok)
+    return nil;
   NSMutableArray* res = [NSMutableArray array];
-  for (uint32_t favorite: favorites_)
+  for (uint32_t favorite: res_)
     [res addObject:[self _numFromUint:favorite]];
   return res;
 }
@@ -436,17 +445,23 @@ performSelector:(SEL)selector
 {
   if (!self._loggedIn)
     return nil;
-  auto transaction = gap_link_transaction_by_id(self.stateWrapper.state, id_.unsignedIntValue);
-  return [self _convertLinkTransaction:transaction];
+  surface::gap::LinkTransaction res;
+  gap_Status status = gap_link_transaction_by_id(self.stateWrapper.state, id_.unsignedIntValue, res);
+  if (status != gap_ok)
+    return nil;
+  return [self _convertLinkTransaction:res];
 }
 
 - (NSArray*)linkTransactions
 {
   if (!self._loggedIn)
     return nil;
-  auto transactions_ = gap_link_transactions(self.stateWrapper.state);
+  std::vector<surface::gap::LinkTransaction> res_;
+  gap_Status status = gap_link_transactions(self.stateWrapper.state, res_);
+  if (status != gap_ok)
+    return nil;
   NSMutableArray* res = [NSMutableArray array];
-  for (auto const& transaction: transactions_)
+  for (auto const& transaction: res_)
   {
     [res addObject:[self _convertLinkTransaction:transaction]];
   }
@@ -477,17 +492,23 @@ performSelector:(SEL)selector
 {
   if (!self._loggedIn)
     return nil;
-  auto transaction = gap_peer_transaction_by_id(self.stateWrapper.state, id_.unsignedIntValue);
-  return [self _convertPeerTransaction:transaction];
+  surface::gap::PeerTransaction res;
+  gap_Status status = gap_peer_transaction_by_id(self.stateWrapper.state, id_.unsignedIntValue, res);
+  if (status != gap_ok)
+    return nil;
+  return [self _convertPeerTransaction:res];
 }
 
 - (NSArray*)peerTransactions
 {
   if (!self._loggedIn)
     return nil;
-  auto transactions_ = gap_peer_transactions(self.stateWrapper.state);
+  std::vector<surface::gap::PeerTransaction> res_;
+  gap_Status status = gap_peer_transactions(self.stateWrapper.state, res_);
+  if (status != gap_ok)
+    return nil;
   NSMutableArray* res = [NSMutableArray array];
-  for (auto const& transaction: transactions_)
+  for (auto const& transaction: res_)
   {
     [res addObject:[self _convertPeerTransaction:transaction]];
   }
@@ -521,10 +542,19 @@ performSelector:(SEL)selector
 }
 
 - (void)acceptTransactionWithId:(NSNumber*)id_
+                    toDirectory:(NSString*)directory
 {
   if (!self._loggedIn)
     return;
-  gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+  if (directory != nil && directory.length > 0)
+  {
+    std::string output_dir = directory.UTF8String;
+    gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue, output_dir);
+  }
+  else
+  {
+    gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+  }
 }
 
 - (void)rejectTransactionWithId:(NSNumber*)id_
@@ -669,6 +699,27 @@ performSelector:(SEL)selector
 
 #pragma mark - Search
 
+- (void)userByMetaId:(NSString*)meta_id
+     performSelector:(SEL)selector
+            onObject:(id)object
+            withData:(NSMutableDictionary*)data
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    if (!manager._loggedIn)
+      return gap_not_logged_in;
+    surface::gap::User res;
+    gap_Status status = gap_user_by_meta_id(manager.stateWrapper.state, meta_id.UTF8String, res);
+    if (status == gap_ok)
+    {
+      InfinitUser* user = [manager _convertUser:res];
+      if (user != nil)
+        data[@"user"] = user;
+    }
+    return gap_ok;
+  } performSelector:selector onObject:object withData:data];
+}
+
 - (void)userByHandle:(NSString*)handle
      performSelector:(SEL)selector
             onObject:(id)object
@@ -678,10 +729,15 @@ performSelector:(SEL)selector
    {
      if (!manager._loggedIn)
        return gap_not_logged_in;
-     auto user_ = gap_user_by_handle(manager.stateWrapper.state, handle.UTF8String);
-     InfinitUser* user = [manager _convertUser:user_];
-     data[@"user"] = user;
-     return gap_ok;
+     surface::gap::User res;
+     gap_Status status = gap_user_by_handle(manager.stateWrapper.state, handle.UTF8String, res);
+     if (status == gap_ok)
+     {
+       InfinitUser* user = [manager _convertUser:res];
+       if (user != nil)
+         data[@"user"] = user;
+     }
+     return status;
    } performSelector:selector onObject:object withData:data];
 }
 
@@ -694,14 +750,20 @@ performSelector:(SEL)selector
    {
      if (!manager.logged_in)
        return gap_not_logged_in;
-     auto results = gap_users_search(manager.stateWrapper.state, text.UTF8String);
-     NSMutableArray* res = [NSMutableArray array];
-     for (auto const& user: results)
+     std::vector<surface::gap::User> res_;
+     gap_Status status = gap_users_search(manager.stateWrapper.state, text.UTF8String, res_);
+     if (status == gap_ok)
      {
-       [res addObject:[manager _convertUser:user]];
+       NSMutableArray* res = [NSMutableArray array];
+       for (auto const& user_: res_)
+       {
+         InfinitUser* user = [manager _convertUser:user_];
+         if (user != nil)
+           [res addObject:user];
+       }
+       data[@"users"] = res;
      }
-     data[@"users"] = res;
-     return gap_ok;
+     return status;
    } performSelector:selector onObject:object withData:data];
 }
 
@@ -719,14 +781,20 @@ performSelector:(SEL)selector
      {
        emails_.push_back(email.UTF8String);
      }
-     auto results = gap_users_by_emails(manager.stateWrapper.state, emails_);
-     NSMutableDictionary* res = [NSMutableDictionary dictionary];
-     for (auto const& result: results)
+     std::unordered_map<std::string, surface::gap::User> res_;
+     gap_Status status = gap_users_by_emails(manager.stateWrapper.state, emails_, res_);
+     if (status == gap_ok)
      {
-       res[[manager _nsString:result.first]] = [manager _convertUser:result.second];
+       NSMutableDictionary* res = [NSMutableDictionary dictionary];
+       for (auto const& result: res_)
+       {
+         InfinitUser* user = [manager _convertUser:result.second];
+         if (user != nil)
+           res[[manager _nsString:result.first]] = user;
+       }
+       data[@"results"] = res;
      }
-     data[@"results"] = res;
-     return gap_ok;
+     return status;
    } performSelector:selector onObject:object withData:data];
 }
 
@@ -798,6 +866,7 @@ performSelector:(SEL)selector
     link = [NSString stringWithUTF8String:transaction.link.get().c_str()];
   InfinitLinkTransaction* res =
     [[InfinitLinkTransaction alloc] initWithId:[self _numFromUint:transaction.id]
+                                       meta_id:[self _nsString:transaction.meta_id]
                                         status:transaction.status
                                  sender_device:[self _nsString:transaction.sender_device_id]
                                           name:[self _nsString:transaction.name]
@@ -819,6 +888,7 @@ performSelector:(SEL)selector
   }
   InfinitPeerTransaction* res =
     [[InfinitPeerTransaction alloc] initWithId:[self _numFromUint:transaction.id]
+                                       meta_id:[self _nsString:transaction.meta_id]
                                         status:transaction.status
                                         sender:[self _numFromUint:transaction.sender_id]
                                  sender_device:[self _nsString:transaction.sender_device_id]

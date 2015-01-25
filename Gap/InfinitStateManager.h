@@ -118,7 +118,8 @@ performSelector:(SEL)selector
 - (NSNumber*)sendFiles:(NSArray*)files
            toRecipient:(id)recipient
            withMessage:(NSString*)message;
-- (void)acceptTransactionWithId:(NSNumber*)id_;
+- (void)acceptTransactionWithId:(NSNumber*)id_
+                    toDirectory:(NSString*)directory;
 - (void)rejectTransactionWithId:(NSNumber*)id_;
 
 #pragma mark - Connection Status
@@ -159,6 +160,11 @@ performSelector:(SEL)selector
              onObject:(id)object;
 
 #pragma mark - Search
+- (void)userByMetaId:(NSString*)meta_id
+     performSelector:(SEL)selector
+            onObject:(id)object
+            withData:(NSMutableDictionary*)data;
+
 - (void)userByHandle:(NSString*)handle
      performSelector:(SEL)selector
             onObject:(id)object
