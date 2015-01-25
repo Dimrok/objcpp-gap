@@ -8,6 +8,7 @@
 
 #import "InfinitPeerTransactionManager.h"
 
+#import "InfinitDirectoryManager.h"
 #import "InfinitStateManager.h"
 
 #import "NSString+email.h"
@@ -130,7 +131,25 @@ static InfinitPeerTransactionManager* _instance = nil;
 
 - (void)acceptTransaction:(InfinitPeerTransaction*)transaction
 {
-  [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_];
+  NSString* path =
+    [[InfinitDirectoryManager sharedInstance] downloadDirectoryForTransaction:transaction];
+  if (path == nil)
+  {
+    ELLE_ERR("%s: unable to accept transaction, invalid download path",
+             self.description.UTF8String);
+    return;
+  }
+  NSDictionary* meta_data = @{@"sender": transaction.sender.meta_id,
+                              @"sender_device": transaction.sender_device_id,
+                              @"ctime": @(transaction.mtime)};
+  NSString* meta_file = [path stringByAppendingPathComponent:@".sender"];
+  if (![meta_data writeToFile:meta_file atomically:YES])
+  {
+    ELLE_ERR("%s: unable to write transaction sender data: %s",
+             self.description.UTF8String, transaction.sender.meta_id.UTF8String);
+  }
+  [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_
+                                                    toDirectory:path];
 }
 
 - (void)rejectTransaction:(InfinitPeerTransaction*)transaction
