@@ -21,6 +21,7 @@
 #pragma mark - Init
 
 - (id)initWithId:(NSNumber*)id_
+         meta_id:(NSString*)meta_id
           status:(gap_TransactionStatus)status
           sender:(NSNumber*)sender_id
    sender_device:(NSString*)sender_device_id
@@ -32,6 +33,7 @@
        directory:(BOOL)directory
 {
   if (self = [super initWithId:id_
+                       meta_id:meta_id
                         status:status
                          mtime:mtime
                        message:message

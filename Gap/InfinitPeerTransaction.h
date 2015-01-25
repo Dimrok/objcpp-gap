@@ -24,6 +24,7 @@
 @property (nonatomic, readonly) InfinitUser* sender;
 
 - (id)initWithId:(NSNumber*)id_
+         meta_id:(NSString*)meta_id
           status:(gap_TransactionStatus)status
           sender:(NSNumber*)sender_id
    sender_device:(NSString*)sender_device_id
