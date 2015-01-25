@@ -24,16 +24,18 @@
 #pragma mark - Init
 
 - (id)initWithId:(NSNumber*)id_
+         meta_id:(NSString*)meta_id
           status:(gap_TransactionStatus)status
            mtime:(NSTimeInterval)mtime
          message:(NSString*)message
             size:(NSNumber*)size
-sender_device_id:(NSString *)sender_device_id
+sender_device_id:(NSString*)sender_device_id
 {
   if (self = [super init])
   {
     _id_ = id_;
     _status = status;
+    _meta_id = meta_id;
     if (mtime == 0.0f)
       _mtime = [NSDate date].timeIntervalSince1970;
     else
@@ -94,6 +96,7 @@ sender_device_id:(NSString *)sender_device_id
 - (void)updateWithTransaction:(InfinitTransaction*)transaction
 {
   _status = transaction.status;
+  _meta_id = transaction.meta_id;
   _mtime = transaction.mtime;
 }
 
