@@ -141,8 +141,9 @@ static InfinitPeerTransactionManager* _instance = nil;
   }
   NSDictionary* meta_data = @{@"sender": transaction.sender.meta_id,
                               @"sender_device": transaction.sender_device_id,
+                              @"sender_fullname": transaction.sender.fullname,
                               @"ctime": @(transaction.mtime)};
-  NSString* meta_file = [path stringByAppendingPathComponent:@".sender"];
+  NSString* meta_file = [path stringByAppendingPathComponent:@".meta"];
   if (![meta_data writeToFile:meta_file atomically:YES])
   {
     ELLE_ERR("%s: unable to write transaction sender data: %s",

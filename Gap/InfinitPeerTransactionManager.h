@@ -22,7 +22,7 @@
 
 @interface InfinitPeerTransactionManager : NSObject
 
-// Returns a reverse time ordered list of transactions.
+/// Returns a reverse time ordered list of transactions.
 @property (readonly) NSArray* transactions;
 
 + (instancetype)sharedInstance;
