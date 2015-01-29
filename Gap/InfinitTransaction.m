@@ -77,7 +77,11 @@ sender_device_id:(NSString*)sender_device_id
 - (float)progress
 {
   if (self.status == gap_transaction_transferring)
-    return [[InfinitStateManager sharedInstance] transactionProgressForId:self.id_];
+  {
+    CGFloat progress = [[InfinitStateManager sharedInstance] transactionProgressForId:self.id_];
+    [self updateTimeRemainingWithCurrentProgress:progress];
+    return progress;
+  }
   else if (self.done)
     return 1.0f;
   else
@@ -105,16 +109,16 @@ sender_device_id:(NSString*)sender_device_id
   NSTimeInterval current_time = [NSDate date].timeIntervalSince1970;
   NSTimeInterval time_interval = current_time - _last_time;
   double rate = (current_progress - _last_progress) / time_interval;
-  if (_data_points.count < 30)
-  {
-    [_data_points addObject:[NSNumber numberWithDouble:rate]];
-  }
-  else
+  if (_data_points == nil)
+    _data_points = [NSMutableArray array];
+  if (_data_points.count > 29)
   {
     [_data_points removeObjectAtIndex:0];
-    [_data_points addObject:[NSNumber numberWithDouble:rate]];
   }
+  [_data_points addObject:[NSNumber numberWithDouble:rate]];
+
   _last_time = current_time;
+  _last_progress = current_progress;
 
   double avg_rate = 0.0f;
   for (NSNumber* rate in _data_points)
