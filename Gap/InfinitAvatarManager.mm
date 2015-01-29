@@ -7,6 +7,7 @@
 //
 
 #import "InfinitAvatarManager.h"
+#import "InfinitDirectoryManager.h"
 #import "InfinitStateManager.h"
 #import "InfinitUserManager.h"
 
@@ -70,25 +71,7 @@ static InfinitAvatarManager* _instance = nil;
 
 - (NSString*)avatar_dir
 {
-  NSString* cache_dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
-                                                            NSUserDomainMask,
-                                                            YES).firstObject;
-  NSString* avatar_dir = [cache_dir stringByAppendingPathComponent:@"avatar_cache"];
-  if (![[NSFileManager defaultManager] fileExistsAtPath:avatar_dir isDirectory:NULL])
-  {
-    NSError* error = nil;
-    [[NSFileManager defaultManager] createDirectoryAtPath:avatar_dir
-                              withIntermediateDirectories:YES
-                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
-                                                    error:&error];
-    if (error)
-    {
-      ELLE_ERR("%s: unable to create avatar cache folder: %s",
-               self.description.UTF8String, error.description.UTF8String);
-      return nil;
-    }
-  }
-  return avatar_dir;
+  return [InfinitDirectoryManager sharedInstance].avatar_cache_directory;
 }
 
 - (NSString*)pathForUser:(InfinitUser*)user
@@ -101,7 +84,7 @@ static InfinitAvatarManager* _instance = nil;
 avatarToDiskCache:(UIImage*)avatar
 {
   NSError* error = nil;
-  [UIImageJPEGRepresentation(avatar, 0.8f) writeToFile:[self pathForUser:user]
+  [UIImageJPEGRepresentation(avatar, 1.0f) writeToFile:[self pathForUser:user]
                                                options:NSDataWritingAtomic
                                                  error:&error];
   if (error)
