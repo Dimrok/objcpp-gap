@@ -148,7 +148,8 @@ static InfinitUserManager* _instance = nil;
     if (res == nil)
     {
       res = [[InfinitStateManager sharedInstance] userById:id_];
-      [_user_map setObject:res forKey:res.id_];
+      if (res != nil)
+        [_user_map setObject:res forKey:res.id_];
     }
     return res;
   }
