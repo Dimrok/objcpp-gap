@@ -189,4 +189,27 @@ static InfinitDirectoryManager* _instance = nil;
   return res;
 }
 
+- (NSString*)thumbnail_cache_directory
+{
+  NSString* cache_dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
+                                                            NSUserDomainMask,
+                                                            YES).firstObject;
+  NSString* thumbnail_dir = [cache_dir stringByAppendingPathComponent:@"thumbnail_cache"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnail_dir isDirectory:NULL])
+  {
+    NSError* error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:thumbnail_dir
+                              withIntermediateDirectories:YES
+                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
+                                                    error:&error];
+    if (error)
+    {
+      ELLE_ERR("%s: unable to create thumbnail cache folder: %s",
+               self.description.UTF8String, error.description.UTF8String);
+      return nil;
+    }
+  }
+  return thumbnail_dir;
+}
+
 @end

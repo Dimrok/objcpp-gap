@@ -18,6 +18,7 @@
 @property (nonatomic, readonly) NSString* persistent_directory;
 @property (nonatomic, readonly) NSString* non_persistent_directory;
 @property (nonatomic, readonly) NSString* temporary_files_directory;
+@property (nonatomic, readonly) NSString* thumbnail_cache_directory;
 
 + (instancetype)sharedInstance;
 
