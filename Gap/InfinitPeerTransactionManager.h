@@ -22,6 +22,8 @@
 
 @interface InfinitPeerTransactionManager : NSObject
 
+/// Boolean for when transactions are running.
+@property (readonly) BOOL running_transactions;
 /// Returns a reverse time ordered list of transactions.
 @property (readonly) NSArray* transactions;
 

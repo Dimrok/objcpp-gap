@@ -69,6 +69,16 @@ static InfinitPeerTransactionManager* _instance = nil;
 
 #pragma mark - Access Transactions
 
+- (BOOL)running_transactions
+{
+  for (InfinitPeerTransaction* transaction in _transaction_map.allValues)
+  {
+    if (transaction.status == gap_transaction_transferring)
+      return YES;
+  }
+  return NO;
+}
+
 - (NSArray*)transactions
 {
   return [[_transaction_map allValues] sortedArrayUsingSelector:@selector(compare:)];
@@ -150,7 +160,7 @@ static InfinitPeerTransactionManager* _instance = nil;
              self.description.UTF8String, transaction.sender.meta_id.UTF8String);
   }
   [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_
-                                                    toDirectory:path];
+                                            toRelativeDirectory:transaction.meta_id];
 }
 
 - (void)rejectTransaction:(InfinitPeerTransaction*)transaction
