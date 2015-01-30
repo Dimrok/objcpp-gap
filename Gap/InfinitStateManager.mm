@@ -543,7 +543,7 @@ performSelector:(SEL)selector
 }
 
 - (void)acceptTransactionWithId:(NSNumber*)id_
-                    toDirectory:(NSString*)directory
+            toRelativeDirectory:(NSString*)directory
 {
   if (!self._loggedIn)
     return;

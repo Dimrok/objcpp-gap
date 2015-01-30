@@ -119,7 +119,7 @@ performSelector:(SEL)selector
            toRecipient:(id)recipient
            withMessage:(NSString*)message;
 - (void)acceptTransactionWithId:(NSNumber*)id_
-                    toDirectory:(NSString*)directory;
+            toRelativeDirectory:(NSString*)directory;
 - (void)rejectTransactionWithId:(NSNumber*)id_;
 
 #pragma mark - Connection Status
