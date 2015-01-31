@@ -38,7 +38,7 @@ static InfinitStateWrapper* _wrapper_instance = nil;
 
 + (void)setEnvironmentVariables
 {
-  NSString* log_file = [[InfinitLogManager sharedInstance] current_log_path];
+  NSString* log_file = [InfinitLogManager sharedInstance].current_log_path;
   if (log_file != nil && log_file.length > 0)
     setenv("INFINIT_LOG_FILE", log_file.UTF8String, 0);
 
