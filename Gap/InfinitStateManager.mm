@@ -1008,7 +1008,9 @@ static
 void
 on_connection_callback(bool status, bool still_retrying, std::string const& last_error)
 {
-  NSString* error = [NSString stringWithUTF8String:last_error.c_str()];
+  NSString* error = @"";
+  if (!last_error.empty())
+    error = [NSString stringWithUTF8String:last_error.c_str()];
   [[InfinitConnectionManager sharedInstance] setConnectedStatus:status
                                                     stillTrying:still_retrying
                                                       lastError:error];
