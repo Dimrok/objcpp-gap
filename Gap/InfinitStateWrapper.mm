@@ -66,6 +66,7 @@ static InfinitStateWrapper* _wrapper_instance = nil;
     "surface.gap.*:TRACE,"
     "surface.gap.TransferMachine:DEBUG,"
     "Gap-ObjC++*:DEBUG,"
+    "iOS*:DEBUG,"
     "*trophonius*:TRACE";
   setenv("ELLE_LOG_LEVEL", log_level.c_str(), 0);
   setenv("ELLE_LOG_TIME", "1", 0);
