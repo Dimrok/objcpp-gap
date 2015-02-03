@@ -46,7 +46,7 @@ static InfinitLogManager* _instance = nil;
 
 - (NSString*)crash_report_path
 {
-  return [[self logFolder] stringByAppendingPathComponent:@"last_crash.log"];
+  return [[self logFolder] stringByAppendingPathComponent:@"last_crash.crash"];
 }
 
 - (NSString*)current_log_path
