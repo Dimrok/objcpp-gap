@@ -34,11 +34,17 @@
  */
 - (InfinitUser*)me;
 
-/** Return list of users that the user has previously been involved in a share with.
+/** Return list of users that the user has previously been involved in a share with
+ (alphabetical order).
  @return An array of users.
  */
-- (NSArray*)swaggers;
+- (NSArray*)alphabetical_swaggers;
 
+/** Return list of users that the user has previously been involved in a share with
+  (time order).
+ @return An array of users.
+ */
+- (NSArray*)time_ordered_swaggers;
 
 /** Return list of user's favorites.
  @return An array of users.

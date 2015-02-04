@@ -97,11 +97,15 @@ static InfinitUserManager* _instance = nil;
   return _me;
 }
 
-- (NSArray*)swaggers
+- (NSArray*)alphabetical_swaggers
+{
+  NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"fullname" ascending:YES];
+  return [[self time_ordered_swaggers] sortedArrayUsingDescriptors:@[sort]];
+}
+
+- (NSArray*)time_ordered_swaggers
 {
   NSMutableOrderedSet* res = [NSMutableOrderedSet orderedSet];
-  [res addObject:[self me]];
-  [res addObjectsFromArray:[self favorites]];
   NSArray* reversed_transactions = [[InfinitPeerTransactionManager sharedInstance] transactions];
   for (InfinitPeerTransaction* transaction in reversed_transactions)
   {
@@ -114,6 +118,8 @@ static InfinitUserManager* _instance = nil;
     if (user.swagger)
       [res addObject:user];
   }
+  [res removeObject:[self me]];
+  [res removeObjectsInArray:[self favorites]];
   return res.array;
 }
 
@@ -125,7 +131,9 @@ static InfinitUserManager* _instance = nil;
     if (user.favorite)
       [res addObject:user];
   }
-  return res;
+  [res removeObject:[self me]];
+  NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"fullname" ascending:YES];
+  return [res sortedArrayUsingDescriptors:@[sort]];
 }
 
 - (void)addFavorite:(InfinitUser*)user
