@@ -49,6 +49,13 @@
   return [[InfinitAvatarManager sharedInstance] avatarForUser:self];
 }
 
+- (void)setFullname:(NSString*)fullname
+{
+  if (!self.is_self)
+    return;
+  _fullname = fullname;
+}
+
 - (BOOL)is_self
 {
   if ([[[InfinitStateManager sharedInstance] self_id] isEqualToNumber:self.id_])
