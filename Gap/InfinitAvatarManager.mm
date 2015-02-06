@@ -9,6 +9,7 @@
 #import "InfinitAvatarManager.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitStateManager.h"
+#import "InfinitStateResult.h"
 #import "InfinitUserManager.h"
 
 #import "NSString+email.h"
@@ -122,7 +123,43 @@ avatarToDiskCache:(UIImage*)avatar
   return nil;
 }
 
+- (void)removeDiskCacheForUser:(InfinitUser*)user
+{
+  NSError* error = nil;
+  if ([[NSFileManager defaultManager] fileExistsAtPath:[self pathForUser:user]])
+  {
+    [[NSFileManager defaultManager] removeItemAtPath:[self pathForUser:user] error:&error];
+  }
+  if (error)
+  {
+    ELLE_WARN("%s: unable to remove cached avatar (%s): %s",
+              self.description.UTF8String, user.meta_id.UTF8String, error.description.UTF8String);
+  }
+}
+
 #pragma mark - Public Functions
+
+- (void)setSelfAvatar:(UIImage*)avatar
+{
+  [[InfinitStateManager sharedInstance] setSelfAvatar:avatar
+                                      performSelector:@selector(setAvatarCallback:)
+                                             onObject:self];
+  InfinitUser* me = [InfinitUserManager sharedInstance].me;
+  [_avatar_map setObject:avatar forKey:me.meta_id];
+}
+
+- (void)setAvatarCallback:(InfinitStateResult*)result
+{
+  if (result.success)
+  {
+    InfinitUser* me = [InfinitUserManager sharedInstance].me;
+    [self removeDiskCacheForUser:me];
+  }
+  else
+  {
+    ELLE_ERR("%s: unable to set self avatar", self.description.UTF8String);
+  }
+}
 
 #if TARGET_OS_IPHONE
 - (UIImage*)avatarForUser:(InfinitUser*)user

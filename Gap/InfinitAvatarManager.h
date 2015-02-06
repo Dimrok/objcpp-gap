@@ -20,6 +20,8 @@
 
 + (instancetype)sharedInstance;
 
+- (void)setSelfAvatar:(UIImage*)avatar;
+
 #if TARGET_OS_IPHONE
 - (UIImage*)avatarForUser:(InfinitUser*)user;
 #else
