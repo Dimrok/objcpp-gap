@@ -686,11 +686,11 @@ performSelector:(SEL)selector
      if (!manager._loggedIn)
        return gap_not_logged_in;
 #if TARGET_OS_IPHONE
-     NSData* image_data = UIImageJPEGRepresentation(image, 0.8f);
+     NSData* image_data = UIImageJPEGRepresentation(image, 0.9f);
 #else
      NSData* image_data = [image TIFFRepresentation];
      NSBitmapImageRep* image_rep = [NSBitmapImageRep imageRepWithData:image_data];
-     NSDictionary* image_props = [NSDictionary dictionaryWithObject:@0.8f
+     NSDictionary* image_props = [NSDictionary dictionaryWithObject:@0.9f
                                                              forKey:NSImageCompressionFactor];
      image_data = [image_rep representationUsingType:NSJPEGFileType properties:image_props];
 #endif
