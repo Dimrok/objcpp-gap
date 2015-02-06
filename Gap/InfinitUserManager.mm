@@ -99,7 +99,9 @@ static InfinitUserManager* _instance = nil;
 
 - (NSArray*)alphabetical_swaggers
 {
-  NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"fullname" ascending:YES];
+  NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"fullname"
+                                                       ascending:YES
+                                                        selector:@selector(caseInsensitiveCompare:)];
   return [[self time_ordered_swaggers] sortedArrayUsingDescriptors:@[sort]];
 }
 
@@ -112,7 +114,9 @@ static InfinitUserManager* _instance = nil;
     if (!transaction.other_user.is_self)
       [res addObject:transaction.other_user];
   }
-  NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"fullname" ascending:YES];
+  NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"fullname"
+                                                       ascending:YES
+                                                        selector:@selector(caseInsensitiveCompare:)];
   for (InfinitUser* user in [_user_map.allValues sortedArrayUsingDescriptors:@[sort]])
   {
     if (user.swagger)
@@ -132,7 +136,9 @@ static InfinitUserManager* _instance = nil;
       [res addObject:user];
   }
   [res removeObject:[self me]];
-  NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"fullname" ascending:YES];
+  NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"fullname"
+                                                       ascending:YES
+                                                        selector:@selector(caseInsensitiveCompare:)];
   return [res sortedArrayUsingDescriptors:@[sort]];
 }
 
