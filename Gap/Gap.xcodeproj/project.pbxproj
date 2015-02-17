@@ -35,6 +35,7 @@
 		8396106D1A2479A40044B874 /* InfinitTemporaryFileManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8396106B1A2479A40044B874 /* InfinitTemporaryFileManager.mm */; };
 		839610701A2479B50044B874 /* InfinitManagedFiles.h in Headers */ = {isa = PBXBuildFile; fileRef = 8396106E1A2479B50044B874 /* InfinitManagedFiles.h */; };
 		839610711A2479B50044B874 /* InfinitManagedFiles.m in Sources */ = {isa = PBXBuildFile; fileRef = 8396106F1A2479B50044B874 /* InfinitManagedFiles.m */; };
+		839EDA6D1A92645B0005C92A /* InfinitFileSystemErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 839EDA6C1A9262970005C92A /* InfinitFileSystemErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83E0AC221A6A61CD003F60C6 /* InfinitTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 83E0AC201A6A61CD003F60C6 /* InfinitTransaction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83E0AC231A6A61CD003F60C6 /* InfinitTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 83E0AC211A6A61CD003F60C6 /* InfinitTransaction.m */; };
 		83F35D0D1A1CF08F00DF7F35 /* InfinitFeaturesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F35D0B1A1CF08F00DF7F35 /* InfinitFeaturesManager.h */; };
@@ -223,6 +224,7 @@
 		8396106B1A2479A40044B874 /* InfinitTemporaryFileManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitTemporaryFileManager.mm; sourceTree = "<group>"; };
 		8396106E1A2479B50044B874 /* InfinitManagedFiles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitManagedFiles.h; sourceTree = "<group>"; };
 		8396106F1A2479B50044B874 /* InfinitManagedFiles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitManagedFiles.m; sourceTree = "<group>"; };
+		839EDA6C1A9262970005C92A /* InfinitFileSystemErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfinitFileSystemErrors.h; sourceTree = "<group>"; };
 		83E0AC201A6A61CD003F60C6 /* InfinitTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitTransaction.h; sourceTree = "<group>"; };
 		83E0AC211A6A61CD003F60C6 /* InfinitTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitTransaction.m; sourceTree = "<group>"; };
 		83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CrashReporter.xcodeproj; path = ../plcrashreporter/CrashReporter.xcodeproj; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 				836F5C7C1A165AD2007C9C4E /* Connection */,
 				836D39861A690E0800892206 /* Crash Reporter */,
 				83157EEC1A73D82900F8E87F /* Directory Manager */,
+				839EDA5B1A9262780005C92A /* Errors */,
 				83F35D0A1A1CF07300DF7F35 /* Features */,
 				83568D9B1A136DDE00766DA3 /* Gap */,
 				836D39A21A694E3900892206 /* Log Manager */,
@@ -414,6 +417,14 @@
 			name = "Temporary Files";
 			sourceTree = "<group>";
 		};
+		839EDA5B1A9262780005C92A /* Errors */ = {
+			isa = PBXGroup;
+			children = (
+				839EDA6C1A9262970005C92A /* InfinitFileSystemErrors.h */,
+			);
+			name = Errors;
+			sourceTree = "<group>";
+		};
 		83E0AC0B1A6A6180003F60C6 /* Transactions */ = {
 			isa = PBXGroup;
 			children = (
@@ -529,6 +540,7 @@
 				83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */,
 				836D398A1A690E2A00892206 /* InfinitCrashReporter.h in Headers */,
 				83157EEF1A73D84800F8E87F /* InfinitDirectoryManager.h in Headers */,
+				839EDA6D1A92645B0005C92A /* InfinitFileSystemErrors.h in Headers */,
 				8396106C1A2479A40044B874 /* InfinitTemporaryFileManager.h in Headers */,
 				83F72CAD1A1513FA0088106E /* InfinitLinkTransactionManager.h in Headers */,
 				839610701A2479B50044B874 /* InfinitManagedFiles.h in Headers */,
