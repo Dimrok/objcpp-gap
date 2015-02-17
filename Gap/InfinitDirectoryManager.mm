@@ -212,4 +212,26 @@ static InfinitDirectoryManager* _instance = nil;
   return thumbnail_dir;
 }
 
+#pragma mark - Disk Space
+
+- (uint64_t)free_space
+{
+  uint64_t res = 0;
+  __autoreleasing NSError* error = nil;
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSDictionary* dict =
+    [[NSFileManager defaultManager] attributesOfFileSystemForPath:paths.lastObject error: &error];
+  if (dict)
+  {
+    NSNumber* free_space_in_bytes = [dict objectForKey:NSFileSystemFreeSize];
+    res = free_space_in_bytes.unsignedLongLongValue;
+  }
+  else
+  {
+    NSLog(@"Error Obtaining System Memory Info: Domain = %@, Code = %ld",
+          error.domain, (long)error.code);
+  }
+  return res;
+}
+
 @end

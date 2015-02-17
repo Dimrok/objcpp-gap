@@ -20,6 +20,8 @@
 @property (nonatomic, readonly) NSString* temporary_files_directory;
 @property (nonatomic, readonly) NSString* thumbnail_cache_directory;
 
+@property (nonatomic, readonly) uint64_t free_space;
+
 + (instancetype)sharedInstance;
 
 - (NSString*)downloadDirectoryForTransaction:(InfinitTransaction*)transaction;
