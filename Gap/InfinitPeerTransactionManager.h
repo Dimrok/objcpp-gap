@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "InfinitFileSystemErrors.h"
 #import "InfinitPeerTransaction.h"
 
 /** Notification sent when there is a new peer transaction.
@@ -53,8 +54,12 @@
 /** Accept a Transaction.
  @param transaction
   Transaction to accept.
+ @param error
+  Error object that should be checked upon return. Will be nil if there was no error.
+ @return False if there was an error.
  */
-- (void)acceptTransaction:(InfinitPeerTransaction*)transaction;
+- (BOOL)acceptTransaction:(InfinitPeerTransaction*)transaction
+                withError:(NSError**)error;
 
 /** Reject a Transaction.
  @param transaction

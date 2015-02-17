@@ -139,15 +139,32 @@ static InfinitPeerTransactionManager* _instance = nil;
   return res;
 }
 
-- (void)acceptTransaction:(InfinitPeerTransaction*)transaction
+- (BOOL)acceptTransaction:(InfinitPeerTransaction*)transaction
+                withError:(NSError**)error;
 {
+  if ([InfinitDirectoryManager sharedInstance].free_space < transaction.size.unsignedIntegerValue)
+  {
+    if (error != NULL)
+    {
+      *error = [NSError errorWithDomain:INFINIT_FILE_SYSTEM_ERROR_DOMAIN
+                                   code:InfinitFileSystemErrorNoFreeSpace
+                               userInfo:nil];
+    }
+    return NO;
+  }
   NSString* path =
     [[InfinitDirectoryManager sharedInstance] downloadDirectoryForTransaction:transaction];
   if (path == nil)
   {
+    if (error != NULL)
+    {
+      *error = [NSError errorWithDomain:INFINIT_FILE_SYSTEM_ERROR_DOMAIN
+                                   code:InfinitFileSystemErrorPathDoesntExist
+                               userInfo:nil];
+    }
     ELLE_ERR("%s: unable to accept transaction, invalid download path",
              self.description.UTF8String);
-    return;
+    return NO;
   }
   NSDictionary* meta_data = @{@"sender": transaction.sender.meta_id,
                               @"sender_device": transaction.sender_device_id,
@@ -156,11 +173,19 @@ static InfinitPeerTransactionManager* _instance = nil;
   NSString* meta_file = [path stringByAppendingPathComponent:@".meta"];
   if (![meta_data writeToFile:meta_file atomically:YES])
   {
+    if (error != NULL)
+    {
+      *error = [NSError errorWithDomain:INFINIT_FILE_SYSTEM_ERROR_DOMAIN
+                                   code:InfinitFileSystemErrorUnableToWrite 
+                               userInfo:nil];
+    }
     ELLE_ERR("%s: unable to write transaction sender data: %s",
              self.description.UTF8String, transaction.sender.meta_id.UTF8String);
+    return NO;
   }
   [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_
                                             toRelativeDirectory:transaction.meta_id];
+  return YES;
 }
 
 - (void)rejectTransaction:(InfinitPeerTransaction*)transaction
