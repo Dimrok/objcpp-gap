@@ -198,7 +198,7 @@ avatarToDiskCache:(UIImage*)avatar
                                   alpha:1.0f];
   CGFloat scale = [[UIScreen mainScreen] scale];
   CGRect rect = CGRectMake(0.0f, 0.0f, 120.0f * scale, 120.0f * scale);
-  UIImage* res = [[UIImage alloc] init];
+  UIImage* res = nil;
   UIGraphicsBeginImageContext(rect.size);
   CGContextRef context = UIGraphicsGetCurrentContext();
   [fill setFill];
