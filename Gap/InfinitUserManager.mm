@@ -91,9 +91,7 @@ static InfinitUserManager* _instance = nil;
 - (InfinitUser*)me
 {
   if (_me == nil)
-  {
     _me = [self userWithId:[[InfinitStateManager sharedInstance] self_id]];
-  }
   return _me;
 }
 
