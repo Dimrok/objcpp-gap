@@ -123,7 +123,7 @@ performSelector:(SEL)selector
 - (void)rejectTransactionWithId:(NSNumber*)id_;
 
 #pragma mark - Connection Status
-- (void)setNetworkConnectionStatus:(InfinitNetworkStatus)status;
+- (void)setNetworkConnectionStatus:(InfinitNetworkStatuses)status;
 
 #pragma mark - Features
 - (NSDictionary*)features;

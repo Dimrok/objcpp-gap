@@ -200,8 +200,12 @@ static NSString* _self_device_id = nil;
                           email.UTF8String,
                           password.UTF8String);
      }
+     [manager _clearSelf];
      if (res == gap_ok)
      {
+       [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
+                                                         stillTrying:NO
+                                                           lastError:@""];
        manager.logged_in = YES;
        [weak_self setCurrent_user:email];
        [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
@@ -236,14 +240,20 @@ performSelector:(SEL)selector
      {
        res = gap_login(manager.stateWrapper.state, email.UTF8String, password.UTF8String);
      }
+     [manager _clearSelf];
      if (res == gap_ok)
      {
+       [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
+                                                         stillTrying:NO
+                                                           lastError:@""];
        manager.logged_in = YES;
        [weak_self setCurrent_user:email];
        [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
      }
      else
+     {
        [manager _stopPolling];
+     }
      return res;
    } performSelector:selector onObject:object];
 }
@@ -567,11 +577,14 @@ performSelector:(SEL)selector
 
 #pragma mark - Connection Status
 
-- (void)setNetworkConnectionStatus:(InfinitNetworkStatus)status
+- (void)setNetworkConnectionStatus:(InfinitNetworkStatuses)status
 {
   bool connected = false;
-  if (status == ReachableViaLAN || status == ReachableViaWWAN)
+  if (status == InfinitNetworkStatusReachableViaLAN ||
+      status == InfinitNetworkStatusReachableViaWWAN)
+  {
     connected = true;
+  }
   gap_internet_connection(self.stateWrapper.state, connected);
 }
 
