@@ -38,6 +38,8 @@
 		839EDA6D1A92645B0005C92A /* InfinitFileSystemErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 839EDA6C1A9262970005C92A /* InfinitFileSystemErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83E0AC221A6A61CD003F60C6 /* InfinitTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 83E0AC201A6A61CD003F60C6 /* InfinitTransaction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83E0AC231A6A61CD003F60C6 /* InfinitTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 83E0AC211A6A61CD003F60C6 /* InfinitTransaction.m */; };
+		83EBB08C1A93B6E400144BC6 /* InfinitConnectionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = 83EBB08A1A93B6E400144BC6 /* InfinitConnectionStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83EBB08D1A93B6E400144BC6 /* InfinitConnectionStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 83EBB08B1A93B6E400144BC6 /* InfinitConnectionStatus.m */; };
 		83F35D0D1A1CF08F00DF7F35 /* InfinitFeaturesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F35D0B1A1CF08F00DF7F35 /* InfinitFeaturesManager.h */; };
 		83F35D0E1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83F35D0C1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm */; };
 		83F35D3A1A1D03C300DF7F35 /* InfinitAvatarManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83FE9C911A1636FF00FC1CFD /* InfinitAvatarManager.mm */; };
@@ -227,6 +229,8 @@
 		839EDA6C1A9262970005C92A /* InfinitFileSystemErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfinitFileSystemErrors.h; sourceTree = "<group>"; };
 		83E0AC201A6A61CD003F60C6 /* InfinitTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitTransaction.h; sourceTree = "<group>"; };
 		83E0AC211A6A61CD003F60C6 /* InfinitTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitTransaction.m; sourceTree = "<group>"; };
+		83EBB08A1A93B6E400144BC6 /* InfinitConnectionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitConnectionStatus.h; sourceTree = "<group>"; };
+		83EBB08B1A93B6E400144BC6 /* InfinitConnectionStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitConnectionStatus.m; sourceTree = "<group>"; };
 		83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CrashReporter.xcodeproj; path = ../plcrashreporter/CrashReporter.xcodeproj; sourceTree = "<group>"; };
 		83F35D0B1A1CF08F00DF7F35 /* InfinitFeaturesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitFeaturesManager.h; sourceTree = "<group>"; };
 		83F35D0C1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitFeaturesManager.mm; sourceTree = "<group>"; };
@@ -398,6 +402,8 @@
 		836F5C7C1A165AD2007C9C4E /* Connection */ = {
 			isa = PBXGroup;
 			children = (
+				83EBB08A1A93B6E400144BC6 /* InfinitConnectionStatus.h */,
+				83EBB08B1A93B6E400144BC6 /* InfinitConnectionStatus.m */,
 				836F5C7D1A165AE5007C9C4E /* InfinitConnectionManager.h */,
 				836F5C7E1A165AE5007C9C4E /* InfinitConnectionManager.mm */,
 				836F5C811A165B48007C9C4E /* InfinitReachability.h */,
@@ -538,6 +544,7 @@
 				83FE9C921A1636FF00FC1CFD /* InfinitAvatarManager.h in Headers */,
 				830AD1E31A6A943D00E2B058 /* InfinitDataSize.h in Headers */,
 				83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */,
+				83EBB08C1A93B6E400144BC6 /* InfinitConnectionStatus.h in Headers */,
 				836D398A1A690E2A00892206 /* InfinitCrashReporter.h in Headers */,
 				83157EEF1A73D84800F8E87F /* InfinitDirectoryManager.h in Headers */,
 				839EDA6D1A92645B0005C92A /* InfinitFileSystemErrors.h in Headers */,
@@ -772,6 +779,7 @@
 				83568DB11A136E1000766DA3 /* InfinitStateResult.m in Sources */,
 				83568DAB1A136DFF00766DA3 /* InfinitPeerTransactionManager.mm in Sources */,
 				830AD1E41A6A943D00E2B058 /* InfinitDataSize.m in Sources */,
+				83EBB08D1A93B6E400144BC6 /* InfinitConnectionStatus.m in Sources */,
 				836D39A61A694E5500892206 /* InfinitLogManager.mm in Sources */,
 				8396106D1A2479A40044B874 /* InfinitTemporaryFileManager.mm in Sources */,
 				83F35D0E1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm in Sources */,
