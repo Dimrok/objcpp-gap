@@ -8,9 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "InfinitConnectionStatus.h"
+
 /** Notification sent when connection to the notification server's state changes.
- Contains a dictionary with the current "status", if the backend is "still_trying" to reconnect
- automatically, and the "last_error" message.
+ Contains a connection status object.
  */
 #define INFINIT_CONNECTION_STATUS_CHANGE @"INFINIT_CONNECTION_STATUS_CHANGE"
 
@@ -20,19 +21,20 @@
  */
 #define INFINIT_CONNECTION_TYPE_CHANGE   @"INFINIT_CONNECTION_TYPE_CHANGE"
 
-typedef enum : NSInteger
+typedef NS_ENUM(NSUInteger, InfinitNetworkStatuses)
 {
-  NotReachable = 0,
-  ReachableViaLAN,
+  InfinitNetworkStatusNotReachable = 0,
+  InfinitNetworkStatusReachableViaLAN,
 #if TARGET_OS_IPHONE
-  ReachableViaWWAN,
+  InfinitNetworkStatusReachableViaWWAN,
 #endif
-} InfinitNetworkStatus;
+};
 
 @interface InfinitConnectionManager : NSObject
 
-@property (nonatomic, readonly) InfinitNetworkStatus network_status;
 @property (nonatomic, readonly) BOOL connected;
+@property (nonatomic, readonly) InfinitNetworkStatuses network_status;
+@property (nonatomic, readonly) BOOL was_logged_in;
 
 + (instancetype)sharedInstance;
 

@@ -31,6 +31,10 @@ static InfinitConnectionManager* _instance = nil;
                                              selector:@selector(reachabilityChanged:)
                                                  name:kReachabilityChangedNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(clearModel)
+                                                 name:INFINIT_CLEAR_MODEL_NOTIFICATION
+                                               object:nil];
     _reachability = [InfinitReachability reachabilityForInternetConnection];
     _network_status = [self networkStatusFromApple:[_reachability currentReachabilityStatus]];
     [_reachability startNotifier];
@@ -52,40 +56,45 @@ static InfinitConnectionManager* _instance = nil;
   return _instance;
 }
 
+- (void)clearModel
+{
+  _was_logged_in = NO;
+}
+
 #pragma mark - Reachability
 
-- (NSString*)statusString:(InfinitNetworkStatus)status
+- (NSString*)statusString:(InfinitNetworkStatuses)status
 {
   switch (status)
   {
-    case NotReachable:
+    case InfinitNetworkStatusNotReachable:
       return @"NotReachable";
-    case ReachableViaLAN:
+    case InfinitNetworkStatusReachableViaLAN:
       return @"ReachableViaLAN";
-    case ReachableViaWWAN:
+    case InfinitNetworkStatusReachableViaWWAN:
       return @"ReachableViaWWAN";
     default:
       return @"Unknown";
   }
 }
 
-- (InfinitNetworkStatus)networkStatusFromApple:(__NetworkStatus)status
+- (InfinitNetworkStatuses)networkStatusFromApple:(__NetworkStatus)status
 {
   switch (status)
   {
     case __NotReachable:
-      return NotReachable;
+      return InfinitNetworkStatusNotReachable;
     case __ReachableViaWiFi:
-      return ReachableViaLAN;
+      return InfinitNetworkStatusReachableViaLAN;
     case __ReachableViaWWAN:
-      return ReachableViaWWAN;
+      return InfinitNetworkStatusReachableViaWWAN;
 
     default:
-      return NotReachable;
+      return InfinitNetworkStatusNotReachable;
   }
 }
 
-- (void)setNetworkStatus:(InfinitNetworkStatus)status
+- (void)setNetworkStatus:(InfinitNetworkStatuses)status
 {
   if (_network_status != status)
   {
@@ -105,19 +114,22 @@ static InfinitConnectionManager* _instance = nil;
 }
 
 #pragma mark - State Manager Callback
+
 - (void)setConnectedStatus:(BOOL)status
                stillTrying:(BOOL)trying
                  lastError:(NSString*)error
 {
-  if (_connected != status)
+  if (!self.was_logged_in && status)
+    _was_logged_in = YES;
+  if (self.connected != status || trying)
   {
     _connected = status;
-    NSDictionary* user_info = @{@"status": [NSNumber numberWithBool:status],
-                                @"still_trying": [NSNumber numberWithBool:trying],
-                                @"last_error": error};
+    InfinitConnectionStatus* res = [InfinitConnectionStatus connectionStatus:status
+                                                                 stillTrying:trying
+                                                                   lastError:error];
     [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_CONNECTION_STATUS_CHANGE
-                                                        object:self
-                                                      userInfo:user_info];
+                                                        object:res
+                                                      userInfo:nil];
   }
 }
 
