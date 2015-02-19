@@ -192,4 +192,10 @@ performSelector:(SEL)selector
        performSelector:(SEL)selector
               onObject:(id)object;
 
+#pragma mark - Metrics Reporting
+
+- (void)sendMetricEvent:(NSString*)event
+             withMethod:(NSString*)method
+      andAdditionalData:(NSDictionary*)additional;
+
 @end

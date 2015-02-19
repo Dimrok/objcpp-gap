@@ -856,6 +856,31 @@ performSelector:(SEL)selector
    } performSelector:selector onObject:object];
 }
 
+#pragma mark - Metrics Reporting
+
+- (void)sendMetricEvent:(NSString*)event
+             withMethod:(NSString*)method
+      andAdditionalData:(NSDictionary*)additional
+{
+  __weak InfinitStateManager* weak_self = self;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    if (additional)
+    {
+      return gap_send_generic_metric(manager.stateWrapper.state,
+                                     event.UTF8String,
+                                     method.UTF8String,
+                                     [weak_self _stringDictionaryToMap:additional]);
+    }
+    else
+    {
+      return gap_send_generic_metric(manager.stateWrapper.state,
+                                     event.UTF8String,
+                                     method.UTF8String);
+    }
+  }];
+}
+
 #pragma mark - Conversions
 
 - (std::vector<std::string>)_filesVectorFromNSArray:(NSArray*)array
@@ -876,6 +901,24 @@ performSelector:(SEL)selector
 - (NSNumber*)_numFromUint:(uint32_t)id_
 {
   return [NSNumber numberWithUnsignedInt:id_];
+}
+
+- (std::unordered_map<std::string, std::string>)_stringDictionaryToMap:(NSDictionary*)dictionary
+{
+  std::unordered_map<std::string, std::string> res;
+  for (NSString* key_ in dictionary.allKeys)
+  {
+    std::string key(key_.UTF8String);
+    std::string value;
+    if ([dictionary[key_] isKindOfClass:NSString.class])
+      value = [dictionary[key_] UTF8String];
+    else if ([dictionary[key_] isKindOfClass:NSNumber.class])
+      value = [[dictionary[key_] stringValue] UTF8String];
+    else
+      value = "unknown";
+    res[key] = value;
+  }
+  return res;
 }
 
 - (InfinitLinkTransaction*)_convertLinkTransaction:(surface::gap::LinkTransaction const&)transaction
