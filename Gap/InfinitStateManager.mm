@@ -955,6 +955,7 @@ performSelector:(SEL)selector
                                         sender:[self _numFromUint:transaction.sender_id]
                                  sender_device:[self _nsString:transaction.sender_device_id]
                                      recipient:[self _numFromUint:transaction.recipient_id]
+                              recipient_device:[self _nsString:transaction.recipient_device_id]
                                          files:files
                                          mtime:transaction.mtime
                                        message:[self _nsString:transaction.message]
