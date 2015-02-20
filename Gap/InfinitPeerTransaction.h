@@ -19,9 +19,11 @@
 @property (nonatomic, readonly) BOOL directory;
 @property (nonatomic, readonly) NSArray* files;
 @property (nonatomic, readonly) InfinitUser* recipient;
+@property (nonatomic, readonly) NSString* recipient_device;
 @property (nonatomic, readonly) BOOL receivable;
 @property (nonatomic, readonly) InfinitUser* other_user;
 @property (nonatomic, readonly) InfinitUser* sender;
+@property (nonatomic, readonly) BOOL to_device;
 
 - (id)initWithId:(NSNumber*)id_
          meta_id:(NSString*)meta_id
@@ -29,6 +31,7 @@
           sender:(NSNumber*)sender_id
    sender_device:(NSString*)sender_device_id
        recipient:(NSNumber*)recipient_id
+recipient_device:(NSString*)recipient_device_id
            files:(NSArray*)files
            mtime:(NSTimeInterval)mtime
          message:(NSString*)message

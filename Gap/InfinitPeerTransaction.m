@@ -26,6 +26,7 @@
           sender:(NSNumber*)sender_id
    sender_device:(NSString*)sender_device_id
        recipient:(NSNumber*)recipient_id
+recipient_device:(NSString*)recipient_device_id
            files:(NSArray*)files
            mtime:(NSTimeInterval)mtime
          message:(NSString*)message
@@ -42,6 +43,7 @@
   {
     _sender_id = sender_id;
     _recipient_id = recipient_id;
+    _recipient_device = recipient_device_id;
     _files = files;
     _directory = directory;
   }
@@ -54,6 +56,7 @@
 {
   [super updateWithTransaction:transaction];
   _recipient_id = transaction.recipient.id_;
+  _recipient_device = transaction.recipient_device;
 }
 
 #pragma mark - Public
@@ -88,6 +91,14 @@
   {
     return NO;
   }
+}
+
+- (BOOL)to_device
+{
+  NSString* self_device_id = [InfinitStateManager sharedInstance].self_device_id;
+  if ([self.recipient_device isEqualToString:self_device_id])
+    return YES;
+  return NO;
 }
 
 #pragma mark - Description
