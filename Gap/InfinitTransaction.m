@@ -68,7 +68,7 @@ sender_device_id:(NSString*)sender_device_id
 
 - (BOOL)from_device
 {
-  NSString* self_device_id = [[InfinitStateManager sharedInstance] self_device_id];
+  NSString* self_device_id = [InfinitStateManager sharedInstance].self_device_id;
   if ([self.sender_device_id isEqualToString:self_device_id])
     return YES;
   return NO;
