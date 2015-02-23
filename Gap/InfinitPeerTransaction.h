@@ -16,6 +16,7 @@
 
 @interface InfinitPeerTransaction : InfinitTransaction
 
+@property (nonatomic, readonly) InfinitUser* canceler;
 @property (nonatomic, readonly) BOOL directory;
 @property (nonatomic, readonly) NSArray* files;
 @property (nonatomic, readonly) InfinitUser* recipient;
@@ -36,7 +37,8 @@ recipient_device:(NSString*)recipient_device_id
            mtime:(NSTimeInterval)mtime
          message:(NSString*)message
             size:(NSNumber*)size
-       directory:(BOOL)directory;
+       directory:(BOOL)directory
+        canceler:(NSString*)canceler_meta_id;
 
 - (void)updateWithTransaction:(InfinitPeerTransaction*)transaction;
 

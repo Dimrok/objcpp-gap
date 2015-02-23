@@ -14,6 +14,7 @@
 @implementation InfinitPeerTransaction
 {
 @private
+  NSNumber* _canceler_id;
   NSNumber* _sender_id;
   NSNumber* _recipient_id;
 }
@@ -32,6 +33,7 @@ recipient_device:(NSString*)recipient_device_id
          message:(NSString*)message
             size:(NSNumber*)size
        directory:(BOOL)directory
+        canceler:(NSString*)canceler_meta_id
 {
   if (self = [super initWithId:id_
                        meta_id:meta_id
@@ -46,8 +48,16 @@ recipient_device:(NSString*)recipient_device_id
     _recipient_device = recipient_device_id;
     _files = files;
     _directory = directory;
+    _canceler_id = nil;
+    if (status == gap_transaction_canceled)
+      _canceler_id = [[InfinitUserManager sharedInstance] localUserWithMetaId:canceler_meta_id].id_;
   }
   return self;
+}
+
+- (void)cancelerFromMetaIdCallback:(InfinitUser*)canceler
+{
+  _canceler_id = canceler.id_;
 }
 
 #pragma mark - Update Transaction
@@ -57,9 +67,18 @@ recipient_device:(NSString*)recipient_device_id
   [super updateWithTransaction:transaction];
   _recipient_id = transaction.recipient.id_;
   _recipient_device = transaction.recipient_device;
+  if (transaction.status == gap_transaction_canceled)
+    _canceler_id = transaction.canceler.id_;
 }
 
 #pragma mark - Public
+
+- (InfinitUser*)canceler
+{
+  if (_canceler_id == nil)
+    return nil;
+  return [[InfinitUserManager sharedInstance] userWithId:_canceler_id];
+}
 
 - (InfinitUser*)other_user
 {
