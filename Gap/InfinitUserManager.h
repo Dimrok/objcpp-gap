@@ -84,6 +84,13 @@
        performSelector:(SEL)selector
               onObject:(id)object;
 
+/** User locally in model with corresponding Meta ID.
+ @param meta_id
+  User's Meta ID.
+ @return The corresponding user or nil.
+ */
+- (InfinitUser*)localUserWithMetaId:(NSString*)meta_id;
+
 /** Asynchronously fetch user with corresponding handle.
  When the result has been fetched, the selector of the object is called with a user object or nil
  if none was found.

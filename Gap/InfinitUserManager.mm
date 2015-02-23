@@ -417,6 +417,16 @@ static InfinitUserManager* _instance = nil;
                                             withData:dict];
 }
 
+- (InfinitUser*)localUserWithMetaId:(NSString*)meta_id
+{
+  for (InfinitUser* user in _user_map.allValues)
+  {
+    if ([user.meta_id isEqualToString:meta_id])
+      return user;
+  }
+  return nil;
+}
+
 - (void)userWithMetaIdCallback:(InfinitStateResult*)result
 {
   NSDictionary* dict = result.data;
