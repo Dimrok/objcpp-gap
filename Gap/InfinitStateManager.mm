@@ -960,7 +960,8 @@ performSelector:(SEL)selector
                                          mtime:transaction.mtime
                                        message:[self _nsString:transaction.message]
                                           size:size
-                                     directory:transaction.is_directory];
+                                     directory:transaction.is_directory
+                                      canceler:[self _nsString:transaction.canceler.user_id]];
   return res;
 }
 
