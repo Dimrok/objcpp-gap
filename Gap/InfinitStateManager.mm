@@ -314,7 +314,7 @@ performSelector:(SEL)selector
 
 - (InfinitUser*)userById:(NSNumber*)id_
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   surface::gap::User res;
   gap_Status status = gap_user_by_id(self.stateWrapper.state, id_.unsignedIntValue, res);
@@ -325,7 +325,7 @@ performSelector:(SEL)selector
 
 - (NSArray*)swaggers
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   std::vector<surface::gap::User> res_;
   gap_Status status = gap_swaggers(self.stateWrapper.state, res_);
@@ -339,7 +339,7 @@ performSelector:(SEL)selector
 
 - (NSArray*)favorites
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   std::vector<uint32_t> res_;
   gap_Status status = gap_favorites(self.stateWrapper.state, res_);
@@ -353,11 +353,11 @@ performSelector:(SEL)selector
 
 - (void)addFavorite:(InfinitUser*)user
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
-     if (!manager._loggedIn)
+     if (!manager.logged_in)
        return gap_not_logged_in;
      return gap_favorite(manager.stateWrapper.state, user.id_.unsignedIntValue);
    }];
@@ -365,11 +365,11 @@ performSelector:(SEL)selector
 
 - (void)removeFavorite:(InfinitUser*)user
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
-     if (!manager._loggedIn)
+     if (!manager.logged_in)
        return gap_not_logged_in;
      return gap_unfavorite(manager.stateWrapper.state, user.id_.unsignedIntValue);
    }];
@@ -377,7 +377,7 @@ performSelector:(SEL)selector
 
 - (NSNumber*)self_id
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   if (_self_id == nil)
     _self_id = [self _numFromUint:gap_self_id(self.stateWrapper.state)];
@@ -397,7 +397,7 @@ performSelector:(SEL)selector
 - (NSImage*)avatarForUserWithId:(NSNumber*)id_
 #endif
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   void* gap_data;
   size_t size;
@@ -424,28 +424,28 @@ performSelector:(SEL)selector
 
 - (void)pauseTransactionWithId:(NSNumber*)id_
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return;
   gap_pause_transaction(self.stateWrapper.state, id_.unsignedIntValue);
 }
 
 - (void)resumeTransactionWithId:(NSNumber*)id_
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return;
   gap_resume_transaction(self.stateWrapper.state, id_.unsignedIntValue);
 }
 
 - (void)cancelTransactionWithId:(NSNumber*)id_
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return;
   gap_cancel_transaction(self.stateWrapper.state, id_.unsignedIntValue);
 }
 
 - (float)transactionProgressForId:(NSNumber*)id_
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return 0.0f;
   return gap_transaction_progress(self.stateWrapper.state, id_.unsignedIntValue);
 }
@@ -454,7 +454,7 @@ performSelector:(SEL)selector
 
 - (InfinitLinkTransaction*)linkTransactionById:(NSNumber*)id_
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   surface::gap::LinkTransaction res;
   gap_Status status = gap_link_transaction_by_id(self.stateWrapper.state, id_.unsignedIntValue, res);
@@ -465,7 +465,7 @@ performSelector:(SEL)selector
 
 - (NSArray*)linkTransactions
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   std::vector<surface::gap::LinkTransaction> res_;
   gap_Status status = gap_link_transactions(self.stateWrapper.state, res_);
@@ -482,7 +482,7 @@ performSelector:(SEL)selector
 - (NSNumber*)createLinkWithFiles:(NSArray*)files
                      withMessage:(NSString*)message
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   uint32_t res = gap_create_link_transaction(self.stateWrapper.state,
                                              [self _filesVectorFromNSArray:files],
@@ -492,7 +492,7 @@ performSelector:(SEL)selector
 
 - (void)deleteTransactionWithId:(NSNumber*)id_
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return;
   gap_delete_transaction(self.stateWrapper.state, id_.unsignedIntValue);
 }
@@ -501,7 +501,7 @@ performSelector:(SEL)selector
 
 - (InfinitPeerTransaction*)peerTransactionById:(NSNumber*)id_
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   surface::gap::PeerTransaction res;
   gap_Status status = gap_peer_transaction_by_id(self.stateWrapper.state, id_.unsignedIntValue, res);
@@ -512,7 +512,7 @@ performSelector:(SEL)selector
 
 - (NSArray*)peerTransactions
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   std::vector<surface::gap::PeerTransaction> res_;
   gap_Status status = gap_peer_transactions(self.stateWrapper.state, res_);
@@ -530,7 +530,7 @@ performSelector:(SEL)selector
            toRecipient:(id)recipient
            withMessage:(NSString*)message
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   uint32_t res = 0;
   if ([recipient isKindOfClass:InfinitUser.class])
@@ -555,7 +555,7 @@ performSelector:(SEL)selector
 - (void)acceptTransactionWithId:(NSNumber*)id_
             toRelativeDirectory:(NSString*)directory
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return;
   if (directory != nil && directory.length > 0)
   {
@@ -570,7 +570,7 @@ performSelector:(SEL)selector
 
 - (void)rejectTransactionWithId:(NSNumber*)id_
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return;
   gap_reject_transaction(self.stateWrapper.state, id_.unsignedIntValue);
 }
@@ -604,14 +604,6 @@ performSelector:(SEL)selector
 
 #pragma mark - Self
 
-- (BOOL)_loggedIn
-{
-  BOOL res = gap_logged_in(self.stateWrapper.state);
-  if (self.logged_in != res)
-    self.logged_in = res;
-  return res;
-}
-
 - (NSString*)selfFullname
 {
   auto fullname = gap_self_fullname(self.stateWrapper.state);
@@ -624,7 +616,7 @@ performSelector:(SEL)selector
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
-     if (!manager._loggedIn)
+     if (!manager.logged_in)
        return gap_not_logged_in;
      return gap_set_self_fullname(manager.stateWrapper.state, fullname.UTF8String);
    } performSelector:selector onObject:object];
@@ -632,7 +624,7 @@ performSelector:(SEL)selector
 
 - (NSString*)selfHandle
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   auto handle = gap_self_handle(self.stateWrapper.state);
   return [self _nsString:handle];
@@ -644,7 +636,7 @@ performSelector:(SEL)selector
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
-     if (!manager._loggedIn)
+     if (!manager.logged_in)
        return gap_not_logged_in;
      return gap_set_self_handle(manager.stateWrapper.state, handle.UTF8String);
    } performSelector:selector onObject:object];
@@ -652,7 +644,7 @@ performSelector:(SEL)selector
 
 - (NSString*)selfEmail
 {
-  if (!self._loggedIn)
+  if (!self.logged_in)
     return nil;
   auto email = gap_self_email(self.stateWrapper.state);
   return [self _nsString:email];
@@ -665,7 +657,7 @@ performSelector:(SEL)selector
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
-     if (!manager._loggedIn)
+     if (!manager.logged_in)
        return gap_not_logged_in;
      return gap_set_self_email(manager.stateWrapper.state, email.UTF8String, password.UTF8String);
    } performSelector:selector onObject:object];
@@ -678,7 +670,7 @@ performSelector:(SEL)selector
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
-     if (!manager._loggedIn)
+     if (!manager.logged_in)
        return gap_not_logged_in;
      return gap_change_password(manager.stateWrapper.state,
                                 old_password.UTF8String,
@@ -696,7 +688,7 @@ performSelector:(SEL)selector
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
-     if (!manager._loggedIn)
+     if (!manager.logged_in)
        return gap_not_logged_in;
 #if TARGET_OS_IPHONE
      NSData* image_data = UIImageJPEGRepresentation(image, 0.9f);
@@ -720,7 +712,7 @@ performSelector:(SEL)selector
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
-    if (!manager._loggedIn)
+    if (!manager.logged_in)
       return gap_not_logged_in;
     surface::gap::User res;
     gap_Status status = gap_user_by_meta_id(manager.stateWrapper.state, meta_id.UTF8String, res);
@@ -741,7 +733,7 @@ performSelector:(SEL)selector
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
-     if (!manager._loggedIn)
+     if (!manager.logged_in)
        return gap_not_logged_in;
      surface::gap::User res;
      gap_Status status = gap_user_by_handle(manager.stateWrapper.state, handle.UTF8String, res);
@@ -1069,6 +1061,8 @@ on_connection_callback(bool status, bool still_retrying, std::string const& last
   NSString* error = @"";
   if (!last_error.empty())
     error = [NSString stringWithUTF8String:last_error.c_str()];
+  if (!status && !still_retrying)
+    [InfinitStateManager sharedInstance].logged_in = NO;
   [[InfinitConnectionManager sharedInstance] setConnectedStatus:status
                                                     stillTrying:still_retrying
                                                       lastError:error];
