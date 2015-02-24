@@ -20,10 +20,17 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.PeerTransactionManager");
 
 static InfinitPeerTransactionManager* _instance = nil;
 
+@interface InfinitPeerTransactionManager ()
+
+@property (atomic, readonly) NSMutableArray* archived_transaction_ids;
+
+@end
+
 @implementation InfinitPeerTransactionManager
 {
 @private
   NSMutableDictionary* _transaction_map;
+  NSString* _archived_transactions_file;
 }
 
 #pragma mark - Init
@@ -37,6 +44,9 @@ static InfinitPeerTransactionManager* _instance = nil;
                                              selector:@selector(clearModel:)
                                                  name:INFINIT_CLEAR_MODEL_NOTIFICATION
                                                object:nil];
+    NSString* dir = [InfinitDirectoryManager sharedInstance].persistent_directory;
+    _archived_transactions_file = [dir stringByAppendingPathComponent:@"archived_transactions"];
+    [self _fetchArchivedTransactions];
     [self _fillTransactionMap];
   }
   return self;
@@ -59,12 +69,32 @@ static InfinitPeerTransactionManager* _instance = nil;
   return _instance;
 }
 
+- (void)_fetchArchivedTransactions
+{
+  if ([[NSFileManager defaultManager] fileExistsAtPath:_archived_transactions_file isDirectory:NULL])
+  {
+    _archived_transaction_ids = [NSMutableArray arrayWithContentsOfFile:_archived_transactions_file];
+    if (self.archived_transaction_ids == nil)
+    {
+      ELLE_ERR("%s: unable to read archived transactions file, removing",
+               self.description.UTF8String);
+      [[NSFileManager defaultManager] removeItemAtPath:_archived_transactions_file error:nil];
+    }
+  }
+  if (self.archived_transaction_ids == nil)
+    _archived_transaction_ids = [NSMutableArray array];
+}
+
 - (void)_fillTransactionMap
 {
   _transaction_map = [NSMutableDictionary dictionary];
   NSArray* transactions = [[InfinitStateManager sharedInstance] peerTransactions];
   for (InfinitPeerTransaction* transaction in transactions)
+  {
+    if ([self.archived_transaction_ids containsObject:transaction.meta_id])
+      transaction.archived = YES;
     [_transaction_map setObject:transaction forKey:transaction.id_];
+  }
 }
 
 #pragma mark - Access Transactions
@@ -92,6 +122,24 @@ static InfinitPeerTransactionManager* _instance = nil;
     if (res == nil)
     {
       res = [[InfinitStateManager sharedInstance] peerTransactionById:id_];
+    }
+    return res;
+  }
+}
+
+- (NSArray*)transactionsIncludingArchived:(BOOL)archived
+{
+  if (archived)
+  {
+    return self.transactions;
+  }
+  else
+  {
+    NSMutableArray* res = [NSMutableArray array];
+    for (InfinitPeerTransaction* transaction in self.transactions)
+    {
+      if (![self.archived_transaction_ids containsObject:transaction.meta_id])
+        [res addObject:transaction];
     }
     return res;
   }
@@ -206,6 +254,23 @@ static InfinitPeerTransactionManager* _instance = nil;
 - (void)cancelTransaction:(InfinitPeerTransaction*)transaction
 {
   [[InfinitStateManager sharedInstance] cancelTransactionWithId:transaction.id_];
+}
+
+- (void)archiveTransaction:(InfinitPeerTransaction*)transaction
+{
+  if (!transaction.done)
+    return;
+  transaction.archived = YES;
+  if (transaction.meta_id.length == 0)
+    return;
+  if (self.archived_transaction_ids == nil)
+    _archived_transaction_ids = [NSMutableArray array];
+
+  [self.archived_transaction_ids addObject:transaction.meta_id];
+  if (![self.archived_transaction_ids writeToFile:_archived_transactions_file atomically:YES])
+  {
+    ELLE_ERR("%s: unable to write archived transactions to disk", self.description.UTF8String);
+  }
 }
 
 #pragma mark - Transaction Updated

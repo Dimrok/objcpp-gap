@@ -30,6 +30,13 @@
 
 + (instancetype)sharedInstance;
 
+/** List of reverse time ordered transactions.
+ @param archived
+  Include or exclude archived transactions.
+ @return Array of InfinitPeerTransaction objects.
+ */
+- (NSArray*)transactionsIncludingArchived:(BOOL)archived;
+
 /** Peer Transaction corresponding to ID.
  @param id_
   InfinitPeerTransaction ID.
@@ -84,6 +91,12 @@
   Transaction to cancel.
  */
 - (void)cancelTransaction:(InfinitPeerTransaction*)transaction;
+
+/** Archive a Transaction.
+ @param transaction
+  Transaction to archive. Archiving is currently only locally effected.
+ */
+- (void)archiveTransaction:(InfinitPeerTransaction*)transaction;
 
 #pragma mark - State Manager Callback
 - (void)transactionUpdated:(InfinitPeerTransaction*)transaction;
