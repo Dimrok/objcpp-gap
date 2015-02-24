@@ -12,6 +12,7 @@
 
 @interface InfinitTransaction : NSObject
 
+@property (nonatomic, readwrite) BOOL archived;
 @property (nonatomic, readonly) BOOL done;
 @property (nonatomic, readonly) BOOL from_device;
 @property (nonatomic, readonly) NSNumber* id_;
