@@ -882,9 +882,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					../../elle/elle/src,
-					../../fist/src,
-					../../_build/ios,
 					../../../_build/ios/fist/src,
 					../../../_build/ios/elle/boost/include,
 					../../../_build/ios/oracles/src,
@@ -935,9 +932,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					../../elle/elle/src,
-					../../fist/src,
-					../../_build/ios,
 					../../../_build/ios/fist/src,
 					../../../_build/ios/elle/boost/include,
 					../../../_build/ios/oracles/src,
