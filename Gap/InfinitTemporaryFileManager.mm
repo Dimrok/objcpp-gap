@@ -536,7 +536,8 @@ static InfinitTemporaryFileManager* _instance = nil;
   {
     dispatch_semaphore_t copy_sema = dispatch_semaphore_create(0);
     PHVideoRequestOptions* options = [[PHVideoRequestOptions alloc] init];
-    options.networkAccessAllowed = NO;
+    options.networkAccessAllowed = YES;
+    options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
     [[PHImageManager defaultManager] requestAVAssetForVideo:asset
                                                     options:options
                                               resultHandler:^(AVAsset* asset,
@@ -555,7 +556,8 @@ static InfinitTemporaryFileManager* _instance = nil;
   else if (asset.mediaType == PHAssetMediaTypeImage)
   {
     PHImageRequestOptions* options = [[PHImageRequestOptions alloc] init];
-    options.networkAccessAllowed = NO;
+    options.networkAccessAllowed = YES;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     options.synchronous = YES;
     [[PHImageManager defaultManager] requestImageDataForAsset:asset
                                                       options:options
