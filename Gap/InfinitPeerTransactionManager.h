@@ -44,6 +44,14 @@
  */
 - (InfinitPeerTransaction*)transactionWithId:(NSNumber*)id_;
 
+/** Cached Peer Transaction with corresponding Meta ID.
+ This will only return a transaction if it is in the local model.
+ @param meta_id
+  Meta ID of transaction.
+ @return Peer Transaction
+ */
+- (InfinitPeerTransaction*)transactionWithMetaId:(NSString*)meta_id;
+
 #pragma mark - User Interaction
 /** Send files to a list of recipients.
  @param files 

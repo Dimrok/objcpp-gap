@@ -127,6 +127,19 @@ static InfinitPeerTransactionManager* _instance = nil;
   }
 }
 
+- (InfinitPeerTransaction*)transactionWithMetaId:(NSString*)meta_id
+{
+  @synchronized(_transaction_map)
+  {
+    for (InfinitPeerTransaction* transaction in _transaction_map.allValues)
+    {
+      if ([transaction.meta_id isEqualToString:meta_id])
+        return transaction;
+    }
+  }
+  return nil;
+}
+
 - (NSArray*)transactionsIncludingArchived:(BOOL)archived
 {
   if (archived)
