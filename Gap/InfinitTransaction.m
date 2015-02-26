@@ -102,6 +102,7 @@ sender_device_id:(NSString*)sender_device_id
   _status = transaction.status;
   _meta_id = transaction.meta_id;
   _mtime = transaction.mtime;
+  _size = transaction.size;
 }
 
 - (void)updateTimeRemainingWithCurrentProgress:(CGFloat)current_progress
