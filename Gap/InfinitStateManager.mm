@@ -836,15 +836,13 @@ performSelector:(SEL)selector
      std::string username = "unknown";
      if (weak_self.current_user != nil && weak_self.current_user.length > 0)
        username = weak_self.current_user.UTF8String;
-     InfinitDirectoryManager* d_manager = [InfinitDirectoryManager sharedInstance];
-     std::vector<std::string> infinit_files = {
-       d_manager.non_persistent_directory.UTF8String,
-       d_manager.persistent_directory.UTF8String};
+     std::vector<std::string> files = {};
+     if (file.length > 0)
+       files.push_back(file.UTF8String);
      return gap_send_user_report(manager.stateWrapper.state,
                                  username,
                                  problem.UTF8String,
-                                 file.UTF8String,
-                                 infinit_files);
+                                 files);
    } performSelector:selector onObject:object];
 }
 
