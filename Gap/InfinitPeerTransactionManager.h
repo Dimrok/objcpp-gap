@@ -23,6 +23,8 @@
 
 @interface InfinitPeerTransactionManager : NSObject
 
+/// Returns list of Meta IDs for archived transactions.
+@property (readonly) NSArray* archived_transaction_meta_ids;
 /// Boolean for when transactions are running.
 @property (readonly) BOOL running_transactions;
 /// Returns a reverse time ordered list of transactions.
@@ -33,9 +35,12 @@
 /** List of reverse time ordered transactions.
  @param archived
   Include or exclude archived transactions.
+ @param device_only
+  Include or exclude transactions to other devices.
  @return Array of InfinitPeerTransaction objects.
  */
-- (NSArray*)transactionsIncludingArchived:(BOOL)archived;
+- (NSArray*)transactionsIncludingArchived:(BOOL)archived
+                           thisDeviceOnly:(BOOL)device_only;
 
 /** Peer Transaction corresponding to ID.
  @param id_

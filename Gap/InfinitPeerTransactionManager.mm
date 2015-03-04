@@ -99,6 +99,11 @@ static InfinitPeerTransactionManager* _instance = nil;
 
 #pragma mark - Access Transactions
 
+- (NSArray*)archived_transaction_meta_ids
+{
+  return [self.archived_transaction_ids copy];
+}
+
 - (BOOL)running_transactions
 {
   for (InfinitPeerTransaction* transaction in _transaction_map.allValues)
@@ -141,8 +146,9 @@ static InfinitPeerTransactionManager* _instance = nil;
 }
 
 - (NSArray*)transactionsIncludingArchived:(BOOL)archived
+                           thisDeviceOnly:(BOOL)device_only
 {
-  if (archived)
+  if (archived && !device_only)
   {
     return self.transactions;
   }
@@ -152,7 +158,11 @@ static InfinitPeerTransactionManager* _instance = nil;
     for (InfinitPeerTransaction* transaction in self.transactions)
     {
       if (![self.archived_transaction_ids containsObject:transaction.meta_id])
+      {
+        if (device_only && !transaction.concerns_device)
+          continue;
         [res addObject:transaction];
+      }
     }
     return res;
   }
@@ -244,29 +254,41 @@ static InfinitPeerTransactionManager* _instance = nil;
              self.description.UTF8String, transaction.sender.meta_id.UTF8String);
     return NO;
   }
+  transaction.status = gap_transaction_connecting;
+  [transaction locallyAccepted];
   [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_
                                             toRelativeDirectory:transaction.meta_id];
+  [self sendTransactionStatusNotification:transaction];
   return YES;
 }
 
 - (void)rejectTransaction:(InfinitPeerTransaction*)transaction
 {
+  transaction.status = gap_transaction_rejected;
   [[InfinitStateManager sharedInstance] rejectTransactionWithId:transaction.id_];
+  [self sendTransactionStatusNotification:transaction];
 }
 
 - (void)pauseTransaction:(InfinitPeerTransaction*)transaction
 {
+  transaction.status = gap_transaction_paused;
   [[InfinitStateManager sharedInstance] pauseTransactionWithId:transaction.id_];
+  [self sendTransactionStatusNotification:transaction];
 }
 
 - (void)resumeTransaction:(InfinitPeerTransaction*)transaction
 {
+  transaction.status = gap_transaction_connecting;
   [[InfinitStateManager sharedInstance] resumeTransactionWithId:transaction.id_];
+  [self sendTransactionStatusNotification:transaction];
 }
 
 - (void)cancelTransaction:(InfinitPeerTransaction*)transaction
 {
+  transaction.status = gap_transaction_canceled;
+  [transaction locallyCanceled];
   [[InfinitStateManager sharedInstance] cancelTransactionWithId:transaction.id_];
+  [self sendTransactionStatusNotification:transaction];
 }
 
 - (void)archiveTransaction:(InfinitPeerTransaction*)transaction
