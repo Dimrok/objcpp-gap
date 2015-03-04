@@ -45,11 +45,18 @@
   _click_count = [transaction.click_count copy];
 }
 
+#pragma mark - General
+
+- (BOOL)concerns_device
+{
+  return YES;
+}
+
 #pragma mark - Description
 
 - (NSString*)description
 {
-  return [NSString stringWithFormat:@"%@: %@", self.id_, [self statusText]];
+  return [NSString stringWithFormat:@"%@: %@", self.id_, self.status_text];
 }
 
 @end
