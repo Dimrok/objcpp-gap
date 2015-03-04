@@ -49,6 +49,11 @@ sender_device_id:(NSString*)sender_device_id
 
 #pragma mark - Properties
 
+- (BOOL)concerns_device
+{
+  return YES;
+}
+
 - (BOOL)done
 {
   switch (self.status)
@@ -160,7 +165,7 @@ sender_device_id:(NSString*)sender_device_id
 
 #pragma mark - Description
 
-- (NSString*)statusText
+- (NSString*)status_text
 {
   switch (self.status)
   {

@@ -13,6 +13,7 @@
 @interface InfinitTransaction : NSObject
 
 @property (nonatomic, readwrite) BOOL archived;
+@property (nonatomic, readonly) BOOL concerns_device;
 @property (nonatomic, readonly) BOOL done;
 @property (nonatomic, readonly) BOOL from_device;
 @property (nonatomic, readonly) NSNumber* id_;
@@ -22,7 +23,8 @@
 @property (nonatomic, readonly) float progress;
 @property (nonatomic, readonly) NSString* sender_device_id;
 @property (nonatomic, readonly) NSNumber* size; // Currently empty for link transactions.
-@property (nonatomic, readonly) gap_TransactionStatus status;
+@property (nonatomic, readwrite) gap_TransactionStatus status; // Written to to fake updates.
+@property (nonatomic, readonly) NSString* status_text;
 @property (nonatomic, readonly) NSTimeInterval time_remaining;
 
 - (id)initWithId:(NSNumber*)id_
@@ -34,7 +36,5 @@
 sender_device_id:(NSString*)sender_device_id;
 
 - (void)updateWithTransaction:(InfinitTransaction*)transaction;
-
-- (NSString*)statusText;
 
 @end
