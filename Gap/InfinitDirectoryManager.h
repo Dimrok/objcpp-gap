@@ -19,6 +19,7 @@
 @property (nonatomic, readonly) NSString* non_persistent_directory;
 @property (nonatomic, readonly) NSString* temporary_files_directory;
 @property (nonatomic, readonly) NSString* thumbnail_cache_directory;
+@property (nonatomic, readonly) NSString* upload_thumbnail_cache_directory;
 
 @property (nonatomic, readonly) uint64_t free_space;
 
