@@ -80,6 +80,26 @@ recipient_device:(NSString*)recipient_device_id
   return [[InfinitUserManager sharedInstance] userWithId:_canceler_id];
 }
 
+- (BOOL)concerns_device
+{
+  return (self.receivable || self.to_device || self.from_device);
+}
+
+- (void)locallyAccepted
+{
+  _recipient_device = [InfinitStateManager sharedInstance].self_device_id;
+}
+
+- (void)locallyRejected
+{
+  _recipient_device = [InfinitStateManager sharedInstance].self_device_id;
+}
+
+- (void)locallyCanceled
+{
+  _canceler_id = [InfinitUserManager sharedInstance].me.id_;
+}
+
 - (InfinitUser*)other_user
 {
   if (self.sender.is_self)
@@ -100,7 +120,7 @@ recipient_device:(NSString*)recipient_device_id
 
 - (BOOL)receivable
 {
-  NSString* self_device_id = [[InfinitStateManager sharedInstance] self_device_id];
+  NSString* self_device_id = [InfinitStateManager sharedInstance].self_device_id;
   if (self.status == gap_transaction_waiting_accept &&
       self.recipient.is_self && ![self.sender_device_id isEqualToString:self_device_id])
   {
@@ -124,7 +144,7 @@ recipient_device:(NSString*)recipient_device_id
 
 - (NSString*)description
 {
-  return [NSString stringWithFormat:@"%@: %@", self.id_, [self statusText]];
+  return [NSString stringWithFormat:@"%@: %@", self.id_, self.status_text];
 }
 
 @end

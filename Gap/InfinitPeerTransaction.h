@@ -42,4 +42,8 @@ recipient_device:(NSString*)recipient_device_id
 
 - (void)updateWithTransaction:(InfinitPeerTransaction*)transaction;
 
+- (void)locallyAccepted;
+- (void)locallyRejected;
+- (void)locallyCanceled;
+
 @end
