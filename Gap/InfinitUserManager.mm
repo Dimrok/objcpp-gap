@@ -374,15 +374,18 @@ static InfinitUserManager* _instance = nil;
 
 #pragma mark - State Manager Callbacks
 
-- (void)newUser:(InfinitUser*)user
+- (void)updateUser:(InfinitUser*)user
 {
   @synchronized(_user_map)
   {
     InfinitUser* existing = [_user_map objectForKey:user.id_];
-    if (existing != nil)
+    if (existing == nil)
+    {
+      [_user_map setObject:user forKey:user.id_];
+      [self sendNewUserNotification:user];
       return;
-    [_user_map setObject:user forKey:user.id_];
-    [self sendNewUserNotification:user];
+    }
+    [existing updateWithUser:user];
   }
 }
 

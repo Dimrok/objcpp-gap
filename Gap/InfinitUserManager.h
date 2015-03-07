@@ -135,7 +135,7 @@
 
 
 #pragma mark - State Manager Callbacks
-- (void)newUser:(InfinitUser*)user;
+- (void)updateUser:(InfinitUser*)user;
 - (void)userWithId:(NSNumber*)id_
      statusUpdated:(BOOL)status;
 - (void)userDeletedWithId:(NSNumber*)id_;
