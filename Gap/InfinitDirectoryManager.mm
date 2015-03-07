@@ -156,7 +156,7 @@ static InfinitDirectoryManager* _instance = nil;
   {
     NSError* error = nil;
     [[NSFileManager defaultManager] createDirectoryAtPath:res
-                              withIntermediateDirectories:NO
+                              withIntermediateDirectories:YES
                                                attributes:@{NSURLIsExcludedFromBackupKey: @YES}
                                                     error:&error];
     if (error)
