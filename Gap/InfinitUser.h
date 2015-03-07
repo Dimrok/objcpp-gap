@@ -29,6 +29,8 @@
 @property (nonatomic, readwrite) BOOL favorite;
 @property (nonatomic, readwrite) NSString* fullname;
 @property (nonatomic, readonly) BOOL ghost;
+@property (nonatomic, readonly) NSString* ghost_code;
+@property (nonatomic, readonly) NSString* ghost_invitation_url;
 @property (nonatomic, readonly) NSString* handle;
 @property (nonatomic, readonly) NSNumber* id_;
 @property (nonatomic, readonly) NSString* meta_id;
@@ -43,5 +45,10 @@
          swagger:(BOOL)swagger
          deleted:(BOOL)deleted
            ghost:(BOOL)ghost
+       ghostCode:(NSString*)ghost_code
+ghostInvitationURL:(NSString*)ghost_invitation_url
          meta_id:(NSString*)meta_id;
+
+- (void)updateWithUser:(InfinitUser*)user;
+
 @end

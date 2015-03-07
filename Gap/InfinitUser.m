@@ -22,6 +22,8 @@
          swagger:(BOOL)swagger
          deleted:(BOOL)deleted
            ghost:(BOOL)ghost
+       ghostCode:(NSString*)ghost_code
+ghostInvitationURL:(NSString*)ghost_invitation_url
          meta_id:(NSString*)meta_id
 {
   if (self = [super init])
@@ -33,6 +35,8 @@
     _swagger = swagger;
     _deleted = deleted;
     _ghost = ghost;
+    _ghost_code = ghost_code;
+    _ghost_invitation_url = ghost_invitation_url;
     _meta_id = meta_id;
   }
   return self;
@@ -62,6 +66,23 @@
     return YES;
   else
     return NO;
+}
+
+#pragma mark - Update User
+
+- (void)updateWithUser:(InfinitUser*)user
+{
+  _status = user.status;
+  _fullname = user.fullname;
+  _handle = user.handle;
+  _swagger = user.swagger;
+  _deleted = user.deleted;
+  _ghost = user.ghost;
+  if (user.ghost_code.length > 0)
+    _ghost_code = user.ghost_code;
+  if (user.ghost_invitation_url.length > 0)
+    _ghost_invitation_url = user.ghost_invitation_url;
+  [[InfinitAvatarManager sharedInstance] clearAvatarForUser:self];
 }
 
 #pragma mark - Description
