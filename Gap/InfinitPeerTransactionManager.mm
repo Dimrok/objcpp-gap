@@ -12,6 +12,7 @@
 #import "InfinitStateManager.h"
 
 #import "NSString+email.h"
+#import "NSString+PhoneNumber.h"
 
 #undef check
 #import <elle/log.hh>
@@ -157,12 +158,11 @@ static InfinitPeerTransactionManager* _instance = nil;
     NSMutableArray* res = [NSMutableArray array];
     for (InfinitPeerTransaction* transaction in self.transactions)
     {
-      if (![self.archived_transaction_ids containsObject:transaction.meta_id])
-      {
-        if (device_only && !transaction.concerns_device)
-          continue;
-        [res addObject:transaction];
-      }
+      if (!archived && [self.archived_transaction_ids containsObject:transaction.meta_id])
+        continue;
+      if (device_only && !transaction.concerns_device)
+        continue;
+      [res addObject:transaction];
     }
     return res;
   }
@@ -186,7 +186,7 @@ static InfinitPeerTransactionManager* _instance = nil;
     if ([recipient isKindOfClass:NSString.class])
     {
       NSString* string = recipient;
-      if (!string.isEmail)
+      if (!string.isEmail && !string.isPhoneNumber)
       {
         ELLE_ERR("%s: unable to send, string is not valid email: %s",
                  self.description.UTF8String, string.UTF8String);
