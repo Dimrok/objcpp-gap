@@ -18,10 +18,13 @@
 #import "InfinitPeerTransactionManager.h"
 #import "InfinitStateResult.h"
 #import "InfinitStateWrapper.h"
+#import "InfinitTemporaryFileManager.h"
 #import "InfinitUser.h"
 #import "InfinitUserManager.h"
 
 #import <surface/gap/gap.hh>
+
+#import "NSString+email.h"
 
 #if TARGET_OS_IPHONE
 # import <UIKit/UIImage.h>
@@ -112,7 +115,7 @@ static NSString* _self_device_id = nil;
   {
     ELLE_ERR("%s: unable to attach link transaction callback", self.description.UTF8String);
   }
-  if (gap_new_swagger_callback(self.stateWrapper.state, on_new_swagger) != gap_ok)
+  if (gap_update_user_callback(self.stateWrapper.state, on_user_update) != gap_ok)
   {
     ELLE_ERR("%s: unable to attach new swagger callback", self.description.UTF8String);
   }
@@ -183,23 +186,15 @@ static NSString* _self_device_id = nil;
      gap_clean_state(manager.stateWrapper.state);
      [manager _clearSelf];
      [manager _startPolling];
-     gap_Status res;
+     boost::optional<std::string> device_push_token;
      if (weak_self.push_token != nil && weak_self.push_token.length > 0)
-     {
-       std::string device_push_token = weak_self.push_token.UTF8String;
-       res = gap_register(manager.stateWrapper.state,
-                          fullname.UTF8String,
-                          email.UTF8String,
-                          password.UTF8String,
-                          device_push_token);
-     }
-     else
-     {
-       res = gap_register(manager.stateWrapper.state,
-                          fullname.UTF8String,
-                          email.UTF8String,
-                          password.UTF8String);
-     }
+       device_push_token = weak_self.push_token.UTF8String;
+
+     gap_Status res = gap_register(manager.stateWrapper.state,
+                                   fullname.UTF8String,
+                                   email.UTF8String,
+                                   password.UTF8String,
+                                   device_push_token);
      [manager _clearSelf];
      if (res == gap_ok)
      {
@@ -214,6 +209,16 @@ static NSString* _self_device_id = nil;
        [manager _stopPolling];
      return res;
    } performSelector:selector onObject:object];
+}
+
+- (void)useGhostCode:(NSString*)code
+     performSelector:(SEL)selector
+            onObject:(id)object
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    return gap_use_ghost_code(manager.stateWrapper.state, code.UTF8String);
+  } performSelector:selector onObject:object];
 }
 
 - (void)login:(NSString*)email
@@ -227,19 +232,13 @@ performSelector:(SEL)selector
      gap_clean_state(manager.stateWrapper.state);
      [manager _clearSelf];
      [manager _startPolling];
-     gap_Status res;
+     boost::optional<std::string> device_push_token;
      if (weak_self.push_token != nil && weak_self.push_token.length > 0)
-     {
-       std::string device_push_token = weak_self.push_token.UTF8String;
-       res = gap_login(manager.stateWrapper.state,
-                       email.UTF8String,
-                       password.UTF8String,
-                       device_push_token);
-     }
-     else
-     {
-       res = gap_login(manager.stateWrapper.state, email.UTF8String, password.UTF8String);
-     }
+       device_push_token = weak_self.push_token.UTF8String;
+     gap_Status res = gap_login(manager.stateWrapper.state,
+                                email.UTF8String,
+                                password.UTF8String,
+                                device_push_token);
      [manager _clearSelf];
      if (res == gap_ok)
      {
@@ -258,11 +257,55 @@ performSelector:(SEL)selector
    } performSelector:selector onObject:object];
 }
 
+- (void)facebookConnect:(NSString*)facebook_token
+           emailAddress:(NSString*)email
+        performSelector:(SEL)selector
+               onObject:(id)object
+{
+  __weak InfinitStateManager* weak_self = self;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    gap_clean_state(manager.stateWrapper.state);
+    [manager _clearSelf];
+    [manager _startPolling];
+    boost::optional<std::string> preferred_email;
+    if (email && email.length > 0)
+      preferred_email = email.UTF8String;
+    boost::optional<std::string> device_push_token;
+    if (weak_self.push_token && weak_self.push_token.length > 0)
+      device_push_token = weak_self.push_token.UTF8String;
+    gap_Status res = gap_facebook_connect(manager.stateWrapper.state,
+                                          facebook_token.UTF8String,
+                                          preferred_email,
+                                          device_push_token);
+    [manager _clearSelf];
+    if (res == gap_ok)
+    {
+      [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
+                                                        stillTrying:NO
+                                                          lastError:@""];
+      manager.logged_in = YES;
+      if (email.isEmail)
+        [weak_self setCurrent_user:email];
+      else
+        [weak_self setCurrent_user:@"unknown Facebook user"];
+      [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
+    }
+    else
+    {
+      [manager _stopPolling];
+    }
+    return res;
+  } performSelector:selector onObject:object];
+}
+
 - (void)logoutPerformSelector:(SEL)selector
                      onObject:(id)object
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
+     [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_WILL_LOGOUT_NOTIFICATION
+                                                         object:nil];
      [manager _stopPolling];
      gap_Status res = gap_logout(manager.stateWrapper.state);
      return res;
@@ -544,10 +587,10 @@ performSelector:(SEL)selector
   else if ([recipient isKindOfClass:NSString.class])
   {
     NSString* email = recipient;
-    res = gap_send_files_by_email(self.stateWrapper.state,
-                                  email.UTF8String,
-                                  [self _filesVectorFromNSArray:files],
-                                  message.UTF8String);
+    res = gap_send_files(self.stateWrapper.state,
+                         email.UTF8String,
+                         [self _filesVectorFromNSArray:files],
+                         message.UTF8String);
   }
   return [self _numFromUint:res];
 }
@@ -964,6 +1007,8 @@ performSelector:(SEL)selector
                                              swagger:user.swagger
                                              deleted:user.deleted
                                                ghost:user.ghost
+                                           ghostCode:[self _nsString:user.ghost_code]
+                                  ghostInvitationURL:[self _nsString:user.ghost_invitation_url]
                                              meta_id:[self _nsString:user.meta_id]];
   return res;
 }
@@ -1092,17 +1137,17 @@ on_link_transaction(surface::gap::LinkTransaction const& transaction)
   [[InfinitStateManager sharedInstance] _linkTransactionUpdated:transaction];
 }
 
-- (void)_newUser:(surface::gap::User const&)user_
+- (void)_updateUser:(surface::gap::User const&)user_
 {
   InfinitUser* user = [self _convertUser:user_];
-  [[InfinitUserManager sharedInstance] newUser:user];
+  [[InfinitUserManager sharedInstance] updateUser:user];
 }
 
 static
 void
-on_new_swagger(surface::gap::User const& user)
+on_user_update(surface::gap::User const& user)
 {
-  [[InfinitStateManager sharedInstance] _newUser:user];
+  [[InfinitStateManager sharedInstance] _updateUser:user];
 }
 
 - (void)_userWithId:(uint32_t)user_id

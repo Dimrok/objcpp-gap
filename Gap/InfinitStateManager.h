@@ -23,6 +23,11 @@
  */
 #define INFINIT_CLEAR_MODEL_NOTIFICATION     @"INFINIT_CLEAR_MODEL_NOTIFICATION"
 
+/** Notification sent when we will perform a logout.
+ Used to alert the frontend so that tokens can be cleared.
+ */
+#define INFINIT_WILL_LOGOUT_NOTIFICATION     @"INFINIT_WILL_LOGOUT_NOTIFICATION"
+
 @interface InfinitStateManager : NSObject
 
 @property (nonatomic, readwrite) BOOL logged_in;
@@ -53,6 +58,18 @@
          performSelector:(SEL)selector
                 onObject:(id)object;
 
+/** Use a ghost code.
+ @param code
+  Code to activate.
+ @param selector
+  Function to call when complete.
+ @param object
+  Calling object.
+ */
+- (void)useGhostCode:(NSString*)code
+     performSelector:(SEL)selector
+            onObject:(id)object;
+
 /** Log a user in.
  @param email
   The user's email address.
@@ -67,6 +84,16 @@
      password:(NSString*)password
 performSelector:(SEL)selector
      onObject:(id)object;
+
+/** Connect user using Facebook.
+  Will either register and login the user or just log the user in using Facebook.
+ @param token
+  Facebook client token.
+ */
+- (void)facebookConnect:(NSString*)facebook_token
+           emailAddress:(NSString*)email
+        performSelector:(SEL)selector
+               onObject:(id)object;
 
 /** Log the current user out.
  @param selector
