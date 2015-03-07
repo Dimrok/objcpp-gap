@@ -187,6 +187,12 @@ avatarToDiskCache:(UIImage*)avatar
   return avatar;
 }
 
+- (void)clearAvatarForUser:(InfinitUser*)user
+{
+  [self removeDiskCacheForUser:user];
+  [_avatar_map removeObjectForKey:user.meta_id];
+}
+
 #pragma mark - Generate Avatar
 
 #if TARGET_OS_IPHONE

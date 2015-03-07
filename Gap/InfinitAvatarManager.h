@@ -28,6 +28,8 @@
 - (NSImage*)avatarForUser:(InfinitUser*)user;
 #endif
 
+- (void)clearAvatarForUser:(InfinitUser*)user;
+
 #pragma mark - State Manager Callback
 - (void)gotAvatarForUserWithId:(NSNumber*)id_;
 
