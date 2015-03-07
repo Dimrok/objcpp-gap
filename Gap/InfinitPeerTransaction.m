@@ -85,6 +85,13 @@ recipient_device:(NSString*)recipient_device_id
   return (self.receivable || self.to_device || self.from_device);
 }
 
+- (BOOL)from_device
+{
+  if (super.from_device && self.sender.is_self)
+    return YES;
+  return NO;
+}
+
 - (void)locallyAccepted
 {
   _recipient_device = [InfinitStateManager sharedInstance].self_device_id;
@@ -122,20 +129,18 @@ recipient_device:(NSString*)recipient_device_id
 {
   NSString* self_device_id = [InfinitStateManager sharedInstance].self_device_id;
   if (self.status == gap_transaction_waiting_accept &&
-      self.recipient.is_self && ![self.sender_device_id isEqualToString:self_device_id])
+      self.recipient.is_self &&
+      (![self.sender_device_id isEqualToString:self_device_id] || !self.sender.is_self))
   {
     return YES;
   }
-  else
-  {
-    return NO;
-  }
+  return NO;
 }
 
 - (BOOL)to_device
 {
   NSString* self_device_id = [InfinitStateManager sharedInstance].self_device_id;
-  if ([self.recipient_device isEqualToString:self_device_id])
+  if (self.recipient.is_self && [self.recipient_device isEqualToString:self_device_id])
     return YES;
   return NO;
 }
@@ -144,7 +149,13 @@ recipient_device:(NSString*)recipient_device_id
 
 - (NSString*)description
 {
-  return [NSString stringWithFormat:@"%@: %@", self.id_, self.status_text];
+  return [NSString stringWithFormat:@"<%@: "
+          "status: %@\n"
+          "sender: %@\n"
+          "sender device: %@\n"
+          "recipient: %@\n"
+          "recipient device: %@>",
+          self.id_, self.status_text, self.sender.id_, self.sender_device_id, self.recipient.id_, self.recipient_device];
 }
 
 @end
