@@ -33,8 +33,9 @@
 @property (nonatomic, readonly) NSString* ghost_invitation_url;
 @property (nonatomic, readonly) NSString* handle;
 @property (nonatomic, readonly) NSNumber* id_;
-@property (nonatomic, readonly) NSString* meta_id;
 @property (nonatomic, readonly) BOOL is_self;
+@property (nonatomic, readonly) NSString* meta_id;
+@property (nonatomic, readonly) NSString* phone_number;
 @property (nonatomic, readwrite) BOOL status;
 @property (nonatomic, readonly) BOOL swagger;
 
@@ -47,7 +48,8 @@
            ghost:(BOOL)ghost
        ghostCode:(NSString*)ghost_code
 ghostInvitationURL:(NSString*)ghost_invitation_url
-         meta_id:(NSString*)meta_id;
+         meta_id:(NSString*)meta_id
+     phoneNumber:(NSString*)phone_number;
 
 - (void)updateWithUser:(InfinitUser*)user;
 

@@ -25,6 +25,7 @@
        ghostCode:(NSString*)ghost_code
 ghostInvitationURL:(NSString*)ghost_invitation_url
          meta_id:(NSString*)meta_id
+     phoneNumber:(NSString*)phone_number
 {
   if (self = [super init])
   {
@@ -38,6 +39,7 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
     _ghost_code = ghost_code;
     _ghost_invitation_url = ghost_invitation_url;
     _meta_id = meta_id;
+    _phone_number = phone_number;
   }
   return self;
 }
@@ -82,10 +84,25 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
     _ghost_code = user.ghost_code;
   if (user.ghost_invitation_url.length > 0)
     _ghost_invitation_url = user.ghost_invitation_url;
-  [[InfinitAvatarManager sharedInstance] clearAvatarForUser:self];
+  if (user.phone_number.length > 0)
+    _phone_number = user.phone_number;
 }
 
-#pragma mark - Description
+#pragma mark - NSObject
+
+- (BOOL)isEqual:(id)object
+{
+  if (![object isKindOfClass:self.class])
+    return NO;
+  if ([self.id_ isEqualToNumber:[object id_]])
+    return YES;
+  return NO;
+}
+
+- (NSUInteger)hash
+{
+  return self.id_.hash;
+}
 
 - (NSString*)description
 {
@@ -96,17 +113,6 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
           self.handle.length > 0 ? [NSString stringWithFormat:@" (%@)", self.handle] : @"",
           self.swagger ? @"is swagger, " : @"",
           self.status ? @"online" : @"offline"];
-}
-
-#pragma mark - Comparison
-
-- (BOOL)isEqual:(id)object
-{
-  if (![object isKindOfClass:self.class])
-    return NO;
-  if ([self.id_ isEqualToNumber:[object id_]])
-    return YES;
-  return NO;
 }
 
 @end
