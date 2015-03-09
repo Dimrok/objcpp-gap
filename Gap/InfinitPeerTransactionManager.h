@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "InfinitDevice.h"
 #import "InfinitFileSystemErrors.h"
 #import "InfinitPeerTransaction.h"
 
@@ -20,6 +21,12 @@
  Contains a dictionary with the transaction ID.
  */
 #define INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION @"INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION"
+
+/** Notification sent when a transaction sent to a phone number has received the ghost code from 
+ Meta.
+ Contains a dictionary with the transaction ID.
+ */
+#define INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION  @"INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION"
 
 @interface InfinitPeerTransactionManager : NSObject
 
@@ -70,6 +77,22 @@
 - (NSArray*)sendFiles:(NSArray*)files
          toRecipients:(NSArray*)recipients
           withMessage:(NSString*)message;
+
+/** Send files to a list of recipients.
+ @param files
+  Array of file paths as NSStrings.
+ @param recipient
+  User to which you'd like to send the files.
+ @param device
+  Recipient's device.
+ @param message
+  String message of 100 chars max.
+ @return InfinitPeerTransaction id.
+ */
+- (NSNumber*)sendFiles:(NSArray*)files
+           toRecipient:(InfinitUser*)recipient
+              onDevice:(InfinitDevice*)device
+           withMessage:(NSString*)message;
 
 /** Accept a Transaction.
  @param transaction

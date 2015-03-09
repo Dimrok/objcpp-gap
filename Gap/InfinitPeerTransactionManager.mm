@@ -210,6 +210,24 @@ static InfinitPeerTransactionManager* _instance = nil;
   return res;
 }
 
+- (NSNumber*)sendFiles:(NSArray*)files
+           toRecipient:(InfinitUser*)recipient
+              onDevice:(InfinitDevice*)device
+           withMessage:(NSString*)message
+{
+  NSNumber* transaction_id = [[InfinitStateManager sharedInstance] sendFiles:files
+                                                                 toRecipient:recipient
+                                                                    onDevice:device.id_
+                                                                 withMessage:message];
+  if (transaction_id.unsignedIntValue != 0)
+  {
+    InfinitPeerTransaction* transaction =
+      [[InfinitStateManager sharedInstance] peerTransactionById:transaction_id];
+    [self transactionUpdated:transaction];
+  }
+  return transaction_id;
+}
+
 - (BOOL)acceptTransaction:(InfinitPeerTransaction*)transaction
                 withError:(NSError**)error;
 {
@@ -325,7 +343,15 @@ static InfinitPeerTransactionManager* _instance = nil;
       if (existing.status != transaction.status)
       {
         [existing updateWithTransaction:transaction];
-        [self sendTransactionStatusNotification:existing];
+        if (existing.status == gap_transaction_transferring &&
+            existing.recipient.ghost_code.length > 0)
+        {
+          [self sendPhoneTransactionNotification:existing];
+        }
+        else
+        {
+          [self sendTransactionStatusNotification:existing];
+        }
       }
       else
       {
@@ -341,6 +367,14 @@ static InfinitPeerTransactionManager* _instance = nil;
 {
   NSDictionary* user_info = @{@"id": transaction.id_};
   [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION
+                                                      object:self
+                                                    userInfo:user_info];
+}
+
+- (void)sendPhoneTransactionNotification:(InfinitPeerTransaction*)transaction
+{
+  NSDictionary* user_info = @{@"id": transaction.id_};
+  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION
                                                       object:self
                                                     userInfo:user_info];
 }
