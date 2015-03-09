@@ -145,12 +145,19 @@ performSelector:(SEL)selector
 - (NSNumber*)sendFiles:(NSArray*)files
            toRecipient:(id)recipient
            withMessage:(NSString*)message;
+- (NSNumber*)sendFiles:(NSArray*)files
+           toRecipient:(InfinitUser*)recipient
+              onDevice:(NSString*)device_id 
+           withMessage:(NSString*)message;
 - (void)acceptTransactionWithId:(NSNumber*)id_
             toRelativeDirectory:(NSString*)directory;
 - (void)rejectTransactionWithId:(NSNumber*)id_;
 
 #pragma mark - Connection Status
 - (void)setNetworkConnectionStatus:(InfinitNetworkStatuses)status;
+
+#pragma mark - Devices
+- (NSArray*)devices;
 
 #pragma mark - Features
 - (NSDictionary*)features;

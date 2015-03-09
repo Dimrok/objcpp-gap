@@ -11,6 +11,7 @@
 #import "InfinitAvatarManager.h"
 #import "InfinitConnectionManager.h"
 #import "InfinitCrashReporter.h"
+#import "InfinitDevice.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitLinkTransaction.h"
 #import "InfinitLinkTransactionManager.h"
@@ -206,7 +207,9 @@ static NSString* _self_device_id = nil;
        [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
      }
      else
+     {
        [manager _stopPolling];
+     }
      return res;
    } performSelector:selector onObject:object];
 }
@@ -595,6 +598,23 @@ performSelector:(SEL)selector
   return [self _numFromUint:res];
 }
 
+- (NSNumber*)sendFiles:(NSArray*)files
+           toRecipient:(InfinitUser*)recipient
+              onDevice:(NSString*)device_id
+           withMessage:(NSString*)message
+{
+  if (!self.logged_in)
+    return nil;
+  uint32_t res = 0;
+  std::string device_id_(device_id.UTF8String);
+  res = gap_send_files(self.stateWrapper.state,
+                       recipient.id_.unsignedIntValue,
+                       [self _filesVectorFromNSArray:files],
+                       message.UTF8String,
+                       device_id_);
+  return [self _numFromUint:res];
+}
+
 - (void)acceptTransactionWithId:(NSNumber*)id_
             toRelativeDirectory:(NSString*)directory
 {
@@ -629,6 +649,18 @@ performSelector:(SEL)selector
     connected = true;
   }
   gap_internet_connection(self.stateWrapper.state, connected);
+}
+
+#pragma mark - Devices
+
+- (NSArray*)devices
+{
+  std::vector<surface::gap::Device> devices_;
+  gap_Status status = gap_devices(self.stateWrapper.state, devices_);
+  NSMutableArray* res = [NSMutableArray array];
+  for (auto const& device: devices_)
+    [res addObject:[self _convertDevice:device]];
+  return res;
 }
 
 #pragma mark - Features
@@ -916,6 +948,14 @@ performSelector:(SEL)selector
 
 #pragma mark - Conversions
 
+- (InfinitDevice*)_convertDevice:(surface::gap::Device const&)device
+{
+  InfinitDevice* res = [[InfinitDevice alloc] initWithId:[self _nsString:device.id]
+                                                    name:[self _nsString:device.name]
+                                                      os:[self _nsString:device.os]];
+  return res;
+}
+
 - (std::vector<std::string>)_filesVectorFromNSArray:(NSArray*)array
 {
   std::vector<std::string> res;
@@ -1009,7 +1049,8 @@ performSelector:(SEL)selector
                                                ghost:user.ghost
                                            ghostCode:[self _nsString:user.ghost_code]
                                   ghostInvitationURL:[self _nsString:user.ghost_invitation_url]
-                                             meta_id:[self _nsString:user.meta_id]];
+                                             meta_id:[self _nsString:user.meta_id]
+                                         phoneNumber:[self _nsString:user.phone_number]];
   return res;
 }
 
