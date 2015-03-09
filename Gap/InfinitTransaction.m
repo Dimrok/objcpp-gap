@@ -150,6 +150,11 @@ sender_device_id:(NSString*)sender_device_id
   return NO;
 }
 
+- (NSUInteger)hash
+{
+  return self.id_.hash;
+}
+
 - (NSComparisonResult)compare:(id)object
 {
   if (![object isKindOfClass:InfinitTransaction.class])
