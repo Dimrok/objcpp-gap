@@ -81,6 +81,10 @@
 		83F72CAE1A1513FA0088106E /* InfinitLinkTransactionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83F72CAC1A1513FA0088106E /* InfinitLinkTransactionManager.mm */; };
 		83F9628D1AAB10A9003F2DE7 /* NSString+PhoneNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F9628B1AAB10A9003F2DE7 /* NSString+PhoneNumber.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83F9628E1AAB10A9003F2DE7 /* NSString+PhoneNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F9628C1AAB10A9003F2DE7 /* NSString+PhoneNumber.m */; };
+		83FB5AAE1AADBB83004D5028 /* InfinitDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 83FB5AAC1AADBB83004D5028 /* InfinitDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83FB5AAF1AADBB83004D5028 /* InfinitDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FB5AAD1AADBB83004D5028 /* InfinitDevice.m */; };
+		83FB5AB21AADBEDF004D5028 /* InfinitDeviceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83FB5AB01AADBEDF004D5028 /* InfinitDeviceManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83FB5AB31AADBEDF004D5028 /* InfinitDeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FB5AB11AADBEDF004D5028 /* InfinitDeviceManager.m */; };
 		83FE9C921A1636FF00FC1CFD /* InfinitAvatarManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83FE9C901A1636FF00FC1CFD /* InfinitAvatarManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83FE9C931A1636FF00FC1CFD /* InfinitAvatarManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83FE9C911A1636FF00FC1CFD /* InfinitAvatarManager.mm */; };
 /* End PBXBuildFile section */
@@ -247,6 +251,10 @@
 		83F72CAC1A1513FA0088106E /* InfinitLinkTransactionManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitLinkTransactionManager.mm; sourceTree = "<group>"; };
 		83F9628B1AAB10A9003F2DE7 /* NSString+PhoneNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+PhoneNumber.h"; sourceTree = "<group>"; };
 		83F9628C1AAB10A9003F2DE7 /* NSString+PhoneNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+PhoneNumber.m"; sourceTree = "<group>"; };
+		83FB5AAC1AADBB83004D5028 /* InfinitDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitDevice.h; sourceTree = "<group>"; };
+		83FB5AAD1AADBB83004D5028 /* InfinitDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitDevice.m; sourceTree = "<group>"; };
+		83FB5AB01AADBEDF004D5028 /* InfinitDeviceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitDeviceManager.h; sourceTree = "<group>"; };
+		83FB5AB11AADBEDF004D5028 /* InfinitDeviceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitDeviceManager.m; sourceTree = "<group>"; };
 		83FE9C901A1636FF00FC1CFD /* InfinitAvatarManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitAvatarManager.h; sourceTree = "<group>"; };
 		83FE9C911A1636FF00FC1CFD /* InfinitAvatarManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitAvatarManager.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -285,6 +293,7 @@
 				83FE9C8E1A16367A00FC1CFD /* Avatars */,
 				836F5C7C1A165AD2007C9C4E /* Connection */,
 				836D39861A690E0800892206 /* Crash Reporter */,
+				83FB5A9B1AADBB6D004D5028 /* Devices */,
 				83157EEC1A73D82900F8E87F /* Directory Manager */,
 				839EDA5B1A9262780005C92A /* Errors */,
 				83F35D0A1A1CF07300DF7F35 /* Features */,
@@ -521,6 +530,17 @@
 			name = "Link Transactions";
 			sourceTree = "<group>";
 		};
+		83FB5A9B1AADBB6D004D5028 /* Devices */ = {
+			isa = PBXGroup;
+			children = (
+				83FB5AAC1AADBB83004D5028 /* InfinitDevice.h */,
+				83FB5AAD1AADBB83004D5028 /* InfinitDevice.m */,
+				83FB5AB01AADBEDF004D5028 /* InfinitDeviceManager.h */,
+				83FB5AB11AADBEDF004D5028 /* InfinitDeviceManager.m */,
+			);
+			name = Devices;
+			sourceTree = "<group>";
+		};
 		83FE9C8E1A16367A00FC1CFD /* Avatars */ = {
 			isa = PBXGroup;
 			children = (
@@ -551,11 +571,13 @@
 				83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */,
 				83EBB08C1A93B6E400144BC6 /* InfinitConnectionStatus.h in Headers */,
 				836D398A1A690E2A00892206 /* InfinitCrashReporter.h in Headers */,
+				83FB5AB21AADBEDF004D5028 /* InfinitDeviceManager.h in Headers */,
 				83157EEF1A73D84800F8E87F /* InfinitDirectoryManager.h in Headers */,
 				836D394F1A67F19200892206 /* NSString+email.h in Headers */,
 				83F9628D1AAB10A9003F2DE7 /* NSString+PhoneNumber.h in Headers */,
 				839EDA6D1A92645B0005C92A /* InfinitFileSystemErrors.h in Headers */,
 				8396106C1A2479A40044B874 /* InfinitTemporaryFileManager.h in Headers */,
+				83FB5AAE1AADBB83004D5028 /* InfinitDevice.h in Headers */,
 				83F72CAD1A1513FA0088106E /* InfinitLinkTransactionManager.h in Headers */,
 				839610701A2479B50044B874 /* InfinitManagedFiles.h in Headers */,
 				83F72CA91A1513810088106E /* InfinitLinkTransaction.h in Headers */,
@@ -780,6 +802,7 @@
 				83568DB01A136E1000766DA3 /* InfinitStateManager.mm in Sources */,
 				83FE9C931A1636FF00FC1CFD /* InfinitAvatarManager.mm in Sources */,
 				836D39501A67F19200892206 /* NSString+email.m in Sources */,
+				83FB5AB31AADBEDF004D5028 /* InfinitDeviceManager.m in Sources */,
 				836F5C801A165AE5007C9C4E /* InfinitConnectionManager.mm in Sources */,
 				836F5C841A165B48007C9C4E /* InfinitReachability.m in Sources */,
 				836D398B1A690E2A00892206 /* InfinitCrashReporter.mm in Sources */,
@@ -791,6 +814,7 @@
 				83F9628E1AAB10A9003F2DE7 /* NSString+PhoneNumber.m in Sources */,
 				8396106D1A2479A40044B874 /* InfinitTemporaryFileManager.mm in Sources */,
 				83F35D0E1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm in Sources */,
+				83FB5AAF1AADBB83004D5028 /* InfinitDevice.m in Sources */,
 				83E0AC231A6A61CD003F60C6 /* InfinitTransaction.m in Sources */,
 				830AD1E01A6A8D2400E2B058 /* InfinitTime.m in Sources */,
 				83568D9F1A136DEE00766DA3 /* InfinitStateWrapper.mm in Sources */,
