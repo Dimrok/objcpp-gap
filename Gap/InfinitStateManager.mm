@@ -28,6 +28,8 @@
 #import "NSString+email.h"
 
 #if TARGET_OS_IPHONE
+# import <CoreTelephony/CTCarrier.h>
+# import <CoreTelephony/CTTelephonyNetworkInfo.h>
 # import <UIKit/UIImage.h>
 #else
 # import <AppKit/NSImage.h>
@@ -175,6 +177,15 @@ static NSString* _self_device_id = nil;
 
 #pragma mark - Register/Login/Logout
 
+#if TARGET_OS_IPHONE
+- (NSString*)countryCode
+{
+  CTTelephonyNetworkInfo* network_info = [[CTTelephonyNetworkInfo alloc] init];
+  CTCarrier* carrier = [network_info subscriberCellularProvider];
+  return carrier.isoCountryCode.uppercaseString;
+}
+#endif
+
 - (void)registerFullname:(NSString*)fullname
                    email:(NSString*)email
                 password:(NSString*)password
@@ -190,12 +201,21 @@ static NSString* _self_device_id = nil;
      boost::optional<std::string> device_push_token;
      if (weak_self.push_token != nil && weak_self.push_token.length > 0)
        device_push_token = weak_self.push_token.UTF8String;
-
+#if TARGET_OS_IPHONE
+     std::string country_code([weak_self countryCode].UTF8String);
+     gap_Status res = gap_register(manager.stateWrapper.state,
+                                   fullname.UTF8String,
+                                   email.UTF8String,
+                                   password.UTF8String,
+                                   device_push_token,
+                                   country_code);
+#else
      gap_Status res = gap_register(manager.stateWrapper.state,
                                    fullname.UTF8String,
                                    email.UTF8String,
                                    password.UTF8String,
                                    device_push_token);
+#endif
      [manager _clearSelf];
      if (res == gap_ok)
      {
@@ -238,10 +258,19 @@ performSelector:(SEL)selector
      boost::optional<std::string> device_push_token;
      if (weak_self.push_token != nil && weak_self.push_token.length > 0)
        device_push_token = weak_self.push_token.UTF8String;
+#if TARGET_OS_IPHONE
+     std::string country_code([weak_self countryCode].UTF8String);
+     gap_Status res = gap_login(manager.stateWrapper.state,
+                                email.UTF8String,
+                                password.UTF8String,
+                                device_push_token,
+                                country_code);
+#else
      gap_Status res = gap_login(manager.stateWrapper.state,
                                 email.UTF8String,
                                 password.UTF8String,
                                 device_push_token);
+#endif
      [manager _clearSelf];
      if (res == gap_ok)
      {
@@ -277,10 +306,19 @@ performSelector:(SEL)selector
     boost::optional<std::string> device_push_token;
     if (weak_self.push_token && weak_self.push_token.length > 0)
       device_push_token = weak_self.push_token.UTF8String;
+#if TARGET_OS_IPHONE
+    std::string country_code([weak_self countryCode].UTF8String);
+    gap_Status res = gap_facebook_connect(manager.stateWrapper.state,
+                                          facebook_token.UTF8String,
+                                          preferred_email,
+                                          device_push_token,
+                                          country_code);
+#else
     gap_Status res = gap_facebook_connect(manager.stateWrapper.state,
                                           facebook_token.UTF8String,
                                           preferred_email,
                                           device_push_token);
+#endif
     [manager _clearSelf];
     if (res == gap_ok)
     {
