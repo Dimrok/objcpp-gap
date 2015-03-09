@@ -140,8 +140,11 @@ recipient_device:(NSString*)recipient_device_id
 - (BOOL)to_device
 {
   NSString* self_device_id = [InfinitStateManager sharedInstance].self_device_id;
-  if (self.recipient.is_self && [self.recipient_device isEqualToString:self_device_id])
+  if (self.recipient.is_self &&
+      ([self.recipient_device isEqualToString:self_device_id] || !self.recipient_device.length))
+  {
     return YES;
+  }
   return NO;
 }
 
