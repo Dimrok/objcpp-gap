@@ -309,6 +309,12 @@ static InfinitPeerTransactionManager* _instance = nil;
   [self sendTransactionStatusNotification:transaction];
 }
 
+- (void)archiveAllTransactions
+{
+  for (InfinitPeerTransaction* transaction in self.transactions)
+    [self archiveTransaction:transaction];
+}
+
 - (void)archiveTransaction:(InfinitPeerTransaction*)transaction
 {
   if (!transaction.done)
@@ -328,6 +334,15 @@ static InfinitPeerTransactionManager* _instance = nil;
 
 #pragma mark - Transaction Updated
 
+- (void)handlePhoneTransaction:(InfinitPeerTransaction*)transaction
+{
+  if (transaction.status == gap_transaction_transferring &&
+      transaction.recipient.ghost_code.length > 0)
+  {
+    [self sendPhoneTransactionNotification:transaction];
+  }
+}
+
 - (void)transactionUpdated:(InfinitPeerTransaction*)transaction
 {
   @synchronized(_transaction_map)
@@ -337,21 +352,15 @@ static InfinitPeerTransactionManager* _instance = nil;
     {
       [_transaction_map setObject:transaction forKey:transaction.id_];
       [self sendNewTransactionNotification:transaction];
+      [self handlePhoneTransaction:transaction];
     }
     else
     {
       if (existing.status != transaction.status)
       {
         [existing updateWithTransaction:transaction];
-        if (existing.status == gap_transaction_transferring &&
-            existing.recipient.ghost_code.length > 0)
-        {
-          [self sendPhoneTransactionNotification:existing];
-        }
-        else
-        {
-          [self sendTransactionStatusNotification:existing];
-        }
+        [self sendTransactionStatusNotification:existing];
+        [self handlePhoneTransaction:existing];
       }
       else
       {

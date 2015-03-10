@@ -128,6 +128,10 @@
  */
 - (void)cancelTransaction:(InfinitPeerTransaction*)transaction;
 
+/** Archive all existing Transactions.
+ */
+- (void)archiveAllTransactions;
+
 /** Archive a Transaction.
  @param transaction
   Transaction to archive. Archiving is currently only locally effected.
