@@ -693,11 +693,16 @@ performSelector:(SEL)selector
 
 - (NSArray*)devices
 {
+  if (!self.logged_in)
+    return nil;
   std::vector<surface::gap::Device> devices_;
   gap_Status status = gap_devices(self.stateWrapper.state, devices_);
   NSMutableArray* res = [NSMutableArray array];
-  for (auto const& device: devices_)
-    [res addObject:[self _convertDevice:device]];
+  if (status == gap_ok)
+  {
+    for (auto const& device: devices_)
+      [res addObject:[self _convertDevice:device]];
+  }
   return res;
 }
 
@@ -705,6 +710,8 @@ performSelector:(SEL)selector
 
 - (NSDictionary*)features
 {
+  if (!self.logged_in)
+    return nil;
   auto features_ = gap_fetch_features(self.stateWrapper.state);
   NSMutableDictionary* dict = [NSMutableDictionary dictionary];
   for (std::pair<std::string, std::string> const& pair: features_)
