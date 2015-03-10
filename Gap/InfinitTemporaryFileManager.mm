@@ -330,6 +330,8 @@ static InfinitTemporaryFileManager* _instance = nil;
   toManagedFiles:(NSString*)uuid
             copy:(BOOL)copy
 {
+  ELLE_TRACE("%s: adding files to managed files (%s): %s",
+             self.description.UTF8String, uuid.UTF8String, files.description.UTF8String);
   InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
   if (managed_files == nil)
   {
