@@ -12,11 +12,13 @@
 #import "InfinitDevice.h"
 #import "InfinitStateManager.h"
 
+@interface InfinitDeviceManager ()
+
+@property (atomic, readonly) NSMutableDictionary* device_map;
+
+@end
+
 @implementation InfinitDeviceManager
-{
-@private
-  NSArray* _all_devices;
-}
 
 static InfinitDeviceManager* _instance = nil;
 
@@ -56,9 +58,14 @@ static InfinitDeviceManager* _instance = nil;
 
 - (NSArray*)all_devices
 {
-  if (_all_devices == nil || _all_devices.count == 0)
+  if (self.device_map == nil)
     [self updateDevices];
-  return _all_devices;
+  return self.device_map.allValues;
+}
+
+- (InfinitDevice*)deviceWithId:(NSString*)id_
+{
+  return [self.device_map objectForKey:id_];
 }
 
 - (NSArray*)other_devices
@@ -79,7 +86,12 @@ static InfinitDeviceManager* _instance = nil;
 
 - (void)updateDevices
 {
-  _all_devices = [[InfinitStateManager sharedInstance].devices copy];
+  _device_map = [NSMutableDictionary dictionary];
+  for (InfinitDevice* device in [InfinitStateManager sharedInstance].devices)
+  {
+    if (device.id_)
+      [self.device_map setObject:device forKey:device.id_];
+  }
 }
 
 - (void)connectionStatusChanged:(NSNotification*)notification
