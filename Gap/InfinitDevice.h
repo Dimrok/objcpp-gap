@@ -21,6 +21,7 @@ typedef NS_ENUM(NSUInteger, InfinitDeviceType)
 
 @interface InfinitDevice : NSObject
 
+@property (nonatomic, readonly) NSString* friendly_name;
 @property (nonatomic, readonly) NSString* id_;
 @property (nonatomic, readonly) BOOL is_self;
 @property (nonatomic, readonly) NSString* name;

@@ -47,6 +47,24 @@
 
 #pragma mark - General
 
+- (NSString*)friendly_name
+{
+  switch (self.type)
+  {
+    case InfinitDeviceTypeAndroid:
+      return NSLocalizedString(@"My Android", nil);
+    case  InfinitDeviceTypeiPhone:
+      return NSLocalizedString(@"My iPhone", nil);
+    case InfinitDeviceTypeMacLaptop:
+      return NSLocalizedString(@"My Mac", nil);
+    case InfinitDeviceTypePCLinux:
+    case InfinitDeviceTypePCWindows:
+      return NSLocalizedString(@"My PC", nil);
+    case InfinitDeviceTypeUnknown:
+      return NSLocalizedString(@"Unknown", nil);
+  }
+}
+
 - (BOOL)is_self
 {
   return [[InfinitStateManager sharedInstance].self_device_id isEqualToString:self.id_];
