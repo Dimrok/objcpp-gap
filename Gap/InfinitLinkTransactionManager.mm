@@ -38,7 +38,7 @@ static InfinitLinkTransactionManager* _instance = nil;
 {
   if (_instance == nil)
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(clearModel:)
+                                             selector:@selector(clearModel)
                                                  name:INFINIT_CLEAR_MODEL_NOTIFICATION
                                                object:nil];
     _instance = [[InfinitLinkTransactionManager alloc] init];
@@ -50,7 +50,7 @@ static InfinitLinkTransactionManager* _instance = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)clearModel:(NSNotification*)notification
+- (void)clearModel
 {
   _instance = nil;
 }
