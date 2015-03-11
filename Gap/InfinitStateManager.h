@@ -85,10 +85,30 @@
 performSelector:(SEL)selector
      onObject:(id)object;
 
+/** User registered with Facebook id.
+ @param facebook_id
+  Facebook id of user.
+ @param selector
+  Function to call when complete.
+ @param object
+  Calling object.
+ @param data
+  Mutable dictionary for result.
+ */
+- (void)userRegisteredWithFacebookId:(NSString*)facebook_id
+                     performSelector:(SEL)selector
+                            onObject:(id)object
+                            withData:(NSMutableDictionary*)data;
+
+
 /** Connect user using Facebook.
   Will either register and login the user or just log the user in using Facebook.
  @param token
   Facebook client token.
+ @param selector
+  Function to call when complete.
+ @param object
+  Calling object.
  */
 - (void)facebookConnect:(NSString*)facebook_token
            emailAddress:(NSString*)email

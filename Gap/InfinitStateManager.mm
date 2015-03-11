@@ -293,6 +293,22 @@ performSelector:(SEL)selector
    } performSelector:selector onObject:object];
 }
 
+- (void)userRegisteredWithFacebookId:(NSString*)facebook_id
+                     performSelector:(SEL)selector
+                            onObject:(id)object
+                            withData:(NSMutableDictionary*)data
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    bool registered;
+    gap_Status status = gap_facebook_already_registered(manager.stateWrapper.state,
+                                                        facebook_id.UTF8String,
+                                                        registered);
+    [data setObject:@(registered) forKey:@"registered"];
+    return status;
+  } performSelector:selector onObject:object withData:data];
+}
+
 - (void)facebookConnect:(NSString*)facebook_token
            emailAddress:(NSString*)email
         performSelector:(SEL)selector
