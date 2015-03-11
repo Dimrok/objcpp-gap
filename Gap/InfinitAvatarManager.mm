@@ -13,6 +13,7 @@
 #import "InfinitUserManager.h"
 
 #import "NSString+email.h"
+#import "NSString+PhoneNumber.h"
 
 #if TARGET_OS_IPHONE
 # import <UIKit/UIKit.h>
@@ -24,6 +25,11 @@
 ELLE_LOG_COMPONENT("Gap-ObjC++.AvatarManager");
 
 static InfinitAvatarManager* _instance = nil;
+#if TARGET_OS_IPHONE
+static UIImage* _email_avatar = nil;
+static UIImage* _phone_avatar = nil;
+#endif
+
 
 @interface InfinitAvatarManager ()
 
@@ -198,6 +204,18 @@ avatarToDiskCache:(UIImage*)avatar
 #if TARGET_OS_IPHONE
 - (UIImage*)generateAvatarForUser:(InfinitUser*)user
 {
+  if (user.fullname.isPhoneNumber)
+  {
+    if (_phone_avatar == nil)
+      _phone_avatar = [UIImage imageNamed:@"avatar-phone"];
+    return _phone_avatar;
+  }
+  else if (user.fullname.isEmail)
+  {
+    if (_email_avatar == nil)
+      _email_avatar = [UIImage imageNamed:@"avatar-email"];
+    return _email_avatar;
+  }
   UIColor* fill = [UIColor colorWithRed:202.0f/255.0f
                                   green:217.0f/255.0f
                                    blue:223.0f/255.0f
