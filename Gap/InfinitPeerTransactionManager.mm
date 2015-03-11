@@ -309,10 +309,23 @@ static InfinitPeerTransactionManager* _instance = nil;
   [self sendTransactionStatusNotification:transaction];
 }
 
-- (void)archiveAllTransactions
+- (void)archiveIrrelevantTransactions
 {
+  NSMutableArray* to_archive = [NSMutableArray array];
   for (InfinitPeerTransaction* transaction in self.transactions)
-    [self archiveTransaction:transaction];
+  {
+    if (!transaction.done)
+      continue;
+    transaction.archived = YES;
+    [to_archive addObject:transaction.meta_id];
+  }
+  if (self.archived_transaction_ids == nil)
+    _archived_transaction_ids = [NSMutableArray array];
+  [self.archived_transaction_ids addObjectsFromArray:to_archive];
+  if (![self.archived_transaction_ids writeToFile:_archived_transactions_file atomically:YES])
+  {
+    ELLE_ERR("%s: unable to write archived transactions to disk", self.description.UTF8String);
+  }
 }
 
 - (void)archiveTransaction:(InfinitPeerTransaction*)transaction
@@ -326,6 +339,18 @@ static InfinitPeerTransactionManager* _instance = nil;
     _archived_transaction_ids = [NSMutableArray array];
 
   [self.archived_transaction_ids addObject:transaction.meta_id];
+  if (![self.archived_transaction_ids writeToFile:_archived_transactions_file atomically:YES])
+  {
+    ELLE_ERR("%s: unable to write archived transactions to disk", self.description.UTF8String);
+  }
+}
+
+- (void)unarchiveTransaction:(InfinitPeerTransaction*)transaction
+{
+  if (!transaction.archived)
+    return;
+  transaction.archived = NO;
+  [self.archived_transaction_ids removeObject:transaction.meta_id];
   if (![self.archived_transaction_ids writeToFile:_archived_transactions_file atomically:YES])
   {
     ELLE_ERR("%s: unable to write archived transactions to disk", self.description.UTF8String);

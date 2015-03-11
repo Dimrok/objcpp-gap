@@ -128,15 +128,21 @@
  */
 - (void)cancelTransaction:(InfinitPeerTransaction*)transaction;
 
-/** Archive all existing Transactions.
+/** Archive all existing Transactions that aren't relevant to device.
  */
-- (void)archiveAllTransactions;
+- (void)archiveIrrelevantTransactions;
 
 /** Archive a Transaction.
  @param transaction
   Transaction to archive. Archiving is currently only locally effected.
  */
 - (void)archiveTransaction:(InfinitPeerTransaction*)transaction;
+
+/** Unarchive a Transaction.
+ @param transaction
+ Transaction to unarchive. Archiving is currently only locally effected.
+ */
+- (void)unarchiveTransaction:(InfinitPeerTransaction*)transaction;
 
 #pragma mark - State Manager Callback
 - (void)transactionUpdated:(InfinitPeerTransaction*)transaction;
