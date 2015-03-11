@@ -58,7 +58,6 @@ sender_device_id:(NSString*)sender_device_id
 {
   switch (self.status)
   {
-    case gap_transaction_cloud_buffered:
     case gap_transaction_finished:
     case gap_transaction_failed:
     case gap_transaction_canceled:
@@ -148,11 +147,6 @@ sender_device_id:(NSString*)sender_device_id
   if ([self.id_ isEqualToNumber:other.id_])
     return YES;
   return NO;
-}
-
-- (NSUInteger)hash
-{
-  return self.id_.hash;
 }
 
 - (NSComparisonResult)compare:(id)object
