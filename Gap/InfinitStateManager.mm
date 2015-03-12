@@ -1209,14 +1209,22 @@ static
 void
 on_connection_callback(bool status, bool still_retrying, std::string const& last_error)
 {
-  NSString* error = @"";
-  if (!last_error.empty())
-    error = [NSString stringWithUTF8String:last_error.c_str()];
-  if (!status && !still_retrying)
-    [InfinitStateManager sharedInstance].logged_in = NO;
-  [[InfinitConnectionManager sharedInstance] setConnectedStatus:status
-                                                    stillTrying:still_retrying
-                                                      lastError:error];
+  @try
+  {
+    NSString* error = @"";
+    if (!last_error.empty())
+      error = [NSString stringWithUTF8String:last_error.c_str()];
+    if (!status && !still_retrying)
+      [InfinitStateManager sharedInstance].logged_in = NO;
+    [[InfinitConnectionManager sharedInstance] setConnectedStatus:status
+                                                      stillTrying:still_retrying
+                                                        lastError:error];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_connection_callback exception: %s", e.description.UTF8String);
+    @throw e;
+  }
 }
 
 - (void)_peerTransactionUpdated:(surface::gap::PeerTransaction const&)transaction_
@@ -1229,7 +1237,15 @@ static
 void
 on_peer_transaction(surface::gap::PeerTransaction const& transaction)
 {
-  [[InfinitStateManager sharedInstance] _peerTransactionUpdated:transaction];
+  @try
+  {
+    [[InfinitStateManager sharedInstance] _peerTransactionUpdated:transaction];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_peer_transaction exception: %s", e.description.UTF8String);
+    @throw e;
+  }
 }
 
 - (void)_linkTransactionUpdated:(surface::gap::LinkTransaction const&)transaction_
@@ -1242,7 +1258,15 @@ static
 void
 on_link_transaction(surface::gap::LinkTransaction const& transaction)
 {
-  [[InfinitStateManager sharedInstance] _linkTransactionUpdated:transaction];
+  @try
+  {
+    [[InfinitStateManager sharedInstance] _linkTransactionUpdated:transaction];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_link_transaction exception: %s", e.description.UTF8String);
+    @throw e;
+  }
 }
 
 - (void)_updateUser:(surface::gap::User const&)user_
@@ -1255,7 +1279,15 @@ static
 void
 on_user_update(surface::gap::User const& user)
 {
-  [[InfinitStateManager sharedInstance] _updateUser:user];
+  @try
+  {
+    [[InfinitStateManager sharedInstance] _updateUser:user];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_user_update exception: %s", e.description.UTF8String);
+    @throw e;
+  }
 }
 
 - (void)_userWithId:(uint32_t)user_id
@@ -1268,7 +1300,15 @@ static
 void
 on_user_status(uint32_t user_id, bool status)
 {
-  [[InfinitStateManager sharedInstance] _userWithId:user_id statusUpdated:status];
+  @try
+  {
+    [[InfinitStateManager sharedInstance] _userWithId:user_id statusUpdated:status];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_user_status exception: %s", e.description.UTF8String);
+    @throw e;
+  }
 }
 
 - (void)_userDeleted:(uint32_t)user_id
@@ -1280,14 +1320,30 @@ static
 void
 on_deleted_favorite(uint32_t user_id)
 {
-  [[InfinitStateManager sharedInstance] _userDeleted:user_id];
+  @try
+  {
+    [[InfinitStateManager sharedInstance] _userDeleted:user_id];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_deleted_favorite exception: %s", e.description.UTF8String);
+    @throw e;
+  }
 }
 
 static
 void
 on_deleted_swagger(uint32_t user_id)
 {
-  [[InfinitStateManager sharedInstance] _userDeleted:user_id];
+  @try
+  {
+    [[InfinitStateManager sharedInstance] _userDeleted:user_id];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_deleted_swagger exception: %s", e.description.UTF8String);
+    @throw e;
+  }
 }
 
 - (void)_gotAvatarForUserWithId:(uint32_t)user_id
@@ -1299,7 +1355,15 @@ static
 void
 on_avatar(uint32_t user_id)
 {
-  [[InfinitStateManager sharedInstance] _gotAvatarForUserWithId:user_id];
+  @try
+  {
+    [[InfinitStateManager sharedInstance] _gotAvatarForUserWithId:user_id];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_avatar exception: %s", e.description.UTF8String);
+    @throw e;
+  }
 }
 
 @end
