@@ -314,7 +314,7 @@ static InfinitPeerTransactionManager* _instance = nil;
   NSMutableArray* to_archive = [NSMutableArray array];
   for (InfinitPeerTransaction* transaction in self.transactions)
   {
-    if (!transaction.done)
+    if (![self canArchiveTransaction:transaction])
       continue;
     transaction.archived = YES;
     [to_archive addObject:transaction.meta_id];
@@ -328,9 +328,19 @@ static InfinitPeerTransactionManager* _instance = nil;
   }
 }
 
+- (BOOL)canArchiveTransaction:(InfinitPeerTransaction*)transaction
+{
+  if (!transaction.done ||
+      (transaction.status == gap_transaction_cloud_buffered && transaction.recipient.is_self))
+  {
+    return NO;
+  }
+  return YES;
+}
+
 - (void)archiveTransaction:(InfinitPeerTransaction*)transaction
 {
-  if (!transaction.done)
+  if (![self canArchiveTransaction:transaction])
     return;
   transaction.archived = YES;
   if (transaction.meta_id.length == 0)
