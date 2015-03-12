@@ -21,9 +21,11 @@
   NSArray* matches = [detector matchesInString:self options:0 range:range];
   if (matches.count != 1)
     return NO;
-  if ([matches[0] length] == self.length)
+  NSTextCheckingResult* res = matches[0];
+  if (res.range.length == self.length)
     return YES;
   return NO;
 }
+
 
 @end
