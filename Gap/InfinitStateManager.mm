@@ -1107,6 +1107,8 @@ performSelector:(SEL)selector
 
 - (InfinitUser*)_convertUser:(surface::gap::User const&)user
 {
+  if (user.id == gap_null())
+    return [InfinitUser initNullUser];
   InfinitUser* res = [[InfinitUser alloc] initWithId:[self _numFromUint:user.id]
                                               status:user.status
                                             fullname:[self _nsString:user.fullname]
