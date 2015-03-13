@@ -39,6 +39,8 @@
 @property (nonatomic, readwrite) BOOL status;
 @property (nonatomic, readonly) BOOL swagger;
 
++ (id)initNullUser;
+
 - (id)initWithId:(NSNumber*)id_
           status:(BOOL)status
         fullname:(NSString*)fullname

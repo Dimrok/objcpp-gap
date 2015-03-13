@@ -44,6 +44,21 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
   return self;
 }
 
++ (id)initNullUser
+{
+  return [[InfinitUser alloc] initWithId:@0
+                                  status:NO
+                                fullname:@"Unknown"
+                                  handle:@""
+                                 swagger:NO
+                                 deleted:YES
+                                   ghost:YES
+                               ghostCode:nil
+                      ghostInvitationURL:nil
+                                 meta_id:@"" 
+                             phoneNumber:nil];
+}
+
 #pragma mark - Public
 
 #if TARGET_OS_IPHONE
@@ -106,7 +121,8 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
 
 - (NSString*)description
 {
-  return [NSString stringWithFormat:@"%@: %@ %@%@: %@%@",
+  return [NSString stringWithFormat:@"<%p: %@: %@ %@%@: %@%@>",
+          self,
           self.id_,
           self.deleted ? @"deleted" : self.ghost ? @"ghost" : @"normal",
           self.fullname,
