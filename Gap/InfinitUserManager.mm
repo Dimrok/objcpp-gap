@@ -19,9 +19,14 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.UserManager");
 
 static InfinitUserManager* _instance = nil;
 
+@interface InfinitUserManager ()
+
+@property (atomic, readonly) NSMutableDictionary* user_map;
+
+@end
+
 @implementation InfinitUserManager
 {
-  NSMutableDictionary* _user_map;
   NSArray* _favorites;
   InfinitUser* _me;
 }
@@ -68,21 +73,18 @@ static InfinitUserManager* _instance = nil;
   for (InfinitUser* swagger in swaggers)
   {
     swagger.favorite = NO;
-    [_user_map setObject:swagger forKey:swagger.id_];
+    [self.user_map setObject:swagger forKey:swagger.id_];
   }
 }
 
 - (void)_fetchFavorites
 {
-  _favorites = [[InfinitStateManager sharedInstance] favorites];
-  for (NSNumber* id_ in _favorites)
+  _favorites = [[[InfinitStateManager sharedInstance] favorites] copy];
+  for (NSNumber* id_ in self.favorites)
   {
     InfinitUser* user = [self userWithId:id_];
     user.favorite = YES;
-    if ([_user_map objectForKey:id_] == nil)
-    {
-      [_user_map setObject:user forKeyedSubscript:id_];
-    }
+    [self updateUser:user];
   }
 }
 
@@ -115,7 +117,7 @@ static InfinitUserManager* _instance = nil;
   NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"fullname"
                                                        ascending:YES
                                                         selector:@selector(caseInsensitiveCompare:)];
-  for (InfinitUser* user in [_user_map.allValues sortedArrayUsingDescriptors:@[sort]])
+  for (InfinitUser* user in [self.user_map.allValues sortedArrayUsingDescriptors:@[sort]])
   {
     if (user.swagger)
       [res addObject:user];
@@ -128,7 +130,7 @@ static InfinitUserManager* _instance = nil;
 - (NSArray*)favorites
 {
   NSMutableArray* res = [NSMutableArray array];
-  for (InfinitUser* user in _user_map.allValues)
+  for (InfinitUser* user in self.user_map.allValues)
   {
     if (user.favorite)
       [res addObject:user];
@@ -154,14 +156,16 @@ static InfinitUserManager* _instance = nil;
 
 - (InfinitUser*)userWithId:(NSNumber*)id_
 {
-  @synchronized(_user_map)
+  @synchronized(self.user_map)
   {
-    InfinitUser* res = [_user_map objectForKey:id_];
+    if (id_.unsignedIntegerValue == 0)
+      return [InfinitUser initNullUser];
+    InfinitUser* res = [self.user_map objectForKey:id_];
     if (res == nil)
     {
       res = [[InfinitStateManager sharedInstance] userById:id_];
       if (res != nil)
-        [_user_map setObject:res forKey:res.id_];
+        [self.user_map setObject:res forKey:res.id_];
     }
     return res;
   }
@@ -171,7 +175,7 @@ static InfinitUserManager* _instance = nil;
        performSelector:(SEL)selector
               onObject:(id)object
 {
-  for (InfinitUser* user in _user_map.allValues)
+  for (InfinitUser* user in self.user_map.allValues)
   {
     if ([user.handle isEqualToString:handle])
     {
@@ -202,10 +206,10 @@ static InfinitUserManager* _instance = nil;
   if (result.success)
   {
     InfinitUser* user = dict[@"user"];
-    @synchronized(_user_map)
+    @synchronized(self.user_map)
     {
-      if (_user_map[user.id_] == nil)
-        [_user_map setObject:user forKey:user.id_];
+      if (self.user_map[user.id_] == nil)
+        [self.user_map setObject:user forKey:user.id_];
     }
     [object performSelector:selector
                  withObject:user
@@ -224,13 +228,13 @@ static InfinitUserManager* _instance = nil;
 {
   NSMutableArray* handle_matches = [NSMutableArray array];
   NSMutableArray* fullname_matches = [NSMutableArray array];
-  @synchronized(_user_map)
+  @synchronized(self.user_map)
   {
     NSUInteger handle_search_mask = (NSCaseInsensitiveSearch|
                                      NSAnchoredSearch|
                                      NSWidthInsensitiveSearch);
     NSUInteger name_search_mask = (NSCaseInsensitiveSearch|NSWidthInsensitiveSearch);
-    for (InfinitUser* user in _user_map.allValues)
+    for (InfinitUser* user in self.user_map.allValues)
     {
       if (user.deleted)
         continue;
@@ -363,25 +367,20 @@ static InfinitUserManager* _instance = nil;
 
 - (void)_upsertUsersToModel:(NSArray*)users
 {
-  @synchronized(_user_map)
-  {
-    for (InfinitUser* user in users)
-    {
-      [_user_map setObject:user forKey:user.id_];
-    }
-  }
+  for (InfinitUser* user in users)
+    [self updateUser:user];
 }
 
 #pragma mark - State Manager Callbacks
 
 - (void)updateUser:(InfinitUser*)user
 {
-  @synchronized(_user_map)
+  @synchronized(self.user_map)
   {
-    InfinitUser* existing = [_user_map objectForKey:user.id_];
+    InfinitUser* existing = [self.user_map objectForKey:user.id_];
     if (existing == nil)
     {
-      [_user_map setObject:user forKey:user.id_];
+      [self.user_map setObject:user forKey:user.id_];
       [self sendNewUserNotification:user];
       return;
     }
@@ -403,7 +402,7 @@ static InfinitUserManager* _instance = nil;
        performSelector:(SEL)selector
               onObject:(id)object
 {
-  for (InfinitUser* user in _user_map.allValues)
+  for (InfinitUser* user in self.user_map.allValues)
   {
     if ([user.meta_id isEqualToString:meta_id] && [object respondsToSelector:selector])
     {
@@ -422,7 +421,7 @@ static InfinitUserManager* _instance = nil;
 
 - (InfinitUser*)localUserWithMetaId:(NSString*)meta_id
 {
-  for (InfinitUser* user in _user_map.allValues)
+  for (InfinitUser* user in self.user_map.allValues)
   {
     if ([user.meta_id isEqualToString:meta_id])
       return user;
@@ -443,10 +442,10 @@ static InfinitUserManager* _instance = nil;
   if (result.success)
   {
     InfinitUser* user = dict[@"user"];
-    @synchronized(_user_map)
+    @synchronized(self.user_map)
     {
-      if (_user_map[user.id_] == nil)
-        [_user_map setObject:user forKey:user.id_];
+      if (self.user_map[user.id_] == nil)
+        [self.user_map setObject:user forKey:user.id_];
     }
     [object performSelector:selector
                  withObject:user
