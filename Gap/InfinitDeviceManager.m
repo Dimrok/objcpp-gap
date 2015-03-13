@@ -70,6 +70,8 @@ static InfinitDeviceManager* _instance = nil;
 
 - (NSArray*)other_devices
 {
+  if (self.all_devices.count <= 1)
+    return @[];
   NSMutableArray* res = [NSMutableArray arrayWithArray:self.all_devices];
   NSUInteger index = 0;
   for (InfinitDevice* device in res)
