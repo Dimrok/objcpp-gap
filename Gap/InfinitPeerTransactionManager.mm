@@ -8,6 +8,7 @@
 
 #import "InfinitPeerTransactionManager.h"
 
+#import "InfinitDeviceManager.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitStateManager.h"
 
@@ -311,6 +312,8 @@ static InfinitPeerTransactionManager* _instance = nil;
 
 - (void)archiveIrrelevantTransactions
 {
+  if ([InfinitDeviceManager sharedInstance].other_devices.count == 0)
+    return;
   NSMutableArray* to_archive = [NSMutableArray array];
   for (InfinitPeerTransaction* transaction in self.transactions)
   {
