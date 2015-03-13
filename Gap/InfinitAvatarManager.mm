@@ -170,10 +170,14 @@ avatarToDiskCache:(UIImage*)avatar
 #if TARGET_OS_IPHONE
 - (UIImage*)avatarForUser:(InfinitUser*)user
 {
+  if (user.id_.unsignedIntegerValue == 0)
+    return nil;
   UIImage* avatar = [_avatar_map objectForKey:user.meta_id];
 #else
 - (NSImage*)avatarForUser:(InfinitUser*)user
 {
+  if (user.id_.unsignedIntegerValue == 0)
+    return nil;
   NSImage* avatar = [_avatar_map objectForKey:user.meta_id];
 #endif
   if (![_requested_avatars containsObject:user.meta_id])
