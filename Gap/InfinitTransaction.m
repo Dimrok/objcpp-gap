@@ -95,7 +95,7 @@ sender_device_id:(NSString*)sender_device_id
 
 - (NSTimeInterval)time_remaining
 {
-  if (!gap_transaction_transferring)
+  if (self.status != gap_transaction_transferring)
     return 0.0f;
   return _time_remaining;
 }

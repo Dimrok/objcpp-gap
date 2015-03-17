@@ -10,6 +10,9 @@
 
 #import <surface/gap/enums.hh>
 
+/// Constant used as key for Transaction ID in dictionaries.
+#define kInfinitTransactionId @"id"
+
 @interface InfinitTransaction : NSObject
 
 @property (nonatomic, readwrite) BOOL archived;
