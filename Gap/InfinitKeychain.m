@@ -206,7 +206,7 @@ static NSString* _service_name = @"Infinit";
     (__bridge id)kSecAttrServer: host,
 #endif
     (__bridge id)kSecAttrPort: @(port),
-    (__bridge id)kSecAttrAuthenticationType: @(kSecAuthenticationTypeAny),
+    (__bridge id)kSecAttrAuthenticationType: (__bridge id)kSecAttrAuthenticationTypeDefault,
     (__bridge id)kSecAttrAccessible: (__bridge id)kSecAttrAccessibleAlwaysThisDeviceOnly
   };
   return [res mutableCopy];
