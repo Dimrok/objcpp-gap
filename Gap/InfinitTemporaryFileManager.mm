@@ -103,7 +103,7 @@ static InfinitTemporaryFileManager* _instance = nil;
 
 - (void)_linkTransactionUpdated:(NSNotification*)notification
 {
-  NSNumber* id_ = notification.userInfo[@"id"];
+  NSNumber* id_ = notification.userInfo[kInfinitTransactionId];
   InfinitManagedFiles* managed_files = [_transaction_map objectForKey:id_];
   if (managed_files == nil)
     return;
@@ -120,7 +120,7 @@ static InfinitTemporaryFileManager* _instance = nil;
 
 - (void)_peerTransactionUpdated:(NSNotification*)notification
 {
-  NSNumber* id_ = notification.userInfo[@"id"];
+  NSNumber* id_ = notification.userInfo[kInfinitTransactionId];
   InfinitManagedFiles* managed_files = [_transaction_map objectForKey:id_];
   if (managed_files == nil)
     return;
