@@ -41,8 +41,9 @@
 - (void)updateWithTransaction:(InfinitLinkTransaction*)transaction
 {
   [super updateWithTransaction:transaction];
-  _link = [transaction.link copy];
-  _click_count = [transaction.click_count copy];
+  _link = transaction.link;
+  _name = transaction.name;
+  _click_count = transaction.click_count;
 }
 
 #pragma mark - General
@@ -56,7 +57,14 @@
 
 - (NSString*)description
 {
-  return [NSString stringWithFormat:@"%@: %@", self.id_, self.status_text];
+  return [NSString stringWithFormat:@"<%@ (%@): "
+          "status: %@\n"
+          "sender device: %@\n"
+          "link: %@\n"
+          "name: %@\n"
+          "click count: %@\n"
+          "%@ screenshot>",
+          self.meta_id, self.id_, self.status_text, self.sender_device_id, self.link, self.name, self.click_count, self.screenshot ? @"is" : @"not"];
 }
 
 @end

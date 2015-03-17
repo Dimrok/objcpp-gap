@@ -15,6 +15,7 @@
 @property (nonatomic, readonly) NSNumber* click_count;
 @property (nonatomic, readonly) NSString* link;
 @property (nonatomic, readonly) NSString* name;
+@property (nonatomic, readwrite) BOOL screenshot;
 
 - (id)initWithId:(NSNumber*)id_
          meta_id:(NSString*)meta_id
