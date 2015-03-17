@@ -11,31 +11,46 @@
 #import "InfinitDevice.h"
 #import "InfinitFileSystemErrors.h"
 #import "InfinitPeerTransaction.h"
+#import "InfinitUser.h"
 
 /** Notification sent when there is a new peer transaction.
- Contains a dictionary with the transaction ID.
+ Contains a dictionary with the transaction "id".
 */
-#define INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION    @"INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION"
+#define INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION      @"INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION"
 
 /** Notification sent when an existing peer transaction has its status updated.
- Contains a dictionary with the transaction ID.
+ Contains a dictionary with the transaction "id".
  */
-#define INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION @"INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION"
+#define INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION   @"INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION"
 
 /** Notification sent when a transaction sent to a phone number has received the ghost code from 
  Meta.
- Contains a dictionary with the transaction ID.
+ Contains a dictionary with the transaction "id".
  */
-#define INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION  @"INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION"
+#define INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION    @"INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION"
+
+/** Notification sent when a transaction is initially accepted by the other party.
+ Contains a dictionary with the transaction "id".
+ */
+#define INFINIT_PEER_TRANSACTION_ACCEPTED_NOTIFICATION @"INFINIT_PEER_TRANSACTION_ACCEPTED_NOTIFICATION"
+
+/** Notification sent when send operation started.
+ Contains empty dictionary.
+ */
+#define INFINIT_PEER_TRANSACTION_CREATED_NOTIFICATION @"INFINIT_PEER_TRANSACTION_CREATED_NOTIFICATION"
 
 @interface InfinitPeerTransactionManager : NSObject
 
 /// Returns list of Meta IDs for archived transactions.
 @property (readonly) NSArray* archived_transaction_meta_ids;
+/// Returns number of receivable transactions.
+@property (readonly) NSUInteger receivable_transaction_count;
 /// Boolean for when transactions are running.
 @property (readonly) BOOL running_transactions;
 /// Returns a reverse time ordered list of transactions.
 @property (readonly) NSArray* transactions;
+/// Returns if there are unread transactions.
+@property (readonly) BOOL unread_transactions;
 
 + (instancetype)sharedInstance;
 
@@ -48,6 +63,13 @@
  */
 - (NSArray*)transactionsIncludingArchived:(BOOL)archived
                            thisDeviceOnly:(BOOL)device_only;
+
+/** List of revers time ordered transactions involving a given user.
+ @param user
+  Involved user.
+ @return Array of InfinitPeerTransaction objects.
+ */
+- (NSArray*)transactionsInvolvingUser:(InfinitUser*)user;
 
 /** Peer Transaction corresponding to ID.
  @param id_
@@ -140,9 +162,54 @@
 
 /** Unarchive a Transaction.
  @param transaction
- Transaction to unarchive. Archiving is currently only locally effected.
+  Transaction to unarchive. Archiving is currently only locally effected.
  */
 - (void)unarchiveTransaction:(InfinitPeerTransaction*)transaction;
+
+/** Mark transaction as read.
+ @param transaction
+  Transaction to be marked read;
+ */
+- (void)markTransactionRead:(InfinitPeerTransaction*)transaction;
+
+/** Number of unread transactions with user.
+ @param user
+  Other user that was involved in transactions.
+ */
+- (NSUInteger)unreadTransactionsWithUser:(InfinitUser*)user;
+
+/** Mark all transactions with user as read.
+ @param user
+  Other user that was involved in transactions.
+ */
+- (void)markTransactionsWithUserRead:(InfinitUser*)user;
+
+/** Number of incomplete transactions with user.
+ @param user
+  Other user that was involved in transactions.
+ @return Number of incomplete transactions.
+ */
+- (NSUInteger)incompleteTransactionsWithUser:(InfinitUser*)user;
+
+/** Number of transferring transactions with user.
+ @param user
+  Other user that was involved in transactions.
+ @return Number of incomplete transactions.
+ */
+- (NSUInteger)transferringTransactionsWithUser:(InfinitUser*)user;
+
+/** Progress of transactions with user.
+ @param user
+  Other user that was involved in transactions.
+ @return Total progress of transactions with user.
+ */
+- (double)progressWithUser:(InfinitUser*)user;
+
+/** Latest transaction per swagger.
+ The result is reverse time ordered.
+ @return Array of transactions.
+ */
+- (NSArray*)latestTransactionPerSwagger;
 
 #pragma mark - State Manager Callback
 - (void)transactionUpdated:(InfinitPeerTransaction*)transaction;

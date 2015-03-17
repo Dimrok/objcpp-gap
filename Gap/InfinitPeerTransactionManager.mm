@@ -8,6 +8,7 @@
 
 #import "InfinitPeerTransactionManager.h"
 
+#import "InfinitConnectionManager.h"
 #import "InfinitDeviceManager.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitStateManager.h"
@@ -25,13 +26,14 @@ static InfinitPeerTransactionManager* _instance = nil;
 @interface InfinitPeerTransactionManager ()
 
 @property (atomic, readonly) NSMutableArray* archived_transaction_ids;
+@property (atomic, readonly) BOOL filled_model;
+@property (atomic, readonly) NSMutableDictionary* transaction_map;
 
 @end
 
 @implementation InfinitPeerTransactionManager
 {
 @private
-  NSMutableDictionary* _transaction_map;
   NSString* _archived_transactions_file;
 }
 
@@ -42,20 +44,25 @@ static InfinitPeerTransactionManager* _instance = nil;
   NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
+    _filled_model = NO;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(clearModel:)
                                                  name:INFINIT_CLEAR_MODEL_NOTIFICATION
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(connectionStatusChanged:)
+                                                 name:INFINIT_CONNECTION_STATUS_CHANGE
+                                               object:nil];
     NSString* dir = [InfinitDirectoryManager sharedInstance].persistent_directory;
     _archived_transactions_file = [dir stringByAppendingPathComponent:@"archived_transactions"];
     [self _fetchArchivedTransactions];
-    [self _fillTransactionMap];
   }
   return self;
 }
 
 - (void)dealloc
 {
+  [NSObject cancelPreviousPerformRequestsWithTarget:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -95,8 +102,9 @@ static InfinitPeerTransactionManager* _instance = nil;
   {
     if ([self.archived_transaction_ids containsObject:transaction.meta_id])
       transaction.archived = YES;
-    [_transaction_map setObject:transaction forKey:transaction.id_];
+    [self.transaction_map setObject:transaction forKey:transaction.id_];
   }
+  _filled_model = YES;
 }
 
 #pragma mark - Access Transactions
@@ -106,9 +114,20 @@ static InfinitPeerTransactionManager* _instance = nil;
   return [self.archived_transaction_ids copy];
 }
 
+- (NSUInteger)receivable_transaction_count
+{
+  NSUInteger res = 0;
+  for (InfinitPeerTransaction* transaction in self.transaction_map.allValues)
+  {
+    if (transaction.receivable)
+      res++;
+  }
+  return res;
+}
+
 - (BOOL)running_transactions
 {
-  for (InfinitPeerTransaction* transaction in _transaction_map.allValues)
+  for (InfinitPeerTransaction* transaction in self.transaction_map.allValues)
   {
     if (transaction.status == gap_transaction_transferring)
       return YES;
@@ -118,14 +137,14 @@ static InfinitPeerTransactionManager* _instance = nil;
 
 - (NSArray*)transactions
 {
-  return [[_transaction_map allValues] sortedArrayUsingSelector:@selector(compare:)];
+  return [[self.transaction_map allValues] sortedArrayUsingSelector:@selector(compare:)];
 }
 
 - (InfinitPeerTransaction*)transactionWithId:(NSNumber*)id_
 {
-  @synchronized(_transaction_map)
+  @synchronized(self.transaction_map)
   {
-    InfinitPeerTransaction* res = [_transaction_map objectForKey:id_];
+    InfinitPeerTransaction* res = [self.transaction_map objectForKey:id_];
     if (res == nil)
     {
       res = [[InfinitStateManager sharedInstance] peerTransactionById:id_];
@@ -134,11 +153,21 @@ static InfinitPeerTransactionManager* _instance = nil;
   }
 }
 
+- (BOOL)unread_transactions
+{
+  for (InfinitPeerTransaction* transaction in self.transaction_map.allValues)
+  {
+    if (transaction.unread)
+      return YES;
+  }
+  return NO;
+}
+
 - (InfinitPeerTransaction*)transactionWithMetaId:(NSString*)meta_id
 {
-  @synchronized(_transaction_map)
+  @synchronized(self.transaction_map)
   {
-    for (InfinitPeerTransaction* transaction in _transaction_map.allValues)
+    for (InfinitPeerTransaction* transaction in self.transaction_map.allValues)
     {
       if ([transaction.meta_id isEqualToString:meta_id])
         return transaction;
@@ -208,6 +237,7 @@ static InfinitPeerTransactionManager* _instance = nil;
       [self transactionUpdated:transaction];
     }
   }
+  [self sendTransactionCreatedNotification];
   return res;
 }
 
@@ -230,7 +260,22 @@ static InfinitPeerTransactionManager* _instance = nil;
 }
 
 - (BOOL)acceptTransaction:(InfinitPeerTransaction*)transaction
-                withError:(NSError**)error;
+                withError:(NSError**)error
+{
+#if TARGET_OS_IPHONE
+  return [self acceptTransaction:transaction
+             toRelativeDirectory:YES
+                    withMetaData:YES
+                        andError:error];
+#else
+  return [self acceptTransaction:transaction toRelativeDirectory:NO withMetaData:NO andError:error];
+#endif
+}
+
+- (BOOL)acceptTransaction:(InfinitPeerTransaction*)transaction
+      toRelativeDirectory:(BOOL)relative
+             withMetaData:(BOOL)meta
+                andError:(NSError**)error;
 {
   if ([InfinitDirectoryManager sharedInstance].free_space < transaction.size.unsignedIntegerValue)
   {
@@ -256,27 +301,38 @@ static InfinitPeerTransactionManager* _instance = nil;
              self.description.UTF8String);
     return NO;
   }
-  NSDictionary* meta_data = @{@"sender": transaction.sender.meta_id,
-                              @"sender_device": transaction.sender_device_id,
-                              @"sender_fullname": transaction.sender.fullname,
-                              @"ctime": @(transaction.mtime)};
-  NSString* meta_file = [path stringByAppendingPathComponent:@".meta"];
-  if (![meta_data writeToFile:meta_file atomically:YES])
+
+  if (meta)
   {
-    if (error != NULL)
+    NSDictionary* meta_data = @{@"sender": transaction.sender.meta_id,
+                                @"sender_device": transaction.sender_device_id,
+                                @"sender_fullname": transaction.sender.fullname,
+                                @"ctime": @(transaction.mtime)};
+    NSString* meta_file = [path stringByAppendingPathComponent:@".meta"];
+    if (![meta_data writeToFile:meta_file atomically:YES])
     {
-      *error = [NSError errorWithDomain:INFINIT_FILE_SYSTEM_ERROR_DOMAIN
-                                   code:InfinitFileSystemErrorUnableToWrite 
-                               userInfo:nil];
+      if (error != NULL)
+      {
+        *error = [NSError errorWithDomain:INFINIT_FILE_SYSTEM_ERROR_DOMAIN
+                                     code:InfinitFileSystemErrorUnableToWrite 
+                                 userInfo:nil];
+      }
+      ELLE_ERR("%s: unable to write transaction sender data: %s",
+               self.description.UTF8String, transaction.sender.meta_id.UTF8String);
+      return NO;
     }
-    ELLE_ERR("%s: unable to write transaction sender data: %s",
-             self.description.UTF8String, transaction.sender.meta_id.UTF8String);
-    return NO;
+  }
+  if (relative)
+  {
+    [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_
+                                              toRelativeDirectory:transaction.meta_id];
+  }
+  else
+  {
+    [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_];
   }
   transaction.status = gap_transaction_connecting;
   [transaction locallyAccepted];
-  [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_
-                                            toRelativeDirectory:transaction.meta_id];
   [self sendTransactionStatusNotification:transaction];
   return YES;
 }
@@ -370,11 +426,105 @@ static InfinitPeerTransactionManager* _instance = nil;
   }
 }
 
+- (void)markTransactionRead:(InfinitPeerTransaction*)transaction
+{
+  InfinitPeerTransaction* existing = [self transactionWithId:transaction.id_];
+  existing.unread = NO;
+}
+
+#pragma mark - Per User
+
+- (NSArray*)transactionsInvolvingUser:(InfinitUser*)user
+{
+  NSMutableArray* res = [NSMutableArray array];
+  for (InfinitPeerTransaction* transaction in self.transactions)
+  {
+    if ([transaction.sender isEqual:user] || [transaction.recipient isEqual:user])
+      [res addObject:transaction];
+  }
+  return res;
+}
+
+- (NSUInteger)unreadTransactionsWithUser:(InfinitUser*)user
+{
+  NSUInteger res = 0;
+  for (InfinitPeerTransaction* transaction in self.transaction_map.allValues)
+  {
+    if ([transaction.other_user isEqual:user] && transaction.unread)
+      res++;
+  }
+  return res;
+}
+
+- (void)markTransactionsWithUserRead:(InfinitUser*)user
+{
+  for (InfinitPeerTransaction* transaction in self.transaction_map.allValues)
+  {
+    if ([transaction.other_user isEqual:user])
+      transaction.unread = NO;
+  }
+}
+
+- (NSUInteger)incompleteTransactionsWithUser:(InfinitUser*)user
+{
+  NSUInteger res = 0;
+  for (InfinitPeerTransaction* transaction in self.transaction_map.allValues)
+  {
+    if ([transaction.other_user isEqual:user] && !transaction.done)
+      res++;
+  }
+  return res;
+}
+
+- (NSUInteger)transferringTransactionsWithUser:(InfinitUser*)user
+{
+  NSUInteger res = 0;
+  for (InfinitPeerTransaction* transaction in self.transaction_map.allValues)
+  {
+    if ([transaction.other_user isEqual:user] && transaction.status == gap_transaction_transferring)
+      res++;
+  }
+  return res;
+}
+
+- (double)progressWithUser:(InfinitUser*)user
+{
+  double res = 0.0f;
+  double total = 0.0f;
+  for (InfinitPeerTransaction* transaction in self.transaction_map.allValues)
+  {
+    if ([transaction.other_user isEqual:user] && transaction.status == gap_transaction_transferring)
+    {
+      total += 1.0f;
+      res += transaction.progress;
+    }
+  }
+  return (res / total);
+}
+
+- (NSArray*)latestTransactionPerSwagger
+{
+  NSMutableSet* transaction_swaggers = [NSMutableSet set];
+  NSMutableArray* res = [NSMutableArray array];
+  NSArray* all_transactions = [self transactionsIncludingArchived:YES thisDeviceOnly:NO];
+  for (InfinitPeerTransaction* transaction in all_transactions)
+  {
+    if (![transaction_swaggers containsObject:transaction.other_user])
+    {
+      [transaction_swaggers addObject:transaction.other_user];
+      [res addObject:transaction];
+    }
+  }
+  return res;
+}
+
 #pragma mark - Transaction Updated
 
 - (void)handlePhoneTransaction:(InfinitPeerTransaction*)transaction
+                 withOldStatus:(gap_TransactionStatus)old_status
 {
   if (transaction.status == gap_transaction_transferring &&
+      old_status == gap_transaction_new &&
       transaction.recipient.ghost_code.length > 0)
   {
     [self sendPhoneTransactionNotification:transaction];
@@ -383,26 +533,24 @@ static InfinitPeerTransactionManager* _instance = nil;
 
 - (void)transactionUpdated:(InfinitPeerTransaction*)transaction
 {
-  @synchronized(_transaction_map)
+  @synchronized(self.transaction_map)
   {
-    InfinitPeerTransaction* existing = [_transaction_map objectForKey:transaction.id_];
+    InfinitPeerTransaction* existing = [self.transaction_map objectForKey:transaction.id_];
     if (existing == nil)
     {
-      [_transaction_map setObject:transaction forKey:transaction.id_];
+      [self.transaction_map setObject:transaction forKey:transaction.id_];
       [self sendNewTransactionNotification:transaction];
-      [self handlePhoneTransaction:transaction];
     }
     else
     {
-      if (existing.status != transaction.status)
+      gap_TransactionStatus old_status = existing.status;
+      [existing updateWithTransaction:transaction];
+      if (existing.status != old_status)
       {
-        [existing updateWithTransaction:transaction];
         [self sendTransactionStatusNotification:existing];
-        [self handlePhoneTransaction:existing];
-      }
-      else
-      {
-        [existing updateWithTransaction:transaction];
+        [self handlePhoneTransaction:existing withOldStatus:old_status];
+        if (old_status == gap_transaction_waiting_accept && !existing.done)
+          [self sendTransactionAcceptedNotification:existing];
       }
     }
   }
@@ -410,28 +558,62 @@ static InfinitPeerTransactionManager* _instance = nil;
 
 #pragma mark - Transaction Notifications
 
+- (NSDictionary*)userInfoForTransaction:(InfinitPeerTransaction*)transaction
+{
+  return @{kInfinitTransactionId: transaction.id_};
+}
+
+- (void)postNotificationOnMainThreadName:(NSString*)name
+                             transaction:(InfinitPeerTransaction*)transaction
+{
+  NSDictionary* user_info = nil;
+  if (transaction)
+    user_info = [self userInfoForTransaction:transaction];
+  dispatch_async(dispatch_get_main_queue(), ^
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:name
+                                                        object:self
+                                                      userInfo:user_info];
+  });
+}
+
+- (void)sendTransactionAcceptedNotification:(InfinitPeerTransaction*)transaction
+{
+  [self postNotificationOnMainThreadName:INFINIT_PEER_TRANSACTION_ACCEPTED_NOTIFICATION
+                             transaction:transaction];
+}
+
+- (void)sendTransactionCreatedNotification
+{
+  [self postNotificationOnMainThreadName:INFINIT_PEER_TRANSACTION_CREATED_NOTIFICATION
+                             transaction:nil];
+}
+
 - (void)sendTransactionStatusNotification:(InfinitPeerTransaction*)transaction
 {
-  NSDictionary* user_info = @{@"id": transaction.id_};
-  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION
-                                                      object:self
-                                                    userInfo:user_info];
+  [self postNotificationOnMainThreadName:INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION
+                             transaction:transaction];
 }
 
 - (void)sendPhoneTransactionNotification:(InfinitPeerTransaction*)transaction
 {
-  NSDictionary* user_info = @{@"id": transaction.id_};
-  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION
-                                                      object:self
-                                                    userInfo:user_info];
+  [self postNotificationOnMainThreadName:INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION
+                             transaction:transaction];
 }
 
 - (void)sendNewTransactionNotification:(InfinitPeerTransaction*)transaction
 {
-  NSDictionary* user_info = @{@"id": transaction.id_};
-  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION
-                                                      object:self
-                                                    userInfo:user_info];
+  [self postNotificationOnMainThreadName:INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION 
+                             transaction:transaction];
+}
+
+#pragma mark - Connection Status Changed
+
+- (void)connectionStatusChanged:(NSNotification*)notification
+{
+  InfinitConnectionStatus* connection_status = notification.object;
+  if (!self.filled_model && connection_status.status)
+    [self _fillTransactionMap];
 }
 
 @end
