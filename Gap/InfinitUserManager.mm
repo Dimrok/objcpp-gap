@@ -8,6 +8,7 @@
 
 #import "InfinitUserManager.h"
 
+#import "InfinitConnectionManager.h"
 #import "InfinitStateManager.h"
 #import "InfinitStateResult.h"
 #import "InfinitPeerTransactionManager.h"
@@ -21,6 +22,7 @@ static InfinitUserManager* _instance = nil;
 
 @interface InfinitUserManager ()
 
+@property (atomic, readonly) BOOL filled_model;
 @property (atomic, readonly) NSMutableDictionary* user_map;
 
 @end
@@ -38,19 +40,23 @@ static InfinitUserManager* _instance = nil;
   NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
+    _filled_model = NO;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(clearModel:)
                                                  name:INFINIT_CLEAR_MODEL_NOTIFICATION
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(connectionStatusChanged:)
+                                                 name:INFINIT_CONNECTION_STATUS_CHANGE 
+                                               object:nil];
     _me = nil;
-    [self _fillMapWithSwaggers];
-    [self _fetchFavorites];
   }
   return self;
 }
 
 - (void)dealloc
 {
+  [NSObject cancelPreviousPerformRequestsWithTarget:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -224,33 +230,6 @@ static InfinitUserManager* _instance = nil;
   }
 }
 
-- (NSArray*)_localResultsForText:(NSString*)text
-{
-  NSMutableArray* handle_matches = [NSMutableArray array];
-  NSMutableArray* fullname_matches = [NSMutableArray array];
-  @synchronized(self.user_map)
-  {
-    NSUInteger handle_search_mask = (NSCaseInsensitiveSearch|
-                                     NSAnchoredSearch|
-                                     NSWidthInsensitiveSearch);
-    NSUInteger name_search_mask = (NSCaseInsensitiveSearch|NSWidthInsensitiveSearch);
-    for (InfinitUser* user in self.user_map.allValues)
-    {
-      if (user.deleted)
-        continue;
-
-      if ([user.handle rangeOfString:text options:handle_search_mask].location != NSNotFound)
-        [handle_matches addObject:user];
-      else if ([user.fullname rangeOfString:text options:name_search_mask].location != NSNotFound)
-        [fullname_matches addObject:user];
-    }
-  }
-  NSMutableArray* combined_results = [NSMutableArray arrayWithArray:handle_matches];
-  [combined_results addObjectsFromArray:fullname_matches];
-  NSArray* res = [self _sortedSearchResults:combined_results forText:text];
-  return res;
-}
-
 - (NSArray*)_sortedSearchResults:(NSArray*)unsorted
                          forText:(NSString*)text
 {
@@ -286,17 +265,41 @@ static InfinitUserManager* _instance = nil;
   return res.array;
 }
 
-- (void)searchUsers:(NSString*)text
-    performSelector:(SEL)selector
-           onObject:(id)object
+- (NSArray*)searchLocalUsers:(NSString*)text
+{
+  NSMutableArray* handle_matches = [NSMutableArray array];
+  NSMutableArray* fullname_matches = [NSMutableArray array];
+  @synchronized(self.user_map)
+  {
+    NSUInteger handle_search_mask = (NSCaseInsensitiveSearch|
+                                     NSAnchoredSearch|
+                                     NSWidthInsensitiveSearch);
+    NSUInteger name_search_mask = (NSCaseInsensitiveSearch|NSWidthInsensitiveSearch);
+    for (InfinitUser* user in self.user_map.allValues)
+    {
+      if (user.deleted)
+        continue;
+
+      if ([user.handle rangeOfString:text options:handle_search_mask].location != NSNotFound)
+        [handle_matches addObject:user];
+      else if ([user.fullname rangeOfString:text options:name_search_mask].location != NSNotFound)
+        [fullname_matches addObject:user];
+    }
+  }
+  NSMutableArray* combined_results = [NSMutableArray arrayWithArray:handle_matches];
+  [combined_results addObjectsFromArray:fullname_matches];
+  NSArray* res = [self _sortedSearchResults:combined_results forText:text];
+  return res;
+}
+
+- (void)searchRemoteUsers:(NSString*)text
+          performSelector:(SEL)selector
+                 onObject:(id)object
 {
   NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithDictionary:@{
     @"selector": NSStringFromSelector(selector),
     @"object": object
     }];
-  NSArray* local_results = [self _localResultsForText:text];
-  if (local_results.count > 0)
-    [object performSelector:selector withObject:local_results afterDelay:0.0f];
   [[InfinitStateManager sharedInstance] textSearch:text
                                    performSelector:@selector(searchUsersCallback:)
                                           onObject:self
@@ -380,6 +383,8 @@ static InfinitUserManager* _instance = nil;
     InfinitUser* existing = [self.user_map objectForKey:user.id_];
     if (existing == nil)
     {
+      if (user == nil)
+        return;
       [self.user_map setObject:user forKey:user.id_];
       [self sendNewUserNotification:user];
       return;
@@ -471,29 +476,51 @@ static InfinitUserManager* _instance = nil;
 
 #pragma mark - User Notifications
 
+- (NSDictionary*)userInfoForUser:(InfinitUser*)user
+{
+  return @{kInfinitUserId: user.id_};
+}
+
+- (void)postNotificationOnMainThreadName:(NSString*)name
+                                    user:(InfinitUser*)user
+{
+  NSDictionary* user_info = nil;
+  if (user)
+    user_info = [self userInfoForUser:user];
+  dispatch_async(dispatch_get_main_queue(), ^
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:name
+                                                        object:self
+                                                      userInfo:user_info];
+  });
+}
+
 - (void)sendNewUserNotification:(InfinitUser*)user
 {
-  NSDictionary* user_info = @{@"id": user.id_};
-  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_NEW_USER_NOTIFICATION
-                                                      object:self
-                                                    userInfo:user_info];
+  [self postNotificationOnMainThreadName:INFINIT_NEW_USER_NOTIFICATION user:user];
 }
 
 - (void)sendUserStatusNotification:(InfinitUser*)user
 {
-  NSDictionary* user_info = @{@"id": user.id_};
-  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_USER_STATUS_NOTIFICATION
-                                                      object:self
-                                                    userInfo:user_info];
+  [self postNotificationOnMainThreadName:INFINIT_USER_STATUS_NOTIFICATION user:user];
   
 }
 
 - (void)sendUserDeletedNotification:(InfinitUser*)user
 {
-  NSDictionary* user_info = @{@"id": user.id_};
-  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_USER_DELETED_NOTIFICATION
-                                                      object:self
-                                                    userInfo:user_info];
+  [self postNotificationOnMainThreadName:INFINIT_USER_DELETED_NOTIFICATION user:user];
+}
+
+#pragma mark - Connection Status Changed
+
+- (void)connectionStatusChanged:(NSNotification*)notification
+{
+  InfinitConnectionStatus* connection_status = notification.object;
+  if (!self.filled_model && connection_status.status)
+  {
+    [self _fillMapWithSwaggers];
+    [self _fetchFavorites];
+  }
 }
 
 @end

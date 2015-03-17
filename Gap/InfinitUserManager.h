@@ -105,9 +105,15 @@
        performSelector:(SEL)selector
               onObject:(id)object;
 
+/** Search in the local user map for users.
+ @param text
+  Search text.
+ @return Array of users.
+ */
+- (NSArray*)searchLocalUsers:(NSString*)text;
+
 /** Asynchronously fetch users whose fullname or handle contains text.
  When the results have been fetched, the selector of the object is called with an array of Users.
- This will occur twice: the first time for local results and the second for remote.
  @param text
   Text to search for.
  @param selector
@@ -115,9 +121,9 @@
  @param object
   Calling object.
  */
-- (void)searchUsers:(NSString*)text
-    performSelector:(SEL)selector
-           onObject:(id)object;
+- (void)searchRemoteUsers:(NSString*)text
+          performSelector:(SEL)selector
+                 onObject:(id)object;
 
 /** Asynchronously fetch users whose emails match those provided.
  When the results have been fetched, the selector of the object is called with a dictionary:
