@@ -89,10 +89,24 @@ static NSString* _self_device_id = nil;
   return [InfinitStateWrapper sharedInstance];
 }
 
-+ (void)startState
++ (void)startStateWithDownloadDir:(NSString*)download_dir
 {
+  [InfinitStateWrapper startStateWithInitialDownloadDir:download_dir];
   [[InfinitStateManager sharedInstance] _attachCallbacks];
   [InfinitCrashReporter sharedInstance];
+  [InfinitConnectionManager sharedInstance];
+}
+
++ (void)startState
+{
+  [InfinitStateManager startStateWithDownloadDir:nil];
+}
+
++ (void)_startModelManagers
+{
+  [InfinitUserManager sharedInstance];
+  [InfinitLinkTransactionManager sharedInstance];
+  [InfinitPeerTransactionManager sharedInstance];
 }
 
 - (uint64_t)max_mirror_size
@@ -221,11 +235,12 @@ static NSString* _self_device_id = nil;
      [manager _clearSelf];
      if (res == gap_ok)
      {
+       manager.logged_in = YES;
+       [weak_self setCurrent_user:email];
+       [InfinitStateManager _startModelManagers];
        [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
                                                          stillTrying:NO
                                                            lastError:@""];
-       manager.logged_in = YES;
-       [weak_self setCurrent_user:email];
        [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
      }
      else
@@ -278,11 +293,12 @@ performSelector:(SEL)selector
      [manager _clearSelf];
      if (res == gap_ok)
      {
+       manager.logged_in = YES;
+       [weak_self setCurrent_user:email];
+       [InfinitStateManager _startModelManagers];
        [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
                                                          stillTrying:NO
                                                            lastError:@""];
-       manager.logged_in = YES;
-       [weak_self setCurrent_user:email];
        [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
      }
      else
@@ -344,14 +360,15 @@ performSelector:(SEL)selector
     [manager _clearSelf];
     if (res == gap_ok)
     {
-      [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
-                                                        stillTrying:NO
-                                                          lastError:@""];
       manager.logged_in = YES;
       if (email.isEmail)
         [weak_self setCurrent_user:email];
       else
         [weak_self setCurrent_user:@"unknown Facebook user"];
+      [InfinitStateManager _startModelManagers];
+      [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
+                                                        stillTrying:NO
+                                                          lastError:@""];
       [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
     }
     else
@@ -497,32 +514,23 @@ performSelector:(SEL)selector
   return _self_device_id;
 }
 
-#if TARGET_OS_IPHONE
-- (UIImage*)avatarForUserWithId:(NSNumber*)id_
-#else
-- (NSImage*)avatarForUserWithId:(NSNumber*)id_
-#endif
+- (INFINIT_IMAGE*)avatarForUserWithId:(NSNumber*)id_
 {
   if (!self.logged_in)
     return nil;
   void* gap_data;
   size_t size;
   gap_Status status = gap_avatar(self.stateWrapper.state, id_.unsignedIntValue, &gap_data, &size);
+  INFINIT_IMAGE* res = nil;
+  if (status == gap_ok && size > 0)
+  {
+    NSData* data = [[NSData alloc] initWithBytes:gap_data length:size];
 #if TARGET_OS_IPHONE
-  UIImage* res = nil;
-  if (status == gap_ok && size > 0)
-  {
-    NSData* data = [[NSData alloc] initWithBytes:gap_data length:size];
     res = [UIImage imageWithData:data];
-  }
 #else
-  NSImage* res = nil;
-  if (status == gap_ok && size > 0)
-  {
-    NSData* data = [[NSData alloc] initWithBytes:gap_data length:size];
     res = [[NSImage alloc] initWithData:data];
-  }
 #endif
+  }
   return res;
 }
 
@@ -586,10 +594,13 @@ performSelector:(SEL)selector
 }
 
 - (NSNumber*)createLinkWithFiles:(NSArray*)files
-                     withMessage:(NSString*)message
+                     withMessage:(NSString*)message_
 {
   if (!self.logged_in)
     return nil;
+  NSString* message = message_;
+  if (message == nil)
+    message = @"";
   uint32_t res = gap_create_link_transaction(self.stateWrapper.state,
                                              [self _filesVectorFromNSArray:files],
                                              message.UTF8String);
@@ -676,6 +687,11 @@ performSelector:(SEL)selector
 }
 
 - (void)acceptTransactionWithId:(NSNumber*)id_
+{
+  [self acceptTransactionWithId:id_ toRelativeDirectory:nil];
+}
+
+- (void)acceptTransactionWithId:(NSNumber*)id_
             toRelativeDirectory:(NSString*)directory
 {
   if (!self.logged_in)
@@ -703,8 +719,12 @@ performSelector:(SEL)selector
 - (void)setNetworkConnectionStatus:(InfinitNetworkStatuses)status
 {
   bool connected = false;
+#if TARGET_OS_IPHONE
   if (status == InfinitNetworkStatusReachableViaLAN ||
       status == InfinitNetworkStatusReachableViaWWAN)
+#else
+  if (status == InfinitNetworkStatusReachableViaLAN)
+#endif
   {
     connected = true;
   }
@@ -868,6 +888,30 @@ performSelector:(SEL)selector
   } performSelector:selector onObject:object withData:data];
 }
 
+- (void)userByEmail:(NSString*)email
+    performSelector:(SEL)selector
+           onObject:(id)object
+           withData:(NSMutableDictionary*)data
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     if (!manager.logged_in)
+       return gap_not_logged_in;
+     surface::gap::User res;
+     gap_Status status = gap_user_by_email(manager.stateWrapper.state, email.UTF8String, res);
+     if (status == gap_ok)
+     {
+       [manager _updateUser:res];
+       data[@"user_id"] = [manager _numFromUint:res.id];
+     }
+     else
+     {
+       data[@"user_id"] = @0;
+     }
+     return gap_ok;
+   } performSelector:selector onObject:object withData:data];
+}
+
 - (void)userByHandle:(NSString*)handle
      performSelector:(SEL)selector
             onObject:(id)object
@@ -1011,6 +1055,31 @@ performSelector:(SEL)selector
                                      method.UTF8String);
     }
   }];
+}
+
+#pragma mark - Proxy
+
+- (void)setProxy:(gap_ProxyType)type
+            host:(NSString*)host
+            port:(UInt16)port
+        username:(NSString*)username
+        password:(NSString*)password
+{
+  gap_set_proxy(self.stateWrapper.state, type, host.UTF8String, port,
+                username.UTF8String, password.UTF8String);
+}
+
+- (void)unsetProxy:(gap_ProxyType)type
+{
+  gap_unset_proxy(self.stateWrapper.state, type);
+}
+
+#pragma mark - Download Directory
+
+- (void)setDownloadDirectory:(NSString*)download_dir
+                    fallback:(BOOL)fallback
+{
+  gap_set_output_dir(self.stateWrapper.state, download_dir.UTF8String, fallback);
 }
 
 #pragma mark - Conversions

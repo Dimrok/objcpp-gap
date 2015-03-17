@@ -9,14 +9,18 @@
 #import <Foundation/Foundation.h>
 #if TARGET_OS_IPHONE
 # import <UIKit/UIImage.h>
+# define INFINIT_IMAGE UIImage
 #else
 # import <AppKit/NSImage.h>
+# define INFINIT_IMAGE NSImage
 #endif
 
 #import "InfinitConnectionManager.h"
 #import "InfinitLinkTransaction.h"
 #import "InfinitPeerTransaction.h"
 #import "InfinitUser.h"
+
+#import <surface/gap/enums.hh>
 
 /** Notification sent when the model needs to be cleared. 
  This is generally sent when a new user logs in.
@@ -37,6 +41,7 @@
 + (instancetype)sharedInstance;
 
 + (void)startState;
++ (void)startStateWithDownloadDir:(NSString*)download_dir;
 + (void)stopState;
 
 #pragma mark - Register/Login/Logout
@@ -135,11 +140,7 @@ performSelector:(SEL)selector
 - (NSNumber*)self_id;
 - (NSString*)self_device_id;
 
-#if TARGET_OS_IPHONE
-- (UIImage*)avatarForUserWithId:(NSNumber*)id_;
-#else
-- (NSImage*)avatarForUserWithId:(NSNumber*)id_;
-#endif
+- (INFINIT_IMAGE*)avatarForUserWithId:(NSNumber*)id_;
 
 #pragma mark - All Transactions
 - (void)pauseTransactionWithId:(NSNumber*)id_;
@@ -169,6 +170,7 @@ performSelector:(SEL)selector
            toRecipient:(InfinitUser*)recipient
               onDevice:(NSString*)device_id 
            withMessage:(NSString*)message;
+- (void)acceptTransactionWithId:(NSNumber*)id_;
 - (void)acceptTransactionWithId:(NSNumber*)id_
             toRelativeDirectory:(NSString*)directory;
 - (void)rejectTransactionWithId:(NSNumber*)id_;
@@ -219,6 +221,11 @@ performSelector:(SEL)selector
             onObject:(id)object
             withData:(NSMutableDictionary*)data;
 
+- (void)userByEmail:(NSString*)email
+    performSelector:(SEL)selector
+           onObject:(id)object
+           withData:(NSMutableDictionary*)data;
+
 - (void)userByHandle:(NSString*)handle
      performSelector:(SEL)selector
             onObject:(id)object
@@ -251,5 +258,20 @@ performSelector:(SEL)selector
 - (void)sendMetricEvent:(NSString*)event
              withMethod:(NSString*)method
       andAdditionalData:(NSDictionary*)additional;
+
+#pragma mark - Proxy
+
+- (void)setProxy:(gap_ProxyType)type
+            host:(NSString*)host
+            port:(UInt16)port
+        username:(NSString*)username
+        password:(NSString*)password;
+
+- (void)unsetProxy:(gap_ProxyType)type;
+
+#pragma mark - Download Directory
+
+- (void)setDownloadDirectory:(NSString*)download_dir
+                    fallback:(BOOL)fallback;
 
 @end
