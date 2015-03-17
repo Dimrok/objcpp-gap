@@ -31,6 +31,9 @@ static InfinitLogManager* _instance = nil;
   if (self = [super init])
   {
     [self rollLogs];
+#if !TARGET_OS_IPHONE
+    [self _cleanOldLogs];
+#endif
   }
   return self;
 }
@@ -40,6 +43,27 @@ static InfinitLogManager* _instance = nil;
   if (_instance == nil)
     _instance = [[InfinitLogManager alloc] init];
   return _instance;
+}
+
+- (void)_cleanOldLogs
+{
+  // Remove old format logs: state_<x>.log.
+  NSError* error = nil;
+  NSString* old_log_dir = [NSHomeDirectory() stringByAppendingPathComponent:@".infinit"];
+  NSArray* contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:old_log_dir
+                                                                          error:&error];
+  NSMutableArray* old_logs = [NSMutableArray array];
+  for (NSString* file in contents)
+  {
+    if ([file.pathExtension isEqualToString:@"log"])
+      [old_logs addObject:file];
+  }
+  NSString* path = nil;
+  for (NSString* file in old_logs)
+  {
+    path = [old_log_dir stringByAppendingPathComponent:file];
+    [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
+  }
 }
 
 #pragma mark - General
