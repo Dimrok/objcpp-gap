@@ -12,6 +12,7 @@
 #import "InfinitLogManager.h"
 
 static InfinitStateWrapper* _wrapper_instance = nil;
+static BOOL _production = NO;
 
 @implementation InfinitStateWrapper
 
@@ -49,8 +50,6 @@ static InfinitStateWrapper* _wrapper_instance = nil;
   setenv("INFINIT_TROPHONIUS_HOST", "192.168.0.14", 0);
   setenv("INFINIT_TROPHONIUS_PORT", "8181", 0);
 
-//  setenv("INFINIT_PRODUCTION", "1", 0);
-
   setenv("ELLE_REAL_ASSERT", "1", 0);
 
   std::string log_level =
@@ -74,27 +73,32 @@ static InfinitStateWrapper* _wrapper_instance = nil;
 
 #pragma mark - Setup Instace
 
-+ (instancetype)sharedInstance
++ (void)startStateWithInitialDownloadDir:(NSString*)download_dir
 {
+  NSCAssert(_wrapper_instance == nil, @"Use sharedInstance");
   if (_wrapper_instance == nil)
   {
-    BOOL production = NO;
     [InfinitStateWrapper setEnvironmentVariables];
     InfinitDirectoryManager* dir_manager = [InfinitDirectoryManager sharedInstance];
-    NSString* download_dir = dir_manager.download_directory;
+    NSString* download = download_dir ? download_dir : dir_manager.download_directory;
     NSString* persistent_config_dir = dir_manager.persistent_directory;
     NSString* non_persistent_config_dir = dir_manager.non_persistent_directory;
     BOOL enable_mirroring = YES;
     uint64_t max_mirror_size = 100 * 1024 * 1024;
     _wrapper_instance =
-      [[InfinitStateWrapper alloc] initWithState:gap_new(production,
-                                                         download_dir.UTF8String,
-                                                         persistent_config_dir.UTF8String,
-                                                         non_persistent_config_dir.UTF8String,
-                                                         enable_mirroring,
-                                                         max_mirror_size)
-                                andMaxMirrorSize:max_mirror_size];
+    [[InfinitStateWrapper alloc] initWithState:gap_new(_production,
+                                                       download.UTF8String,
+                                                       persistent_config_dir.UTF8String,
+                                                       non_persistent_config_dir.UTF8String,
+                                                       enable_mirroring,
+                                                       max_mirror_size)
+                              andMaxMirrorSize:max_mirror_size];
   }
+}
+
++ (instancetype)sharedInstance
+{
+  NSCAssert(_wrapper_instance != nil, @"start instance with startStateWithInitialDownloadDir");
   return _wrapper_instance;
 }
 
