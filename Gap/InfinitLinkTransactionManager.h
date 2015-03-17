@@ -30,8 +30,15 @@
 */
 #define INFINIT_LINK_TRANSACTION_DELETED_NOTIFICATION @"INFINIT_LINK_TRANSACTION_DELETED_NOTIFICATION"
 
+/** Notification sent when link created.
+ Contains a dictionary with the transaction "id".
+ */
+#define INFINIT_LINK_TRANSACTION_CREATED_NOTIFICATION @"INFINIT_LINK_TRANSACTION_CREATED_NOTIFICATION"
+
 @interface InfinitLinkTransactionManager : NSObject
 
+/// Boolean for when transactions are running.
+@property (readonly) BOOL running_transactions;
 // Returns a reverse time ordered list of transactions.
 @property (readonly) NSArray* transactions;
 
@@ -54,6 +61,13 @@
  */
 - (NSNumber*)createLinkWithFiles:(NSArray*)files
                      withMessage:(NSString*)message;
+
+/** Create a link from a screenshot.
+ @param file
+  Screenshot.
+ @returns Transaction ID.
+ */
+- (NSNumber*)createScreenshotLink:(NSString*)file;
 
 /** Pause a Transaction.
  @param transaction

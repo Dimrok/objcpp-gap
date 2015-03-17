@@ -8,6 +8,7 @@
 
 #import "InfinitLinkTransactionManager.h"
 
+#import "InfinitConnectionManager.h"
 #import "InfinitStateManager.h"
 
 #undef check
@@ -17,10 +18,14 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.LinkTransactionManager");
 
 static InfinitLinkTransactionManager* _instance = nil;
 
+@interface InfinitLinkTransactionManager ()
+
+@property (atomic, readonly) BOOL filled_model;
+@property (atomic, readonly) NSMutableDictionary* transaction_map;
+
+@end
+
 @implementation InfinitLinkTransactionManager
-{
-  NSMutableDictionary* _transaction_map;
-}
 
 #pragma mark - Init
 
@@ -29,7 +34,15 @@ static InfinitLinkTransactionManager* _instance = nil;
   NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
-    [self _fillTransactionMap];
+    _filled_model = NO;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(clearModel)
+                                                 name:INFINIT_CLEAR_MODEL_NOTIFICATION
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(connectionStatusChanged:)
+                                                 name:INFINIT_CONNECTION_STATUS_CHANGE
+                                               object:nil];
   }
   return self;
 }
@@ -37,16 +50,13 @@ static InfinitLinkTransactionManager* _instance = nil;
 + (instancetype)sharedInstance
 {
   if (_instance == nil)
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(clearModel)
-                                                 name:INFINIT_CLEAR_MODEL_NOTIFICATION
-                                               object:nil];
     _instance = [[InfinitLinkTransactionManager alloc] init];
   return _instance;
 }
 
 - (void)dealloc
 {
+  [NSObject cancelPreviousPerformRequestsWithTarget:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -57,29 +67,49 @@ static InfinitLinkTransactionManager* _instance = nil;
 
 - (void)_fillTransactionMap
 {
-  _transaction_map = [NSMutableDictionary dictionary];
+  if (self.transaction_map == nil)
+    _transaction_map = [NSMutableDictionary dictionary];
+  else
+    [self.transaction_map removeAllObjects];
   NSArray* transactions = [[InfinitStateManager sharedInstance] linkTransactions];
   for (InfinitLinkTransaction* transaction in transactions)
   {
     if (![self _ignoredStatus:transaction])
     {
-      [_transaction_map setObject:transaction forKey:transaction.id_];
+      [self.transaction_map setObject:transaction forKey:transaction.id_];
     }
   }
+  _filled_model = YES;
 }
 
 #pragma mark - Access Transactions
 
+- (BOOL)running_transactions
+{
+  for (InfinitPeerTransaction* transaction in self.transaction_map.allValues)
+  {
+    if (transaction.status == gap_transaction_transferring)
+      return YES;
+  }
+  return NO;
+}
+
 - (NSArray*)transactions
 {
-  return [[_transaction_map allValues] sortedArrayUsingSelector:@selector(compare:)];
+  NSMutableArray* res = [NSMutableArray array];
+  for (InfinitLinkTransaction* transaction in self.transaction_map.allValues)
+  {
+    if (![self _ignoredStatus:transaction])
+      [res addObject: transaction];
+  }
+  return [res sortedArrayUsingSelector:@selector(compare:)];
 }
 
 - (InfinitLinkTransaction*)transactionWithId:(NSNumber*)id_
 {
-  @synchronized(_transaction_map)
+  @synchronized(self.transaction_map)
   {
-    InfinitLinkTransaction* res = [_transaction_map objectForKey:id_];
+    InfinitLinkTransaction* res = [self.transaction_map objectForKey:id_];
     if (res == nil)
     {
       res = [[InfinitStateManager sharedInstance] linkTransactionById:id_];
@@ -93,13 +123,30 @@ static InfinitLinkTransactionManager* _instance = nil;
 - (NSNumber*)createLinkWithFiles:(NSArray*)files
                      withMessage:(NSString*)message
 {
+  return [self _createLinkWithFiles:files withMessage:message asScreenshot:NO];
+}
+
+- (NSNumber*)createScreenshotLink:(NSString*)file
+{
+  return [self _createLinkWithFiles:@[file] withMessage:nil asScreenshot:YES];
+}
+
+- (NSNumber*)_createLinkWithFiles:(NSArray*)files
+                      withMessage:(NSString*)message
+                     asScreenshot:(BOOL)screenshot
+{
   NSNumber* res = [[InfinitStateManager sharedInstance] createLinkWithFiles:files
                                                                 withMessage:message];
   if (res.unsignedIntValue != 0)
   {
     InfinitLinkTransaction* transaction =
       [[InfinitStateManager sharedInstance] linkTransactionById:res];
+    if (screenshot)
+      transaction.screenshot = YES;
+    else
+      transaction.screenshot = NO;
     [self transactionUpdated:transaction];
+    [self sendTransactionCreatedNotification:transaction];
   }
   return res;
 }
@@ -128,25 +175,26 @@ static InfinitLinkTransactionManager* _instance = nil;
 
 - (void)transactionUpdated:(InfinitLinkTransaction*)transaction
 {
-  @synchronized(_transaction_map)
+  @synchronized(self.transaction_map)
   {
-    InfinitLinkTransaction* existing = [_transaction_map objectForKey:transaction.id_];
+    InfinitLinkTransaction* existing = [self.transaction_map objectForKey:transaction.id_];
     if (existing == nil)
     {
-      [_transaction_map setObject:transaction forKey:transaction.id_];
+      [self.transaction_map setObject:transaction forKey:transaction.id_];
       [self sendNewTransactionNotification:transaction];
     }
     else
     {
+      gap_TransactionStatus old_status = existing.status;
       [existing updateWithTransaction:transaction];
-      if (existing.status == transaction.status)
+      if (existing.status == old_status)
       {
         [self sendTransactionDataNotification:existing];
       }
       else if ([self _ignoredStatus:existing])
       {
         [self sendTransactionDeletedNotification:existing];
-        [_transaction_map removeObjectForKey:existing.id_];
+        [self.transaction_map removeObjectForKey:existing.id_];
       }
       else
       {
@@ -174,36 +222,62 @@ static InfinitLinkTransactionManager* _instance = nil;
 
 #pragma mark - Transaction Notifications
 
+- (NSDictionary*)userInfoForTransaction:(InfinitLinkTransaction*)transaction
+{
+  return @{kInfinitTransactionId: transaction.id_};
+}
+
+- (void)postNotificationOnMainThreadName:(NSString*)name
+                             transaction:(InfinitLinkTransaction*)transaction
+{
+  NSDictionary* user_info = nil;
+  if (transaction)
+    user_info = [self userInfoForTransaction:transaction];
+  dispatch_async(dispatch_get_main_queue(), ^
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:name
+                                                        object:self
+                                                      userInfo:user_info];
+  });
+}
+
+- (void)sendTransactionCreatedNotification:(InfinitLinkTransaction*)transaction
+{
+  [self postNotificationOnMainThreadName:INFINIT_LINK_TRANSACTION_CREATED_NOTIFICATION
+                             transaction:transaction];
+}
+
 - (void)sendTransactionStatusNotification:(InfinitLinkTransaction*)transaction
 {
-  NSDictionary* user_info = @{@"id": transaction.id_};
-  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_LINK_TRANSACTION_STATUS_NOTIFICATION
-                                                      object:self
-                                                    userInfo:user_info];
+  [self postNotificationOnMainThreadName:INFINIT_LINK_TRANSACTION_STATUS_NOTIFICATION
+                             transaction:transaction];
 }
 
 - (void)sendTransactionDataNotification:(InfinitLinkTransaction*)transaction
 {
-  NSDictionary* user_info = @{@"id": transaction.id_};
-  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_LINK_TRANSACTION_DATA_NOTIFICATION
-                                                      object:self
-                                                    userInfo:user_info];
+  [self postNotificationOnMainThreadName:INFINIT_LINK_TRANSACTION_DATA_NOTIFICATION
+                             transaction:transaction];
 }
 
 - (void)sendNewTransactionNotification:(InfinitLinkTransaction*)transaction
 {
-  NSDictionary* user_info = @{@"id": transaction.id_};
-  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_NEW_LINK_TRANSACTION_NOTIFICATION
-                                                      object:self
-                                                    userInfo:user_info];
+  [self postNotificationOnMainThreadName:INFINIT_NEW_LINK_TRANSACTION_NOTIFICATION
+                             transaction:transaction];
 }
 
 - (void)sendTransactionDeletedNotification:(InfinitLinkTransaction*)transaction
 {
-  NSDictionary* user_info = @{@"id": transaction.id_};
-  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_LINK_TRANSACTION_DELETED_NOTIFICATION
-                                                      object:self
-                                                    userInfo:user_info];
+  [self postNotificationOnMainThreadName:INFINIT_LINK_TRANSACTION_DELETED_NOTIFICATION
+                             transaction:transaction];
+}
+
+#pragma mark - Connection Status Changed
+
+- (void)connectionStatusChanged:(NSNotification*)notification
+{
+  InfinitConnectionStatus* connection_status = notification.object;
+  if (!self.filled_model && connection_status.status)
+    [self _fillTransactionMap];
 }
 
 @end
