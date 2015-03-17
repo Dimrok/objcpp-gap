@@ -7,6 +7,8 @@
 //
 
 #import "InfinitAvatarManager.h"
+
+#import "InfinitColor.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitStateManager.h"
 #import "InfinitStateResult.h"
@@ -28,6 +30,9 @@ static InfinitAvatarManager* _instance = nil;
 #if TARGET_OS_IPHONE
 static UIImage* _email_avatar = nil;
 static UIImage* _phone_avatar = nil;
+#else
+static NSImage* _email_avatar = nil;
+static NSImage* _phone_avatar = nil;
 #endif
 
 
@@ -55,6 +60,23 @@ static UIImage* _phone_avatar = nil;
                                                object:nil];
     _avatar_map = [NSMutableDictionary dictionary];
     _requested_avatars = [NSMutableSet set];
+    if (_phone_avatar == nil)
+    {
+#if TARGET_OS_IPHONE
+      _phone_avatar = [UIImage imageNamed:@"avatar-phone"];
+#else
+      _phone_avatar = [NSImage imageNamed:@"avatar-phone"];
+#endif
+    }
+    if (_email_avatar == nil)
+    {
+#if TARGET_OS_IPHONE
+      _email_avatar = [UIImage imageNamed:@"avatar-email"];
+#else
+      _email_avatar = [NSImage imageNamed:@"avatar-phone"];
+#endif
+    }
+
   }
   return self;
 }
@@ -87,6 +109,7 @@ static UIImage* _phone_avatar = nil;
   return [res stringByAppendingPathExtension:@"jpg"];
 }
 
+#if TARGET_OS_IPHONE
 - (void)writeUser:(InfinitUser*)user
 avatarToDiskCache:(UIImage*)avatar
 {
@@ -94,6 +117,17 @@ avatarToDiskCache:(UIImage*)avatar
   [UIImageJPEGRepresentation(avatar, 1.0f) writeToFile:[self pathForUser:user]
                                                options:NSDataWritingAtomic
                                                  error:&error];
+#else
+- (void)writeUser:(InfinitUser*)user
+avatarToDiskCache:(NSImage*)avatar
+  {
+    NSError* error = nil;
+    NSData* image_data = avatar.TIFFRepresentation;
+    NSBitmapImageRep* image_rep = [[NSBitmapImageRep imageRepsWithData:image_data] firstObject];
+    NSDictionary* image_properties = @{NSImageCompressionFactor: @1.0f};
+    image_data = [image_rep representationUsingType:NSJPEGFileType properties:image_properties];
+    [image_data writeToFile:[self pathForUser:user] options:NSDataWritingAtomic error:&error];
+#endif
   if (error)
   {
     ELLE_ERR("%s: unable to write avatar (%s) to disk: %s",
@@ -101,7 +135,11 @@ avatarToDiskCache:(UIImage*)avatar
   }
 }
 
+#if TARGET_OS_IPHONE
 - (UIImage*)diskCacheAvatarForUser:(InfinitUser*)user
+#else
+- (NSImage*)diskCacheAvatarForUser:(InfinitUser*)user
+#endif
 {
   NSError* error = nil;
   NSArray* cached_files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:self.avatar_dir
@@ -118,7 +156,11 @@ avatarToDiskCache:(UIImage*)avatar
     if ([user_id isEqualToString:user.meta_id])
     {
       NSString* path = [self.avatar_dir stringByAppendingPathComponent:item];
+#if TARGET_OS_IPHONE
       UIImage* avatar = [UIImage imageWithContentsOfFile:path];
+#else
+      NSImage* avatar = [[NSImage alloc] initWithContentsOfFile:path];
+#endif
       if (avatar != nil && user_id != nil)
       {
         [_avatar_map setObject:avatar forKey:user_id];
@@ -145,7 +187,11 @@ avatarToDiskCache:(UIImage*)avatar
 
 #pragma mark - Public Functions
 
+#if TARGET_OS_IPHONE
 - (void)setSelfAvatar:(UIImage*)avatar
+#else
+- (void)setSelfAvatar:(NSImage*)avatar
+#endif
 {
   [[InfinitStateManager sharedInstance] setSelfAvatar:avatar
                                       performSelector:@selector(setAvatarCallback:)
@@ -169,15 +215,15 @@ avatarToDiskCache:(UIImage*)avatar
 
 #if TARGET_OS_IPHONE
 - (UIImage*)avatarForUser:(InfinitUser*)user
-{
-  if (user.id_.unsignedIntegerValue == 0)
-    return nil;
-  UIImage* avatar = [_avatar_map objectForKey:user.meta_id];
 #else
 - (NSImage*)avatarForUser:(InfinitUser*)user
+#endif
 {
   if (user.id_.unsignedIntegerValue == 0)
     return nil;
+#if TARGET_OS_IPHONE
+  UIImage* avatar = [_avatar_map objectForKey:user.meta_id];
+#else
   NSImage* avatar = [_avatar_map objectForKey:user.meta_id];
 #endif
   if (![_requested_avatars containsObject:user.meta_id])
@@ -207,31 +253,17 @@ avatarToDiskCache:(UIImage*)avatar
 
 #if TARGET_OS_IPHONE
 - (UIImage*)generateAvatarForUser:(InfinitUser*)user
+#else
+- (NSImage*)generateAvatarForUser:(InfinitUser*)user
+#endif
 {
   if (user.fullname.isPhoneNumber)
-  {
-    if (_phone_avatar == nil)
-      _phone_avatar = [UIImage imageNamed:@"avatar-phone"];
     return _phone_avatar;
-  }
   else if (user.fullname.isEmail)
-  {
-    if (_email_avatar == nil)
-      _email_avatar = [UIImage imageNamed:@"avatar-email"];
     return _email_avatar;
-  }
-  UIColor* fill = [UIColor colorWithRed:202.0f/255.0f
-                                  green:217.0f/255.0f
-                                   blue:223.0f/255.0f
-                                  alpha:1.0f];
-  CGFloat scale = [[UIScreen mainScreen] scale];
-  CGRect rect = CGRectMake(0.0f, 0.0f, 120.0f * scale, 120.0f * scale);
-  UIImage* res = nil;
-  UIGraphicsBeginImageContext(rect.size);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  [fill setFill];
-  CGContextFillRect(context, rect);
-  [[UIColor whiteColor] set];
+  INFINIT_COLOR* fill_color = [InfinitColor colorWithRed:202 green:217 blue:223];
+  INFINIT_COLOR* text_color = [InfinitColor colorWithGray:255];
+  CGRect rect = CGRectMake(0.0f, 0.0f, 120.0f, 120.0f);
   NSMutableString* text = [[NSMutableString alloc] init];
   if (user.fullname.length == 0)
     [text appendFormat:@" "];
@@ -251,17 +283,42 @@ avatarToDiskCache:(UIImage*)avatar
       }
     }
   }
-  NSDictionary* attrs = @{NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-Light"
-                                                               size:(51.0f * scale)],
-                          NSForegroundColorAttributeName: [UIColor whiteColor]};
+  NSDictionary* attrs = nil;
+  NSString* font_name = @"HelveticaNeue-Light";
+  CGFloat font_size = 51.0f;
+#if TARGET_OS_IPHONE
+  CGFloat scale = [UIScreen mainScreen].scale;
+  rect = CGRectMake(rect.origin.x, rect.origin.y,
+                    rect.size.width * scale, rect.size.height * scale);
+  UIImage* res = nil;
+  UIGraphicsBeginImageContext(rect.size);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  [fill_color setFill];
+  CGContextFillRect(context, rect);
+  attrs = @{NSFontAttributeName: [UIFont fontWithName:font_name
+                                                 size:(font_size * scale)],
+            NSForegroundColorAttributeName: text_color};
+#else
+  NSImage* res = [[NSImage alloc] initWithSize:NSMakeSize(rect.size.width, rect.size.height)];
+  [res lockFocus];
+  [fill_color set];
+  NSBezierPath* path = [NSBezierPath bezierPathWithOvalInRect:NSRectFromCGRect(rect)];
+  [path fill];
+  attrs = @{NSFontAttributeName: [NSFont fontWithName:font_name
+                                                 size:font_size],
+            NSForegroundColorAttributeName: text_color};
+#endif
   NSAttributedString* str = [[NSAttributedString alloc] initWithString:text attributes:attrs];
   [str drawAtPoint:CGPointMake(round((rect.size.width - str.size.width) / 2.0f),
                                round((rect.size.height - str.size.height) / 2.0f))];
+#if TARGET_OS_IPHONE
   res = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
+#else
+  [res unlockFocus];
+#endif
   return res;
 }
-#endif
 
 #pragma mark - State Manager Callback
 
@@ -286,10 +343,13 @@ avatarToDiskCache:(UIImage*)avatar
 
 - (void)sendAvatarNotificationForUser:(InfinitUser*)user
 {
-  NSDictionary* user_info = @{@"id": user.id_};
-  [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_USER_AVATAR_NOTIFICATION
-                                                      object:self
-                                                    userInfo:user_info];
+  NSDictionary* user_info = @{kInfinitUserId: user.id_};
+  dispatch_async(dispatch_get_main_queue(), ^
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_USER_AVATAR_NOTIFICATION
+                                                        object:self
+                                                      userInfo:user_info];
+  });
 }
 
 #pragma mark - Clear Cache

@@ -10,8 +10,10 @@
 
 #if TARGET_OS_IPHONE
 # import <UIKit/UIImage.h>
+# define INFINIT_IMAGE UIImage
 #else
 # import <AppKit/NSImage.h>
+# define INFINIT_IMAGE NSImage
 #endif
 
 #import "InfinitUser.h"
@@ -20,13 +22,9 @@
 
 + (instancetype)sharedInstance;
 
-- (void)setSelfAvatar:(UIImage*)avatar;
+- (void)setSelfAvatar:(INFINIT_IMAGE*)avatar;
 
-#if TARGET_OS_IPHONE
-- (UIImage*)avatarForUser:(InfinitUser*)user;
-#else
-- (NSImage*)avatarForUser:(InfinitUser*)user;
-#endif
+- (INFINIT_IMAGE*)avatarForUser:(InfinitUser*)user;
 
 - (void)clearAvatarForUser:(InfinitUser*)user;
 
