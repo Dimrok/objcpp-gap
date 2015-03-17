@@ -172,7 +172,7 @@ static InfinitDirectoryManager* _instance = nil;
                                                                   NSUserDomainMask,
                                                                   YES).firstObject;
   res = [app_support_dir stringByAppendingPathComponent:@"non-persistent"];
-  attrs = @{NSURLIsExcludedFromBackupKey: @YES}
+  attrs = @{NSURLIsExcludedFromBackupKey: @YES};
 #else
   res = [NSHomeDirectory() stringByAppendingPathComponent:@".infinit"];
 #endif
