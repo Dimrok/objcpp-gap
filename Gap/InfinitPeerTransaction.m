@@ -69,6 +69,7 @@ recipient_device:(NSString*)recipient_device_id
   _recipient_device = transaction.recipient_device;
   if (transaction.status == gap_transaction_canceled)
     _canceler_id = transaction.canceler.id_;
+  _unread = YES;
 }
 
 #pragma mark - Public

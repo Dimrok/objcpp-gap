@@ -25,6 +25,7 @@
 @property (nonatomic, readonly) InfinitUser* other_user;
 @property (nonatomic, readonly) InfinitUser* sender;
 @property (nonatomic, readonly) BOOL to_device;
+@property (nonatomic, readwrite) BOOL unread;
 
 - (id)initWithId:(NSNumber*)id_
          meta_id:(NSString*)meta_id
