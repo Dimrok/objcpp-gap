@@ -59,6 +59,8 @@ static InfinitConnectionManager* _instance = nil;
 - (void)clearModel
 {
   _was_logged_in = NO;
+  _connected = NO;
+  _still_trying = NO;
 }
 
 #pragma mark - Reachability
@@ -71,8 +73,10 @@ static InfinitConnectionManager* _instance = nil;
       return @"NotReachable";
     case InfinitNetworkStatusReachableViaLAN:
       return @"ReachableViaLAN";
+#if TARGET_OS_IPHONE
     case InfinitNetworkStatusReachableViaWWAN:
       return @"ReachableViaWWAN";
+#endif
     default:
       return @"Unknown";
   }
@@ -86,8 +90,10 @@ static InfinitConnectionManager* _instance = nil;
       return InfinitNetworkStatusNotReachable;
     case __ReachableViaWiFi:
       return InfinitNetworkStatusReachableViaLAN;
+#if TARGET_OS_IPHONE
     case __ReachableViaWWAN:
       return InfinitNetworkStatusReachableViaWWAN;
+#endif
 
     default:
       return InfinitNetworkStatusNotReachable;
@@ -121,6 +127,7 @@ static InfinitConnectionManager* _instance = nil;
 {
   if (!self.was_logged_in && status)
     _was_logged_in = YES;
+  _still_trying = trying;
   if (self.connected != status || trying)
   {
     _connected = status;

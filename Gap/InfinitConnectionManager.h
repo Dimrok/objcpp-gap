@@ -34,6 +34,7 @@ typedef NS_ENUM(NSUInteger, InfinitNetworkStatuses)
 
 @property (nonatomic, readonly) BOOL connected;
 @property (nonatomic, readonly) InfinitNetworkStatuses network_status;
+@property (nonatomic, readonly) BOOL still_trying;
 @property (nonatomic, readonly) BOOL was_logged_in;
 
 + (instancetype)sharedInstance;
