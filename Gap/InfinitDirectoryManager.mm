@@ -62,7 +62,11 @@ static InfinitDirectoryManager* _instance = nil;
   NSString* cache_dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
                                                             NSUserDomainMask,
                                                             YES).firstObject;
-  NSString* avatar_dir = [cache_dir stringByAppendingPathComponent:@"avatar_cache"];
+  NSString* avatar_dir = cache_dir;
+#if !TARGET_OS_IPHONE
+  avatar_dir = [avatar_dir stringByAppendingPathComponent:[NSBundle mainBundle].bundleIdentifier];
+#endif
+  avatar_dir = [avatar_dir stringByAppendingPathComponent:@"avatar_cache"];
   if (![[NSFileManager defaultManager] fileExistsAtPath:avatar_dir isDirectory:NULL])
   {
     NSError* error = nil;
@@ -82,10 +86,16 @@ static InfinitDirectoryManager* _instance = nil;
 
 - (NSString*)download_directory
 {
+  NSString* res = nil;
+#if TARGET_OS_IPHONE
   NSString* doc_dir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                           NSUserDomainMask,
                                                           YES).firstObject;
-  NSString* res = [doc_dir stringByAppendingPathComponent:@"Downloads"];
+  res = [doc_dir stringByAppendingPathComponent:@"Downloads"];
+#else
+  res =
+    NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory, NSUserDomainMask, YES).firstObject;
+#endif
   if (![[NSFileManager defaultManager] fileExistsAtPath:res])
   {
     NSError* error = nil;
@@ -125,16 +135,23 @@ static InfinitDirectoryManager* _instance = nil;
 
 - (NSString*)persistent_directory
 {
+  NSString* res = nil;
+  NSDictionary* attrs = nil;
+#if TARGET_OS_IPHONE
   NSString* app_support_dir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
                                                                   NSUserDomainMask,
                                                                   YES).firstObject;
-  NSString* res = [app_support_dir stringByAppendingPathComponent:@"persistent"];
+  res = [app_support_dir stringByAppendingPathComponent:@"persistent"];
+  attrs = @{NSURLIsExcludedFromBackupKey: @NO};
+#else
+  res = [NSHomeDirectory() stringByAppendingPathComponent:@".infinit"];
+#endif
   if (![[NSFileManager defaultManager] fileExistsAtPath:res])
   {
     NSError* error = nil;
     [[NSFileManager defaultManager] createDirectoryAtPath:res
                               withIntermediateDirectories:YES
-                                               attributes:@{NSURLIsExcludedFromBackupKey: @NO}
+                                               attributes:attrs
                                                     error:&error];
     if (error)
     {
@@ -148,16 +165,23 @@ static InfinitDirectoryManager* _instance = nil;
 
 - (NSString*)non_persistent_directory
 {
+  NSString* res = nil;
+  NSDictionary* attrs = nil;
+#if TARGET_OS_IPHONE
   NSString* app_support_dir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
                                                                   NSUserDomainMask,
                                                                   YES).firstObject;
-  NSString* res = [app_support_dir stringByAppendingPathComponent:@"non-persistent"];
+  res = [app_support_dir stringByAppendingPathComponent:@"non-persistent"];
+  attrs = @{NSURLIsExcludedFromBackupKey: @YES}
+#else
+  res = [NSHomeDirectory() stringByAppendingPathComponent:@".infinit"];
+#endif
   if (![[NSFileManager defaultManager] fileExistsAtPath:res])
   {
     NSError* error = nil;
     [[NSFileManager defaultManager] createDirectoryAtPath:res
                               withIntermediateDirectories:YES
-                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
+                                               attributes:attrs
                                                     error:&error];
     if (error)
     {
@@ -171,6 +195,9 @@ static InfinitDirectoryManager* _instance = nil;
 
 - (NSString*)temporary_files_directory
 {
+#if !TARGET_OS_IPHONE
+  NSCAssert(false, @"Temporary files directory only used on iOS");
+#endif
   NSString* res = [NSTemporaryDirectory() stringByAppendingPathComponent:@"managed_files"];
   if (![[NSFileManager defaultManager] fileExistsAtPath:res])
   {
@@ -191,6 +218,9 @@ static InfinitDirectoryManager* _instance = nil;
 
 - (NSString*)thumbnail_cache_directory
 {
+#if !TARGET_OS_IPHONE
+  NSCAssert(false, @"Thumbnail cache directory only used on iOS");
+#endif
   NSString* cache_dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
                                                             NSUserDomainMask,
                                                             YES).firstObject;
@@ -214,6 +244,9 @@ static InfinitDirectoryManager* _instance = nil;
 
 - (NSString*)upload_thumbnail_cache_directory
 {
+#if !TARGET_OS_IPHONE
+  NSCAssert(false, @"Upload thumbnail cache directory only used on iOS");
+#endif
   NSString* cache_dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
                                                             NSUserDomainMask,
                                                             YES).firstObject;
@@ -241,9 +274,9 @@ static InfinitDirectoryManager* _instance = nil;
 {
   uint64_t res = 0;
   __autoreleasing NSError* error = nil;
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  NSDictionary* dict =
-    [[NSFileManager defaultManager] attributesOfFileSystemForPath:paths.lastObject error: &error];
+  NSString* path = self.download_directory;
+  NSDictionary* dict = [[NSFileManager defaultManager] attributesOfFileSystemForPath:path
+                                                                               error:&error];
   if (dict)
   {
     NSNumber* free_space_in_bytes = [dict objectForKey:NSFileSystemFreeSize];
