@@ -257,10 +257,12 @@ avatarToDiskCache:(NSImage*)avatar
 - (NSImage*)generateAvatarForUser:(InfinitUser*)user
 #endif
 {
+#if TARGET_OS_IPHONE
   if (user.fullname.isPhoneNumber)
     return _phone_avatar;
   else if (user.fullname.isEmail)
     return _email_avatar;
+#endif
   INFINIT_COLOR* fill_color = [InfinitColor colorWithRed:202 green:217 blue:223];
   INFINIT_COLOR* text_color = [InfinitColor colorWithGray:255];
   CGRect rect = CGRectMake(0.0f, 0.0f, 120.0f, 120.0f);
