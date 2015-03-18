@@ -127,15 +127,15 @@ static NSString* _service_name = @"Infinit";
   return YES;
 }
 
-- (NSString*)passwordForInternetAccount:(NSString*)account
-                               protocol:(NSString*)protocol
-                                   host:(NSString*)host
-                                   port:(UInt16)port
+- (NSString*)passwordForProxyAccount:(NSString*)account
+                            protocol:(NSString*)protocol
+                                host:(NSString*)host
+                                port:(UInt16)port
 {
   if (account == nil || account.length == 0)
     return nil;
   NSMutableDictionary* dict =
-    [self keychainDictionaryForInternetAccount:account protocol:protocol host:host port:port];
+    [self keychainDictionaryForProxyAccount:account protocol:protocol host:host port:port];
   dict[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitOne;
   dict[(__bridge id)kSecReturnData] = (id)kCFBooleanTrue;
   CFTypeRef result = NULL;
@@ -186,30 +186,40 @@ static NSString* _service_name = @"Infinit";
   return [res mutableCopy];
 }
 
-- (NSMutableDictionary*)keychainDictionaryForInternetAccount:(NSString*)account_
-                                                    protocol:(NSString*)protocol_
-                                                        host:(NSString*)host
-                                                        port:(UInt16)port
+- (NSMutableDictionary*)keychainDictionaryForProxyAccount:(NSString*)account_
+                                                 protocol:(NSString*)protocol
+                                                     host:(NSString*)host
+                                                     port:(UInt16)port
 
 {
   NSString* account = account_.lowercaseString;
-  NSString* protocol = protocol_.lowercaseString;
+  CFTypeRef protocol_ref = [self proxyProtocolAttrFromString:protocol];
   NSDictionary* res = @{
     (__bridge id)kSecClass: (__bridge id)kSecClassInternetPassword,
 #if TARGET_OS_IPHONE
     (__bridge id)kSecAttrAccount: [self encodeString:account],
-    (__bridge id)kSecAttrProtocol: [self encodeString:protocol],
     (__bridge id)kSecAttrServer: [self encodeString:host],
 #else
     (__bridge id)kSecAttrAccount: account,
-    (__bridge id)kSecAttrProtocol: protocol,
     (__bridge id)kSecAttrServer: host,
 #endif
+    (__bridge id)kSecAttrProtocol: (__bridge id)protocol_ref,
     (__bridge id)kSecAttrPort: @(port),
-    (__bridge id)kSecAttrAuthenticationType: (__bridge id)kSecAttrAuthenticationTypeDefault,
     (__bridge id)kSecAttrAccessible: (__bridge id)kSecAttrAccessibleAlwaysThisDeviceOnly
   };
   return [res mutableCopy];
+}
+
+- (CFTypeRef)proxyProtocolAttrFromString:(NSString*)string_
+{
+  NSString* string = string_.lowercaseString;
+  if ([string isEqualToString:@"http"])
+    return kSecAttrProtocolHTTPProxy;
+  if ([string isEqualToString:@"https"])
+    return kSecAttrProtocolHTTPS;
+  if ([string isEqualToString:@"socks"])
+    return kSecAttrProtocolSOCKS;
+  return kSecAttrProtocolSOCKS;
 }
 
 @end

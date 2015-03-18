@@ -20,9 +20,9 @@
 - (BOOL)updatePassword:(NSString*)password
             forAccount:(NSString*)account;
 
-- (NSString*)passwordForInternetAccount:(NSString*)account
-                               protocol:(NSString*)protocol
-                                   host:(NSString*)host
-                                   port:(UInt16)port;
+- (NSString*)passwordForProxyAccount:(NSString*)account
+                            protocol:(NSString*)protocol
+                                host:(NSString*)host
+                                port:(UInt16)port;
 
 @end
