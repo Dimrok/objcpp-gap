@@ -206,19 +206,18 @@ static NSString* _self_device_id = nil;
          performSelector:(SEL)selector
                 onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
      gap_clean_state(manager.stateWrapper.state);
      [manager _clearSelf];
      [manager _startPolling];
      boost::optional<std::string> device_push_token;
-     if (weak_self.push_token != nil && weak_self.push_token.length > 0)
-       device_push_token = weak_self.push_token.UTF8String;
+     if (manager.push_token != nil && manager.push_token.length > 0)
+       device_push_token = manager.push_token.UTF8String;
 #if TARGET_OS_IPHONE
      boost::optional<std::string> country_code;
-     if ([weak_self countryCode] != nil)
-       country_code = std::string([weak_self countryCode].UTF8String);
+     if ([manager countryCode] != nil)
+       country_code = std::string([manager countryCode].UTF8String);
      gap_Status res = gap_register(manager.stateWrapper.state,
                                    fullname.UTF8String,
                                    email.UTF8String,
@@ -236,7 +235,7 @@ static NSString* _self_device_id = nil;
      if (res == gap_ok)
      {
        manager.logged_in = YES;
-       [weak_self setCurrent_user:email];
+       [manager setCurrent_user:email];
        [InfinitStateManager _startModelManagers];
        [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
                                                          stillTrying:NO
@@ -266,19 +265,18 @@ static NSString* _self_device_id = nil;
 performSelector:(SEL)selector
      onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
      gap_clean_state(manager.stateWrapper.state);
      [manager _clearSelf];
      [manager _startPolling];
      boost::optional<std::string> device_push_token;
-     if (weak_self.push_token != nil && weak_self.push_token.length > 0)
-       device_push_token = weak_self.push_token.UTF8String;
+     if (manager.push_token != nil && manager.push_token.length > 0)
+       device_push_token = manager.push_token.UTF8String;
 #if TARGET_OS_IPHONE
      boost::optional<std::string> country_code;
-     if ([weak_self countryCode] != nil)
-      country_code = std::string([weak_self countryCode].UTF8String);
+     if ([manager countryCode] != nil)
+      country_code = std::string([manager countryCode].UTF8String);
      gap_Status res = gap_login(manager.stateWrapper.state,
                                 email.UTF8String,
                                 password.UTF8String,
@@ -294,7 +292,7 @@ performSelector:(SEL)selector
      if (res == gap_ok)
      {
        manager.logged_in = YES;
-       [weak_self setCurrent_user:email];
+       [manager setCurrent_user:email];
        [InfinitStateManager _startModelManagers];
        [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
                                                          stillTrying:NO
@@ -330,7 +328,6 @@ performSelector:(SEL)selector
         performSelector:(SEL)selector
                onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
     gap_clean_state(manager.stateWrapper.state);
@@ -340,12 +337,12 @@ performSelector:(SEL)selector
     if (email && email.length > 0)
       preferred_email = email.UTF8String;
     boost::optional<std::string> device_push_token;
-    if (weak_self.push_token && weak_self.push_token.length > 0)
-      device_push_token = weak_self.push_token.UTF8String;
+    if (manager.push_token && manager.push_token.length > 0)
+      device_push_token = manager.push_token.UTF8String;
 #if TARGET_OS_IPHONE
     boost::optional<std::string> country_code;
-    if ([weak_self countryCode] != nil)
-      country_code = std::string([weak_self countryCode].UTF8String);
+    if ([manager countryCode] != nil)
+      country_code = std::string([manager countryCode].UTF8String);
     gap_Status res = gap_facebook_connect(manager.stateWrapper.state,
                                           facebook_token.UTF8String,
                                           preferred_email,
@@ -362,9 +359,9 @@ performSelector:(SEL)selector
     {
       manager.logged_in = YES;
       if (email.isEmail)
-        [weak_self setCurrent_user:email];
+        [manager setCurrent_user:email];
       else
-        [weak_self setCurrent_user:@"unknown Facebook user"];
+        [manager setCurrent_user:@"unknown Facebook user"];
       [InfinitStateManager _startModelManagers];
       [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
                                                         stillTrying:NO
@@ -386,6 +383,7 @@ performSelector:(SEL)selector
    {
      [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_WILL_LOGOUT_NOTIFICATION
                                                          object:nil];
+     [manager _clearSelfAndModel:YES];
      [manager _stopPolling];
      gap_Status res = gap_logout(manager.stateWrapper.state);
      return res;
@@ -696,15 +694,13 @@ performSelector:(SEL)selector
 {
   if (!self.logged_in)
     return;
+  boost::optional<std::string> output_dir;
   if (directory != nil && directory.length > 0)
   {
-    std::string output_dir = directory.UTF8String;
-    gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue, output_dir);
+    std::string dir_string(directory.UTF8String);
+    output_dir = dir_string;
   }
-  else
-  {
-    gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue);
-  }
+  gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue, output_dir);
 }
 
 - (void)rejectTransactionWithId:(NSNumber*)id_
@@ -880,9 +876,8 @@ performSelector:(SEL)selector
     gap_Status status = gap_user_by_meta_id(manager.stateWrapper.state, meta_id.UTF8String, res);
     if (status == gap_ok)
     {
-      InfinitUser* user = [manager _convertUser:res];
-      if (user != nil)
-        data[@"user"] = user;
+      [manager _updateUser:res];
+      data[kInfinitUserId] = [manager _numFromUint:res.id];
     }
     return gap_ok;
   } performSelector:selector onObject:object withData:data];
@@ -902,11 +897,11 @@ performSelector:(SEL)selector
      if (status == gap_ok)
      {
        [manager _updateUser:res];
-       data[@"user_id"] = [manager _numFromUint:res.id];
+       data[kInfinitUserId] = [manager _numFromUint:res.id];
      }
      else
      {
-       data[@"user_id"] = @0;
+       data[kInfinitUserId] = @0;
      }
      return gap_ok;
    } performSelector:selector onObject:object withData:data];
@@ -925,11 +920,14 @@ performSelector:(SEL)selector
      gap_Status status = gap_user_by_handle(manager.stateWrapper.state, handle.UTF8String, res);
      if (status == gap_ok)
      {
-       InfinitUser* user = [manager _convertUser:res];
-       if (user != nil)
-         data[@"user"] = user;
+       [manager _updateUser:res];
+       data[kInfinitUserId] = [manager _numFromUint:res.id];
      }
-     return status;
+     else
+     {
+       data[kInfinitUserId] = @0;
+     }
+     return gap_ok;
    } performSelector:selector onObject:object withData:data];
 }
 
@@ -997,12 +995,11 @@ performSelector:(SEL)selector
          performSelector:(SEL)selector
                 onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
     std::string username = "unknown";
-    if (weak_self.current_user != nil && weak_self.current_user.length > 0)
-      username = weak_self.current_user.UTF8String;
+    if (manager.current_user != nil && manager.current_user.length > 0)
+      username = manager.current_user.UTF8String;
     return gap_send_last_crash_logs(manager.stateWrapper.state,
                                     username,
                                     crash_log.UTF8String,
@@ -1016,14 +1013,13 @@ performSelector:(SEL)selector
        performSelector:(SEL)selector
               onObject:(id)object
 {
-  __weak InfinitStateManager* weak_self = self;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
      std::string username = "unknown";
-     if (weak_self.current_user != nil && weak_self.current_user.length > 0)
-       username = weak_self.current_user.UTF8String;
-     std::vector<std::string> files = {};
-     if (file.length > 0)
+     if (manager.current_user != nil && manager.current_user.length > 0)
+       username = manager.current_user.UTF8String;
+     std::vector<std::string> files;
+     if (file && [[NSFileManager defaultManager] fileExistsAtPath:file])
        files.push_back(file.UTF8String);
      return gap_send_user_report(manager.stateWrapper.state,
                                  username,
@@ -1036,24 +1032,17 @@ performSelector:(SEL)selector
 
 - (void)sendMetricEvent:(NSString*)event
              withMethod:(NSString*)method
-      andAdditionalData:(NSDictionary*)additional
+      andAdditionalData:(NSDictionary*)additional_
 {
-  __weak InfinitStateManager* weak_self = self;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
-    if (additional)
-    {
-      return gap_send_generic_metric(manager.stateWrapper.state,
-                                     event.UTF8String,
-                                     method.UTF8String,
-                                     [weak_self _stringDictionaryToMap:additional]);
-    }
-    else
-    {
-      return gap_send_generic_metric(manager.stateWrapper.state,
-                                     event.UTF8String,
-                                     method.UTF8String);
-    }
+    std::unordered_map<std::string, std::string> additional = {};
+    if (additional_)
+      additional = [manager _stringDictionaryToMap:additional_];
+    return gap_send_generic_metric(manager.stateWrapper.state,
+                                   event.UTF8String,
+                                   method.UTF8String,
+                                   additional);
   }];
 }
 
@@ -1097,7 +1086,8 @@ performSelector:(SEL)selector
   std::vector<std::string> res;
   for (NSString* element in array)
   {
-    res.push_back(element.fileSystemRepresentation);
+    if (element)
+      res.push_back(element.fileSystemRepresentation);
   }
   return res;
 }
@@ -1196,21 +1186,7 @@ performSelector:(SEL)selector
 
 - (void)_addOperation:(gap_operation_t)operation
 {
-  __weak InfinitStateManager* weak_self = self;
-  __block NSBlockOperation* block_operation = [NSBlockOperation blockOperationWithBlock:^(void)
-    {
-      if (block_operation.isCancelled)
-        return;
-      if (weak_self == nil)
-        return;
-      operation(weak_self, block_operation);
-      if (block_operation.isCancelled)
-      {
-        ELLE_LOG("%s: cancelled operation", self.description.UTF8String);
-        return;
-      }
-    }];
-  [_queue addOperation:block_operation];
+  [self _addOperation:operation performSelector:NULL onObject:nil withData:nil];
 }
 
 - (void)_addOperation:(gap_operation_t)operation
@@ -1226,7 +1202,7 @@ performSelector:(SEL)selector
              onObject:(id)object
              withData:(id)data
 {
-  __weak InfinitStateManager* weak_self = self;
+  __weak typeof(self) weak_self = self;
   __block NSBlockOperation* block_operation = [NSBlockOperation blockOperationWithBlock:^(void)
    {
      if (block_operation.isCancelled)
@@ -1250,10 +1226,12 @@ performSelector:(SEL)selector
                 NSStringFromSelector(selector).UTF8String);
        return;
      }
-     if (object != nil && selector != nil)
+     if (object && selector)
+     {
        [object performSelectorOnMainThread:selector
                                 withObject:operation_result
                              waitUntilDone:NO];
+     }
    }];
   [_queue addOperation:block_operation];
 }
