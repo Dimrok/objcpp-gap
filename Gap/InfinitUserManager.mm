@@ -446,7 +446,7 @@ static InfinitUserManager* _instance = nil;
   }
   if (result.success)
   {
-    InfinitUser* user = dict[@"user"];
+    InfinitUser* user = [self userWithId:dict[kInfinitUserId]];
     @synchronized(self.user_map)
     {
       if (self.user_map[user.id_] == nil)
