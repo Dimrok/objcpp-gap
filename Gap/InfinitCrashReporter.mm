@@ -34,7 +34,13 @@ static InfinitCrashReporter* _instance = nil;
   NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
+#if TARGET_OS_IPHONE
     PLCrashReporterConfig* config = [PLCrashReporterConfig defaultConfiguration];
+#else
+    PLCrashReporterConfig* config =
+      [[PLCrashReporterConfig alloc] initWithSignalHandlerType:PLCrashReporterSignalHandlerTypeBSD
+                                         symbolicationStrategy:PLCrashReporterSymbolicationStrategyAll];
+#endif
     _reporter = [[PLCrashReporter alloc] initWithConfiguration:config];
     NSError* error = nil;
     [_reporter enableCrashReporterAndReturnError:&error];
