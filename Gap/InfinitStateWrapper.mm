@@ -43,32 +43,42 @@ static BOOL _production = NO;
   if (log_file != nil && log_file.length > 0)
     setenv("INFINIT_LOG_FILE", log_file.UTF8String, 0);
 
-  setenv("INFINIT_META_PROTOCOL", "http", 0);
-  setenv("INFINIT_META_HOST", "192.168.0.14", 0);
-  setenv("INFINIT_META_PORT", "8080", 0);
+//  std::string local_server = "192.168.0.83";
+//
+//  setenv("INFINIT_META_PROTOCOL", "http", 0);
+//  setenv("INFINIT_META_HOST", local_server.c_str(), 0);
+//  setenv("INFINIT_META_PORT", "8080", 0);
+//
+//  setenv("INFINIT_TROPHONIUS_HOST", local_server.c_str(), 0);
+//  setenv("INFINIT_TROPHONIUS_PORT", "8181", 0);
+//
+//  setenv("ELLE_REAL_ASSERT", "1", 0);
+//
+//  setenv("INFINIT_CRASH_DEST", "chris@infinit.io", 0);
+//
+//  setenv("INFINIT_METRICS_INFINIT", "1", 0);
+//  setenv("INFINIT_METRICS_INFINIT_HOST", local_server.c_str(), 0);
+//  setenv("INFINIT_METRICS_INFINIT_PORT", "8282", 0);
 
-  setenv("INFINIT_TROPHONIUS_HOST", "192.168.0.14", 0);
-  setenv("INFINIT_TROPHONIUS_PORT", "8181", 0);
-
-  setenv("ELLE_REAL_ASSERT", "1", 0);
-
-  std::string log_level =
-    "elle.CrashReporter:DEBUG,"
-    "*FIST*:TRACE,"
-    "*FIST.State*:DEBUG,"
-    "frete.Frete:TRACE,"
-    "infinit.surface.gap.Rounds:DEBUG,"
-    "*meta*:TRACE,"
-    "reactor.fsm.*:TRACE,"
-    "reactor.network.upnp:DEBUG,"
-    "station.Station:DEBUG,"
-    "surface.gap.*:TRACE,"
-    "surface.gap.TransferMachine:DEBUG,"
-    "Gap-ObjC++*:DEBUG,"
-    "iOS*:DEBUG,"
-    "*trophonius*:TRACE";
-  setenv("ELLE_LOG_LEVEL", log_level.c_str(), 0);
+//  std::string log_level =
+//    "elle.CrashReporter:DEBUG,"
+//    "*FIST*:TRACE,"
+//    "*FIST.State*:DEBUG,"
+//    "frete.Frete:TRACE,"
+//    "infinit.surface.gap.Rounds:DEBUG,"
+//    "*meta*:TRACE,"
+//    "reactor.fsm.*:TRACE,"
+//    "reactor.network.upnp:DEBUG,"
+//    "station.Station:DEBUG,"
+//    "surface.gap.*:TRACE,"
+//    "surface.gap.TransferMachine:DEBUG,"
+//    "Gap-ObjC++*:DEBUG,"
+//    "iOS*:DEBUG,"
+//    "*trophonius*:TRACE";
+//  setenv("ELLE_LOG_LEVEL", log_level.c_str(), 0);
   setenv("ELLE_LOG_TIME", "1", 0);
+
+  _production = YES;
 }
 
 #pragma mark - Setup Instace
