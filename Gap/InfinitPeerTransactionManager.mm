@@ -263,18 +263,14 @@ static InfinitPeerTransactionManager* _instance = nil;
                 withError:(NSError**)error
 {
 #if TARGET_OS_IPHONE
-  return [self acceptTransaction:transaction
-             toRelativeDirectory:YES
-                    withMetaData:YES
-                        andError:error];
+  return [self acceptTransaction:transaction toRelativeDirectoryWithMetaData:YES andError:error];
 #else
-  return [self acceptTransaction:transaction toRelativeDirectory:NO withMetaData:NO andError:error];
+  return [self acceptTransaction:transaction toRelativeDirectoryWithMetaData:NO andError:error];
 #endif
 }
 
 - (BOOL)acceptTransaction:(InfinitPeerTransaction*)transaction
-      toRelativeDirectory:(BOOL)relative
-             withMetaData:(BOOL)meta
+toRelativeDirectoryWithMetaData:(BOOL)relative
                 andError:(NSError**)error;
 {
   if ([InfinitDirectoryManager sharedInstance].free_space < transaction.size.unsignedIntegerValue)
@@ -287,23 +283,23 @@ static InfinitPeerTransactionManager* _instance = nil;
     }
     return NO;
   }
-  NSString* path =
-    [[InfinitDirectoryManager sharedInstance] downloadDirectoryForTransaction:transaction];
-  if (path == nil)
-  {
-    if (error != NULL)
-    {
-      *error = [NSError errorWithDomain:INFINIT_FILE_SYSTEM_ERROR_DOMAIN
-                                   code:InfinitFileSystemErrorPathDoesntExist
-                               userInfo:nil];
-    }
-    ELLE_ERR("%s: unable to accept transaction, invalid download path",
-             self.description.UTF8String);
-    return NO;
-  }
 
-  if (meta)
+  if (relative)
   {
+    NSString* path =
+      [[InfinitDirectoryManager sharedInstance] downloadDirectoryForTransaction:transaction];
+    if (path == nil)
+    {
+      if (error != NULL)
+      {
+        *error = [NSError errorWithDomain:INFINIT_FILE_SYSTEM_ERROR_DOMAIN
+                                     code:InfinitFileSystemErrorPathDoesntExist
+                                 userInfo:nil];
+      }
+      ELLE_ERR("%s: unable to accept transaction, invalid download path",
+               self.description.UTF8String);
+      return NO;
+    }
     NSDictionary* meta_data = @{@"sender": transaction.sender.meta_id,
                                 @"sender_device": transaction.sender_device_id,
                                 @"sender_fullname": transaction.sender.fullname,
@@ -321,9 +317,6 @@ static InfinitPeerTransactionManager* _instance = nil;
                self.description.UTF8String, transaction.sender.meta_id.UTF8String);
       return NO;
     }
-  }
-  if (relative)
-  {
     [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_
                                               toRelativeDirectory:transaction.meta_id];
   }
