@@ -52,7 +52,7 @@
   switch (self.type)
   {
     case InfinitDeviceTypeAndroid:
-      return NSLocalizedString(@"My Android", nil);
+      return NSLocalizedString(@"My Mobile", nil);
     case  InfinitDeviceTypeiPhone:
       return NSLocalizedString(@"My iPhone", nil);
     case InfinitDeviceTypeMacLaptop:
