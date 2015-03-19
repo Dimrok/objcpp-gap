@@ -105,6 +105,10 @@ performSelector:(SEL)selector
                             onObject:(id)object
                             withData:(NSMutableDictionary*)data;
 
+/** Facebook application ID.
+ return Facebook application ID as string.
+ */
+- (NSString*)facebookApplicationId;
 
 /** Connect user using Facebook.
   Will either register and login the user or just log the user in using Facebook.

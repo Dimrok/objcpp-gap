@@ -46,6 +46,7 @@ typedef gap_Status(^gap_operation_t)(InfinitStateManager*, NSOperation*);
 static InfinitStateManager* _manager_instance = nil;
 static NSNumber* _self_id = nil;
 static NSString* _self_device_id = nil;
+static NSString* _facebook_app_id = nil;
 
 @interface InfinitStateManager ()
 
@@ -235,7 +236,11 @@ static NSString* _self_device_id = nil;
      if (res == gap_ok)
      {
        manager.logged_in = YES;
-       [manager setCurrent_user:email];
+       std::string self_email = gap_self_email(manager.stateWrapper.state);
+       if (self_email.length() > 0)
+         [manager setCurrent_user:[NSString stringWithUTF8String:self_email.c_str()]];
+       else
+         [manager setCurrent_user:email];
        [InfinitStateManager _startModelManagers];
        [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
                                                          stillTrying:NO
@@ -292,7 +297,11 @@ performSelector:(SEL)selector
      if (res == gap_ok)
      {
        manager.logged_in = YES;
-       [manager setCurrent_user:email];
+       std::string self_email = gap_self_email(manager.stateWrapper.state);
+       if (self_email.length() > 0)
+         [manager setCurrent_user:[NSString stringWithUTF8String:self_email.c_str()]];
+       else
+         [manager setCurrent_user:email];
        [InfinitStateManager _startModelManagers];
        [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
                                                          stillTrying:NO
@@ -321,6 +330,13 @@ performSelector:(SEL)selector
     [data setObject:@(registered) forKey:@"registered"];
     return status;
   } performSelector:selector onObject:object withData:data];
+}
+
+- (NSString*)facebookApplicationId
+{
+  if (_facebook_app_id == nil)
+    _facebook_app_id = [NSString stringWithUTF8String:gap_facebook_app_id().c_str()];
+  return _facebook_app_id;
 }
 
 - (void)facebookConnect:(NSString*)facebook_token
@@ -358,10 +374,13 @@ performSelector:(SEL)selector
     if (res == gap_ok)
     {
       manager.logged_in = YES;
-      if (email.isEmail)
+      std::string self_email = gap_self_email(manager.stateWrapper.state);
+      if (self_email.length() > 0)
+        [manager setCurrent_user:[NSString stringWithUTF8String:self_email.c_str()]];
+      else if (email.length > 0)
         [manager setCurrent_user:email];
       else
-        [manager setCurrent_user:@"unknown Facebook user"];
+        [manager setCurrent_user:@"unknown facebook"];
       [InfinitStateManager _startModelManagers];
       [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
                                                         stillTrying:NO
