@@ -300,8 +300,11 @@ static InfinitTemporaryFileManager* _instance = nil;
 {
   if (data == nil)
   {
+    NSString* filename_ = filename;
+    if (filename_ == nil || !filename_.length)
+      filename_ = @"<empty filename>";
     ELLE_ERR("%s: unable to write file to %s, data is nil",
-             self.description.UTF8String, filename.UTF8String);
+             self.description.UTF8String, filename_.UTF8String);
     return nil;
   }
   InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
