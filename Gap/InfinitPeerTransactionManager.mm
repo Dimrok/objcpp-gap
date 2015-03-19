@@ -366,8 +366,11 @@ toRelativeDirectoryWithMetaData:(BOOL)relative
   NSMutableArray* to_archive = [NSMutableArray array];
   for (InfinitPeerTransaction* transaction in self.transactions)
   {
-    if (![self canArchiveTransaction:transaction])
+    if (!transaction.done ||
+        (transaction.status == gap_transaction_cloud_buffered && transaction.recipient.is_self))
+    {
       continue;
+    }
     transaction.archived = YES;
     [to_archive addObject:transaction.meta_id];
   }
@@ -382,11 +385,8 @@ toRelativeDirectoryWithMetaData:(BOOL)relative
 
 - (BOOL)canArchiveTransaction:(InfinitPeerTransaction*)transaction
 {
-  if (!transaction.done ||
-      (transaction.status == gap_transaction_cloud_buffered && transaction.recipient.is_self))
-  {
+  if (!transaction.done)
     return NO;
-  }
   return YES;
 }
 
@@ -514,10 +514,8 @@ toRelativeDirectoryWithMetaData:(BOOL)relative
 #pragma mark - Transaction Updated
 
 - (void)handlePhoneTransaction:(InfinitPeerTransaction*)transaction
-                 withOldStatus:(gap_TransactionStatus)old_status
 {
   if (transaction.status == gap_transaction_transferring &&
-      old_status == gap_transaction_new &&
       transaction.recipient.ghost_code.length > 0)
   {
     [self sendPhoneTransactionNotification:transaction];
@@ -533,6 +531,7 @@ toRelativeDirectoryWithMetaData:(BOOL)relative
     {
       [self.transaction_map setObject:transaction forKey:transaction.id_];
       [self sendNewTransactionNotification:transaction];
+      [self handlePhoneTransaction:transaction];
     }
     else
     {
@@ -541,7 +540,6 @@ toRelativeDirectoryWithMetaData:(BOOL)relative
       if (existing.status != old_status)
       {
         [self sendTransactionStatusNotification:existing];
-        [self handlePhoneTransaction:existing withOldStatus:old_status];
         if (old_status == gap_transaction_waiting_accept && !existing.done)
           [self sendTransactionAcceptedNotification:existing];
       }
