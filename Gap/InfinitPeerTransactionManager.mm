@@ -570,6 +570,11 @@ toRelativeDirectoryWithMetaData:(BOOL)relative
   });
 }
 
+- (void)postNotificationOnMainThreadName:(NSString*)name
+{
+  [self postNotificationOnMainThreadName:name transaction:nil];
+}
+
 - (void)sendTransactionAcceptedNotification:(InfinitPeerTransaction*)transaction
 {
   [self postNotificationOnMainThreadName:INFINIT_PEER_TRANSACTION_ACCEPTED_NOTIFICATION
@@ -578,8 +583,7 @@ toRelativeDirectoryWithMetaData:(BOOL)relative
 
 - (void)sendTransactionCreatedNotification
 {
-  [self postNotificationOnMainThreadName:INFINIT_PEER_TRANSACTION_CREATED_NOTIFICATION
-                             transaction:nil];
+  [self postNotificationOnMainThreadName:INFINIT_PEER_TRANSACTION_CREATED_NOTIFICATION];
 }
 
 - (void)sendTransactionStatusNotification:(InfinitPeerTransaction*)transaction
@@ -606,7 +610,10 @@ toRelativeDirectoryWithMetaData:(BOOL)relative
 {
   InfinitConnectionStatus* connection_status = notification.object;
   if (!self.filled_model && connection_status.status)
+  {
     [self _fillTransactionMap];
+    [self postNotificationOnMainThreadName:INFINIT_PEER_TRANSACTION_MODEL_READY_NOTIFICATION];
+  }
 }
 
 @end

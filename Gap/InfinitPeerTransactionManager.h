@@ -16,28 +16,31 @@
 /** Notification sent when there is a new peer transaction.
  Contains a dictionary with the transaction "id".
 */
-#define INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION      @"INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION"
+#define INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION         @"INFINIT_NEW_PEER_TRANSACTION_NOTIFICATION"
 
 /** Notification sent when an existing peer transaction has its status updated.
  Contains a dictionary with the transaction "id".
  */
-#define INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION   @"INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION"
+#define INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION      @"INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION"
 
 /** Notification sent when a transaction sent to a phone number has received the ghost code from 
  Meta.
  Contains a dictionary with the transaction "id".
  */
-#define INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION    @"INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION"
+#define INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION       @"INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION"
 
 /** Notification sent when a transaction is initially accepted by the other party.
  Contains a dictionary with the transaction "id".
  */
-#define INFINIT_PEER_TRANSACTION_ACCEPTED_NOTIFICATION @"INFINIT_PEER_TRANSACTION_ACCEPTED_NOTIFICATION"
+#define INFINIT_PEER_TRANSACTION_ACCEPTED_NOTIFICATION    @"INFINIT_PEER_TRANSACTION_ACCEPTED_NOTIFICATION"
 
 /** Notification sent when send operation started.
- Contains empty dictionary.
  */
-#define INFINIT_PEER_TRANSACTION_CREATED_NOTIFICATION @"INFINIT_PEER_TRANSACTION_CREATED_NOTIFICATION"
+#define INFINIT_PEER_TRANSACTION_CREATED_NOTIFICATION     @"INFINIT_PEER_TRANSACTION_CREATED_NOTIFICATION"
+
+/** Notification sent when Peer Transaction model is ready.
+ */
+#define INFINIT_PEER_TRANSACTION_MODEL_READY_NOTIFICATION @"INFINIT_PEER_TRANSACTION_MODEL_READY_NOTIFICATION"
 
 @interface InfinitPeerTransactionManager : NSObject
 
