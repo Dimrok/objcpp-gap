@@ -59,7 +59,7 @@
       return NSLocalizedString(@"My Mac", nil);
     case InfinitDeviceTypePCLinux:
     case InfinitDeviceTypePCWindows:
-      return NSLocalizedString(@"My PC", nil);
+      return NSLocalizedString(@"My Computer", nil);
     case InfinitDeviceTypeUnknown:
       return NSLocalizedString(@"Unknown", nil);
   }
