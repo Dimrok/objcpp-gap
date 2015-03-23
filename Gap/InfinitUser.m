@@ -121,12 +121,13 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
 
 - (NSString*)description
 {
-  return [NSString stringWithFormat:@"<%p: %@: %@ %@%@: %@%@>",
+  return [NSString stringWithFormat:@"<%p: %@: %@ %@%@: %@%@%@>",
           self,
           self.id_,
           self.deleted ? @"deleted" : self.ghost ? @"ghost" : @"normal",
           self.fullname,
           self.handle.length > 0 ? [NSString stringWithFormat:@" (%@)", self.handle] : @"",
+          self.favorite ? @"is favorite, " : @"",
           self.swagger ? @"is swagger, " : @"",
           self.status ? @"online" : @"offline"];
 }
