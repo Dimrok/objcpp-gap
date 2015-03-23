@@ -94,7 +94,7 @@
  @param files 
   Array of file paths as NSStrings.
  @param recipients 
-  Array of recipients that can be either InfinitUser or NSString (email) objects.
+  Array of recipients that can be either InfinitUser, InfinitDevice or NSString (email) objects.
  @param message 
   String message of 100 chars max.
  @return Array of InfinitPeerTransaction ids.

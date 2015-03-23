@@ -207,9 +207,12 @@ static InfinitPeerTransactionManager* _instance = nil;
   NSMutableArray* res = [NSMutableArray array];
   for (id recipient in recipients)
   {
-    if (![recipient isKindOfClass:InfinitUser.class] && ![recipient isKindOfClass:NSString.class])
+    if (![recipient isKindOfClass:InfinitUser.class] &&
+        ![recipient isKindOfClass:InfinitDevice.class] &&
+        ![recipient isKindOfClass:NSString.class])
     {
-      ELLE_ERR("%s: unable to send, recipient is not user or email", self.description.UTF8String);
+      ELLE_ERR("%s: unable to send, recipient is not user, device or email",
+               self.description.UTF8String);
       [res addObject:@0];
       continue;
     }
@@ -218,7 +221,7 @@ static InfinitPeerTransactionManager* _instance = nil;
       NSString* string = recipient;
       if (!string.isEmail && !string.isPhoneNumber)
       {
-        ELLE_ERR("%s: unable to send, string is not valid email: %s",
+        ELLE_ERR("%s: unable to send, string is not valid email or phone number: %s",
                  self.description.UTF8String, string.UTF8String);
         [res addObject:@0];
         continue;
@@ -230,7 +233,8 @@ static InfinitPeerTransactionManager* _instance = nil;
     [res addObject:transaction_id];
     // Only notify UI when it's an Infinit User. When sending to an email address, the user doesn't
     // have an ID until Meta has replied.
-    if (transaction_id.unsignedIntValue != 0 && [recipient isKindOfClass:InfinitUser.class])
+    if (transaction_id.unsignedIntValue != 0 &&
+        ([recipient isKindOfClass:InfinitUser.class] || [recipient isKindOfClass:InfinitDevice.class]))
     {
       InfinitPeerTransaction* transaction =
         [[InfinitStateManager sharedInstance] peerTransactionById:transaction_id];
