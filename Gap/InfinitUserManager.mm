@@ -85,8 +85,8 @@ static InfinitUserManager* _instance = nil;
 
 - (void)_fetchFavorites
 {
-  _favorites = [[[InfinitStateManager sharedInstance] favorites] copy];
-  for (NSNumber* id_ in self.favorites)
+  NSArray* favorites = [[InfinitStateManager sharedInstance] favorites];
+  for (NSNumber* id_ in favorites)
   {
     InfinitUser* user = [self userWithId:id_];
     user.favorite = YES;
