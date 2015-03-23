@@ -232,7 +232,6 @@ static NSString* _facebook_app_id = nil;
                                    password.UTF8String,
                                    device_push_token);
 #endif
-     [manager _clearSelf];
      if (res == gap_ok)
      {
        manager.logged_in = YES;
@@ -293,7 +292,6 @@ performSelector:(SEL)selector
                                 password.UTF8String,
                                 device_push_token);
 #endif
-     [manager _clearSelf];
      if (res == gap_ok)
      {
        manager.logged_in = YES;
@@ -370,7 +368,6 @@ performSelector:(SEL)selector
                                           preferred_email,
                                           device_push_token);
 #endif
-    [manager _clearSelf];
     if (res == gap_ok)
     {
       manager.logged_in = YES;
@@ -395,15 +392,26 @@ performSelector:(SEL)selector
   } performSelector:selector onObject:object];
 }
 
+- (void)cancelAllOperationsExcluding:(NSOperation*)exclude
+{
+  for (NSOperation* operation in _queue.operations)
+  {
+    if (![operation isEqual:exclude])
+      [operation cancel];
+  }
+}
+
 - (void)logoutPerformSelector:(SEL)selector
                      onObject:(id)object
 {
-  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation* operation)
    {
      [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_WILL_LOGOUT_NOTIFICATION
                                                          object:nil];
+     [manager cancelAllOperationsExcluding:operation];
      [manager _clearSelfAndModel:YES];
      [manager _stopPolling];
+     manager.logged_in = NO;
      gap_Status res = gap_logout(manager.stateWrapper.state);
      return res;
    } performSelector:selector onObject:object];
@@ -459,7 +467,11 @@ performSelector:(SEL)selector
   surface::gap::User res;
   gap_Status status = gap_user_by_id(self.stateWrapper.state, id_.unsignedIntValue, res);
   if (status != gap_ok)
+  {
+    ELLE_ERR("%s: asked for user that doesn't exist: %s",
+             self.description.UTF8String, [NSThread callStackSymbols].description.UTF8String);
     return nil;
+  }
   return [self _convertUser:res];
 }
 
@@ -667,20 +679,32 @@ performSelector:(SEL)selector
   if (!self.logged_in)
     return nil;
   uint32_t res = 0;
+  std::vector<std::string> files_ = [self _filesVectorFromNSArray:files];
   if ([recipient isKindOfClass:InfinitUser.class])
   {
     InfinitUser* user = recipient;
     res = gap_send_files(self.stateWrapper.state,
                          user.id_.unsignedIntValue,
-                         [self _filesVectorFromNSArray:files],
+                         files_,
                          message.UTF8String);
+  }
+  else if ([recipient isKindOfClass:InfinitDevice.class])
+  {
+    InfinitDevice* device = recipient;
+    InfinitUser* me = [InfinitUserManager sharedInstance].me;
+    std::string device_id(device.id_.UTF8String);
+    res = gap_send_files(self.stateWrapper.state,
+                         me.id_.unsignedIntValue,
+                         files_,
+                         message.UTF8String,
+                         device_id);
   }
   else if ([recipient isKindOfClass:NSString.class])
   {
     NSString* email = recipient;
     res = gap_send_files(self.stateWrapper.state,
                          email.UTF8String,
-                         [self _filesVectorFromNSArray:files],
+                         files_,
                          message.UTF8String);
   }
   return [self _numFromUint:res];
