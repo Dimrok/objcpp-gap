@@ -181,7 +181,6 @@ static NSString* _service_name = @"Infinit";
     (__bridge id)kSecAttrAccount: account,
     (__bridge id)kSecAttrService: _service_name,
 #endif
-    (__bridge id)kSecAttrAccessible: (__bridge id)kSecAttrAccessibleAlwaysThisDeviceOnly
   };
   return [res mutableCopy];
 }
@@ -205,7 +204,6 @@ static NSString* _service_name = @"Infinit";
 #endif
     (__bridge id)kSecAttrProtocol: (__bridge id)protocol_ref,
     (__bridge id)kSecAttrPort: @(port),
-    (__bridge id)kSecAttrAccessible: (__bridge id)kSecAttrAccessibleAlwaysThisDeviceOnly
   };
   return [res mutableCopy];
 }
