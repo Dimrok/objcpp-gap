@@ -28,7 +28,12 @@
 + (INFINIT_COLOR*)colorWithRed:(NSUInteger)red green:(NSUInteger)green blue:(NSUInteger)blue
                          alpha:(CGFloat)alpha
 {
-  return [INFINIT_COLOR colorWithRed:red/255.0f green:green/255.0f blue:blue/255.0f alpha:alpha];
+#if TARGET_OS_IPHONE
+  return [UIColor colorWithRed:(red/255.0f) green:(green/255.0f) blue:(blue/255.0f) alpha:alpha];
+#else
+  return [NSColor colorWithDeviceRed:(red/255.0f) green:(green/255.0f) blue:(blue/255.0f)
+                               alpha:alpha];
+#endif
 }
 
 + (INFINIT_COLOR*)colorFromPalette:(InfinitPaletteColors)color
