@@ -304,7 +304,7 @@ avatarToDiskCache:(NSImage*)avatar
   NSImage* res = [[NSImage alloc] initWithSize:NSMakeSize(rect.size.width, rect.size.height)];
   [res lockFocus];
   [fill_color set];
-  NSBezierPath* path = [NSBezierPath bezierPathWithOvalInRect:NSRectFromCGRect(rect)];
+  NSBezierPath* path = [NSBezierPath bezierPathWithRect:NSRectFromCGRect(rect)];
   [path fill];
   attrs = @{NSFontAttributeName: [NSFont fontWithName:font_name
                                                  size:font_size],
