@@ -537,49 +537,26 @@ static InfinitTemporaryFileManager* _instance = nil;
 - (void)_addPHAsset:(PHAsset*)asset
      toManagedFiles:(InfinitManagedFiles*)managed_files
 {
-  if (asset.mediaType == PHAssetMediaTypeVideo)
-  {
-    dispatch_semaphore_t copy_sema = dispatch_semaphore_create(0);
-    PHVideoRequestOptions* options = [[PHVideoRequestOptions alloc] init];
-    options.networkAccessAllowed = YES;
-    options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
-    [[PHImageManager defaultManager] requestAVAssetForVideo:asset
+  PHImageRequestOptions* options = [[PHImageRequestOptions alloc] init];
+  options.networkAccessAllowed = YES;
+  options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+  options.version = PHImageRequestOptionsVersionOriginal;
+  options.synchronous = YES;
+  [[PHImageManager defaultManager] requestImageDataForAsset:asset
                                                     options:options
-                                              resultHandler:^(AVAsset* asset,
-                                                              AVAudioMix* audioMix,
+                                              resultHandler:^(NSData* imageData,
+                                                              NSString* dataUTI,
+                                                              UIImageOrientation orientation,
                                                               NSDictionary* info)
-    {
-      if ([asset isKindOfClass:AVURLAsset.class])
-      {
-        NSURL* url = [(AVURLAsset*)asset URL];
-        [self addFiles:@[url.path] toManagedFiles:managed_files.uuid copy:YES];
-      }
-      dispatch_semaphore_signal(copy_sema);
-    }];
-    dispatch_semaphore_wait(copy_sema, DISPATCH_TIME_FOREVER);
-  }
-  else if (asset.mediaType == PHAssetMediaTypeImage)
   {
-    PHImageRequestOptions* options = [[PHImageRequestOptions alloc] init];
-    options.networkAccessAllowed = YES;
-    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-    options.synchronous = YES;
-    [[PHImageManager defaultManager] requestImageDataForAsset:asset
-                                                      options:options
-                                                resultHandler:^(NSData* imageData,
-                                                                NSString* dataUTI,
-                                                                UIImageOrientation orientation,
-                                                                NSDictionary* info)
-    {
-      NSURL* url = info[@"PHImageFileURLKey"];
-      NSString* filename = url.lastPathComponent;
-      NSString* path =
-        [[InfinitTemporaryFileManager sharedInstance] addData:imageData
-                                                 withFilename:filename
-                                               toManagedFiles:managed_files.uuid];
-      [managed_files.asset_map setObject:path forKey:url];
-    }];
-  }
+    NSURL* url = info[@"PHImageFileURLKey"];
+    NSString* filename = url.lastPathComponent;
+    NSString* path =
+      [[InfinitTemporaryFileManager sharedInstance] addData:imageData
+                                               withFilename:filename
+                                             toManagedFiles:managed_files.uuid];
+    [managed_files.asset_map setObject:path forKey:url];
+  }];
 }
 
 @end
