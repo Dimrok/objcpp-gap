@@ -63,7 +63,10 @@ static InfinitDirectoryManager* _instance = nil;
                                                             NSUserDomainMask,
                                                             YES).firstObject;
   NSString* avatar_dir = cache_dir;
-#if !TARGET_OS_IPHONE
+  NSDictionary* attrs = nil;
+#if TARGET_OS_IPHONE
+  attrs = @{NSURLIsExcludedFromBackupKey: @YES};
+#else
   avatar_dir = [avatar_dir stringByAppendingPathComponent:[NSBundle mainBundle].bundleIdentifier];
 #endif
   avatar_dir = [avatar_dir stringByAppendingPathComponent:@"avatar_cache"];
@@ -72,7 +75,7 @@ static InfinitDirectoryManager* _instance = nil;
     NSError* error = nil;
     [[NSFileManager defaultManager] createDirectoryAtPath:avatar_dir
                               withIntermediateDirectories:YES
-                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
+                                               attributes:attrs
                                                     error:&error];
     if (error)
     {
@@ -87,11 +90,13 @@ static InfinitDirectoryManager* _instance = nil;
 - (NSString*)download_directory
 {
   NSString* res = nil;
+  NSDictionary* attrs = nil;
 #if TARGET_OS_IPHONE
   NSString* doc_dir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                           NSUserDomainMask,
                                                           YES).firstObject;
   res = [doc_dir stringByAppendingPathComponent:@"Downloads"];
+  attrs = @{NSURLIsExcludedFromBackupKey: @NO};
 #else
   res =
     NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory, NSUserDomainMask, YES).firstObject;
@@ -101,7 +106,7 @@ static InfinitDirectoryManager* _instance = nil;
     NSError* error = nil;
     [[NSFileManager defaultManager] createDirectoryAtPath:res
                               withIntermediateDirectories:NO
-                                               attributes:@{NSURLIsExcludedFromBackupKey: @NO}
+                                               attributes:attrs
                                                     error:&error];
     if (error)
     {
@@ -116,12 +121,16 @@ static InfinitDirectoryManager* _instance = nil;
 - (NSString*)log_directory
 {
   NSString* res = [self.non_persistent_directory stringByAppendingPathComponent:@"logs"];
+  NSDictionary* attrs = nil;
+#if TARGET_OS_IPHONE
+  attrs = @{NSURLIsExcludedFromBackupKey: @YES};
+#endif
   if (![[NSFileManager defaultManager] fileExistsAtPath:res])
   {
     NSError* error = nil;
     [[NSFileManager defaultManager] createDirectoryAtPath:res
                               withIntermediateDirectories:YES
-                                               attributes:@{NSURLIsExcludedFromBackupKey: @YES}
+                                               attributes:attrs
                                                     error:&error];
     if (error)
     {
