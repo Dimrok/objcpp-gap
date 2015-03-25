@@ -20,6 +20,7 @@
 ELLE_LOG_COMPONENT("Gap-ObjC++.CrashReporter");
 
 static InfinitCrashReporter* _instance = nil;
+static dispatch_once_t _instance_token = 0;
 
 @implementation InfinitCrashReporter
 {
@@ -54,8 +55,10 @@ static InfinitCrashReporter* _instance = nil;
 
 + (instancetype)sharedInstance
 {
-  if (_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _instance = [[InfinitCrashReporter alloc] init];
+  });
   return _instance;
 }
 
