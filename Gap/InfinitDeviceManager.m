@@ -21,6 +21,7 @@
 @implementation InfinitDeviceManager
 
 static InfinitDeviceManager* _instance = nil;
+static dispatch_once_t _instance_token = 0;
 
 #pragma mark - Init
 
@@ -49,8 +50,10 @@ static InfinitDeviceManager* _instance = nil;
 
 + (instancetype)sharedInstance
 {
-  if (_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _instance = [[InfinitDeviceManager alloc] init];
+  });
   return _instance;
 }
 
@@ -108,6 +111,7 @@ static InfinitDeviceManager* _instance = nil;
 - (void)clearModel
 {
   _instance = nil;
+  _instance_token = 0;
 }
 
 @end
