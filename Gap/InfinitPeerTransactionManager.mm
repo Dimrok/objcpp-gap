@@ -270,17 +270,6 @@ static dispatch_once_t _instance_token = 0;
 - (BOOL)acceptTransaction:(InfinitPeerTransaction*)transaction
                 withError:(NSError**)error
 {
-#if TARGET_OS_IPHONE
-  return [self acceptTransaction:transaction toRelativeDirectoryWithMetaData:YES andError:error];
-#else
-  return [self acceptTransaction:transaction toRelativeDirectoryWithMetaData:NO andError:error];
-#endif
-}
-
-- (BOOL)acceptTransaction:(InfinitPeerTransaction*)transaction
-toRelativeDirectoryWithMetaData:(BOOL)relative
-                andError:(NSError**)error;
-{
   if ([InfinitDirectoryManager sharedInstance].free_space < transaction.size.unsignedIntegerValue)
   {
     if (error != NULL)
@@ -292,50 +281,35 @@ toRelativeDirectoryWithMetaData:(BOOL)relative
     return NO;
   }
 
-  if (relative)
-  {
-    NSString* path =
-      [[InfinitDirectoryManager sharedInstance] downloadDirectoryForTransaction:transaction];
-    if (path == nil)
-    {
-      if (error != NULL)
-      {
-        *error = [NSError errorWithDomain:INFINIT_FILE_SYSTEM_ERROR_DOMAIN
-                                     code:InfinitFileSystemErrorPathDoesntExist
-                                 userInfo:nil];
-      }
-      ELLE_ERR("%s: unable to accept transaction, invalid download path",
-               self.description.UTF8String);
-      return NO;
-    }
-    NSDictionary* meta_data = @{@"sender": transaction.sender.meta_id,
-                                @"sender_device": transaction.sender_device_id,
-                                @"sender_fullname": transaction.sender.fullname,
-                                @"ctime": @(transaction.mtime)};
-    NSString* meta_file = [path stringByAppendingPathComponent:@".meta"];
-    if (![meta_data writeToFile:meta_file atomically:YES])
-    {
-      if (error != NULL)
-      {
-        *error = [NSError errorWithDomain:INFINIT_FILE_SYSTEM_ERROR_DOMAIN
-                                     code:InfinitFileSystemErrorUnableToWrite 
-                                 userInfo:nil];
-      }
-      ELLE_ERR("%s: unable to write transaction sender data: %s",
-               self.description.UTF8String, transaction.sender.meta_id.UTF8String);
-      return NO;
-    }
-    [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_
-                                              toRelativeDirectory:transaction.meta_id];
-  }
-  else
-  {
-    [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_];
-  }
+  [[InfinitStateManager sharedInstance] acceptTransactionWithId:transaction.id_];
   transaction.status = gap_transaction_connecting;
   [transaction locallyAccepted];
   [self sendTransactionStatusNotification:transaction];
+  [self onReceiveStarted:transaction];
   return YES;
+}
+
+- (void)onReceiveStarted:(InfinitPeerTransaction*)transaction
+{
+#if TARGET_OS_IPHONE
+  NSString* path =
+    [[InfinitDirectoryManager sharedInstance] downloadDirectoryForTransaction:transaction];
+  if (path == nil)
+  {
+    ELLE_ERR("%s: unable to accept transaction, invalid download path",
+             self.description.UTF8String);
+  }
+  NSDictionary* meta_data = @{@"sender": transaction.sender.meta_id,
+                              @"sender_device": transaction.sender_device_id,
+                              @"sender_fullname": transaction.sender.fullname,
+                              @"ctime": @(transaction.mtime)};
+  NSString* meta_file = [path stringByAppendingPathComponent:@".meta"];
+  if (![meta_data writeToFile:meta_file atomically:YES])
+  {
+    ELLE_ERR("%s: unable to write transaction sender data: %s",
+             self.description.UTF8String, transaction.sender.meta_id.UTF8String);
+  }
+#endif
 }
 
 - (void)rejectTransaction:(InfinitPeerTransaction*)transaction
@@ -545,8 +519,16 @@ toRelativeDirectoryWithMetaData:(BOOL)relative
     {
       gap_TransactionStatus old_status = existing.status;
       [existing updateWithTransaction:transaction];
+      // Check if the transaction has been auto-accepted.
+      if (old_status == gap_transaction_waiting_accept &&
+          existing.status == gap_transaction_connecting)
+      {
+        [self onReceiveStarted:existing];
+      }
       if (existing.status != old_status)
       {
+        if (existing.status == gap_transaction_waiting_accept && existing.recipient_device.length)
+          return;
         [self sendTransactionStatusNotification:existing];
         if (old_status == gap_transaction_waiting_accept && !existing.done)
           [self sendTransactionAcceptedNotification:existing];
