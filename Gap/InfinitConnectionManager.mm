@@ -16,6 +16,7 @@
 ELLE_LOG_COMPONENT("Gap-ObjC++.ConnectionManager");
 
 static InfinitConnectionManager* _instance = nil;
+static dispatch_once_t _instance_token = 0;
 
 @implementation InfinitConnectionManager
 {
@@ -51,8 +52,10 @@ static InfinitConnectionManager* _instance = nil;
 
 + (instancetype)sharedInstance
 {
-  if (_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _instance = [[InfinitConnectionManager alloc] init];
+  });
   return _instance;
 }
 
