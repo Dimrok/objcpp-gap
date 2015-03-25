@@ -27,6 +27,7 @@
 ELLE_LOG_COMPONENT("Gap-ObjC++.AvatarManager");
 
 static InfinitAvatarManager* _instance = nil;
+static dispatch_once_t _instance_token = 0;
 #if TARGET_OS_IPHONE
 static UIImage* _email_avatar = nil;
 static UIImage* _phone_avatar = nil;
@@ -55,7 +56,7 @@ static NSImage* _phone_avatar = nil;
   if (self = [super init])
   {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(clearModel:)
+                                             selector:@selector(clearModel)
                                                  name:INFINIT_CLEAR_MODEL_NOTIFICATION
                                                object:nil];
     _avatar_map = [NSMutableDictionary dictionary];
@@ -86,15 +87,18 @@ static NSImage* _phone_avatar = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)clearModel:(NSNotification*)notification
+- (void)clearModel
 {
   _instance = nil;
+  _instance_token = 0;
 }
 
 + (instancetype)sharedInstance
 {
-  if (_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _instance = [[InfinitAvatarManager alloc] init];
+  });
   return _instance;
 }
 
