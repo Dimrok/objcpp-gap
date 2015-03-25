@@ -17,6 +17,7 @@
 ELLE_LOG_COMPONENT("Gap-ObjC++.LinkTransactionManager");
 
 static InfinitLinkTransactionManager* _instance = nil;
+static dispatch_once_t _instance_token = 0;
 
 @interface InfinitLinkTransactionManager ()
 
@@ -49,8 +50,10 @@ static InfinitLinkTransactionManager* _instance = nil;
 
 + (instancetype)sharedInstance
 {
-  if (_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _instance = [[InfinitLinkTransactionManager alloc] init];
+  });
   return _instance;
 }
 
@@ -63,6 +66,7 @@ static InfinitLinkTransactionManager* _instance = nil;
 - (void)clearModel
 {
   _instance = nil;
+  _instance_token = 0;
 }
 
 - (void)_fillTransactionMap
