@@ -23,6 +23,7 @@
 ELLE_LOG_COMPONENT("Gap-ObjC++.TemporaryFileManager");
 
 static InfinitTemporaryFileManager* _instance = nil;
+static dispatch_once_t _instance_token = 0;
 
 @implementation InfinitTemporaryFileManager
 {
@@ -69,8 +70,10 @@ static InfinitTemporaryFileManager* _instance = nil;
 
 + (instancetype)sharedInstance
 {
-  if (_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _instance = [[InfinitTemporaryFileManager alloc] init];
+  });
   return _instance;
 }
 
