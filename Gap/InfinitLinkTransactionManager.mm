@@ -184,8 +184,11 @@ static dispatch_once_t _instance_token = 0;
     InfinitLinkTransaction* existing = [self.transaction_map objectForKey:transaction.id_];
     if (existing == nil)
     {
-      [self.transaction_map setObject:transaction forKey:transaction.id_];
-      [self sendNewTransactionNotification:transaction];
+      if (![self _ignoredStatus:transaction])
+      {
+        [self.transaction_map setObject:transaction forKey:transaction.id_];
+        [self sendNewTransactionNotification:transaction];
+      }
     }
     else
     {
