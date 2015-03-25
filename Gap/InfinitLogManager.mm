@@ -16,6 +16,7 @@
 ELLE_LOG_COMPONENT("Gap-ObjC++.LogManager");
 
 static InfinitLogManager* _instance = nil;
+static dispatch_once_t _instance_token = 0;
 
 @implementation InfinitLogManager
 {
@@ -40,8 +41,10 @@ static InfinitLogManager* _instance = nil;
 
 + (instancetype)sharedInstance
 {
-  if (_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _instance = [[InfinitLogManager alloc] init];
+  });
   return _instance;
 }
 
