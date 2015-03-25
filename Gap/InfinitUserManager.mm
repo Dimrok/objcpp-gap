@@ -19,6 +19,7 @@
 ELLE_LOG_COMPONENT("Gap-ObjC++.UserManager");
 
 static InfinitUserManager* _instance = nil;
+static dispatch_once_t _instance_token = 0;
 
 @interface InfinitUserManager ()
 
@@ -42,7 +43,7 @@ static InfinitUserManager* _instance = nil;
   {
     _filled_model = NO;
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(clearModel:)
+                                             selector:@selector(clearModel)
                                                  name:INFINIT_CLEAR_MODEL_NOTIFICATION
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -60,15 +61,18 @@ static InfinitUserManager* _instance = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)clearModel:(NSNotification*)notification
+- (void)clearModel
 {
   _instance = nil;
+  _instance_token = 0;
 }
 
 + (instancetype)sharedInstance
 {
-  if (_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _instance = [[InfinitUserManager alloc] init];
+  });
   return _instance;
 }
 
