@@ -22,6 +22,7 @@
 ELLE_LOG_COMPONENT("Gap-ObjC++.PeerTransactionManager");
 
 static InfinitPeerTransactionManager* _instance = nil;
+static dispatch_once_t _instance_token = 0;
 
 @interface InfinitPeerTransactionManager ()
 
@@ -69,12 +70,15 @@ static InfinitPeerTransactionManager* _instance = nil;
 - (void)clearModel:(NSNotification*)notification
 {
   _instance = nil;
+  _instance_token = 0;
 }
 
 + (instancetype)sharedInstance
 {
-  if (_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _instance = [[InfinitPeerTransactionManager alloc] init];
+  });
   return _instance;
 }
 
