@@ -14,6 +14,7 @@
 ELLE_LOG_COMPONENT("Gap-ObjC++.DirectoryManager");
 
 static InfinitDirectoryManager* _instance = nil;
+static dispatch_once_t _instance_token = 0;
 
 @implementation InfinitDirectoryManager
 
@@ -28,8 +29,10 @@ static InfinitDirectoryManager* _instance = nil;
 
 + (instancetype)sharedInstance
 {
-  if (_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _instance = [[InfinitDirectoryManager alloc] init];
+  });
   return _instance;
 }
 
