@@ -733,21 +733,9 @@ performSelector:(SEL)selector
 
 - (void)acceptTransactionWithId:(NSNumber*)id_
 {
-  [self acceptTransactionWithId:id_ toRelativeDirectory:nil];
-}
-
-- (void)acceptTransactionWithId:(NSNumber*)id_
-            toRelativeDirectory:(NSString*)directory
-{
   if (!self.logged_in)
     return;
-  boost::optional<std::string> output_dir;
-  if (directory != nil && directory.length > 0)
-  {
-    std::string dir_string(directory.UTF8String);
-    output_dir = dir_string;
-  }
-  gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue, output_dir);
+  gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue);
 }
 
 - (void)rejectTransactionWithId:(NSNumber*)id_

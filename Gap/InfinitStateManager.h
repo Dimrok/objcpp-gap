@@ -175,8 +175,6 @@ performSelector:(SEL)selector
               onDevice:(NSString*)device_id 
            withMessage:(NSString*)message;
 - (void)acceptTransactionWithId:(NSNumber*)id_;
-- (void)acceptTransactionWithId:(NSNumber*)id_
-            toRelativeDirectory:(NSString*)directory;
 - (void)rejectTransactionWithId:(NSNumber*)id_;
 
 #pragma mark - Connection Status
