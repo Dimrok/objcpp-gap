@@ -44,6 +44,7 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.StateManager");
 typedef gap_Status(^gap_operation_t)(InfinitStateManager*, NSOperation*);
 
 static InfinitStateManager* _manager_instance = nil;
+static dispatch_once_t _instance_token = 0;
 static NSNumber* _self_id = nil;
 static NSString* _self_device_id = nil;
 static NSString* _facebook_app_id = nil;
@@ -80,8 +81,10 @@ static NSString* _facebook_app_id = nil;
 
 + (instancetype)sharedInstance
 {
-  if (_manager_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _manager_instance = [[InfinitStateManager alloc] init];
+  });
   return _manager_instance;
 }
 
@@ -174,6 +177,7 @@ static NSString* _facebook_app_id = nil;
 - (void)_stopState
 {
   _manager_instance = nil;
+  _instance_token = 0;
   [_poll_timer invalidate];
   _queue.suspended = YES;
   [_queue cancelAllOperations];
