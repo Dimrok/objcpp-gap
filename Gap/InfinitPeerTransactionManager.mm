@@ -270,6 +270,12 @@ static dispatch_once_t _instance_token = 0;
 - (BOOL)acceptTransaction:(InfinitPeerTransaction*)transaction
                 withError:(NSError**)error
 {
+  if (transaction.status != gap_transaction_waiting_accept)
+  {
+    ELLE_WARN("%s: ignoring accept for status: %s",
+              self.description.UTF8String, transaction.status_text.UTF8String);
+    return YES;
+  }
   if ([InfinitDirectoryManager sharedInstance].free_space < transaction.size.unsignedIntegerValue)
   {
     if (error != NULL)
@@ -497,7 +503,8 @@ static dispatch_once_t _instance_token = 0;
 
 - (void)handlePhoneTransaction:(InfinitPeerTransaction*)transaction
 {
-  if (transaction.status == gap_transaction_transferring &&
+  if (transaction.from_device &&
+      transaction.status == gap_transaction_transferring &&
       transaction.recipient.ghost_code.length > 0)
   {
     [self sendPhoneTransactionNotification:transaction];
@@ -520,7 +527,8 @@ static dispatch_once_t _instance_token = 0;
       gap_TransactionStatus old_status = existing.status;
       [existing updateWithTransaction:transaction];
       // Check if the transaction has been auto-accepted.
-      if (old_status == gap_transaction_waiting_accept &&
+      if (existing.to_device &&
+          old_status == gap_transaction_waiting_accept &&
           existing.status == gap_transaction_connecting)
       {
         [self onReceiveStarted:existing];
