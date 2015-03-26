@@ -12,6 +12,7 @@
 #import "InfinitLogManager.h"
 
 static InfinitStateWrapper* _wrapper_instance = nil;
+static dispatch_once_t _instance_token = 0;
 static BOOL _production = NO;
 
 @implementation InfinitStateWrapper
@@ -43,6 +44,10 @@ static BOOL _production = NO;
   if (log_file != nil && log_file.length > 0)
     setenv("INFINIT_LOG_FILE", log_file.UTF8String, 0);
 
+  setenv("ELLE_LOG_TIME", "1", 0);
+
+  _production = YES;
+
 //  std::string local_server = "192.168.0.83";
 //
 //  setenv("INFINIT_META_PROTOCOL", "http", 0);
@@ -51,9 +56,9 @@ static BOOL _production = NO;
 //
 //  setenv("INFINIT_TROPHONIUS_HOST", local_server.c_str(), 0);
 //  setenv("INFINIT_TROPHONIUS_PORT", "8181", 0);
-//
+
 //  setenv("ELLE_REAL_ASSERT", "1", 0);
-//
+
 //  setenv("INFINIT_CRASH_DEST", "chris@infinit.io", 0);
 //
 //  setenv("INFINIT_METRICS_INFINIT", "1", 0);
@@ -76,9 +81,6 @@ static BOOL _production = NO;
 //    "iOS*:DEBUG,"
 //    "*trophonius*:TRACE";
 //  setenv("ELLE_LOG_LEVEL", log_level.c_str(), 0);
-  setenv("ELLE_LOG_TIME", "1", 0);
-
-  _production = YES;
 }
 
 #pragma mark - Setup Instace
@@ -86,7 +88,7 @@ static BOOL _production = NO;
 + (void)startStateWithInitialDownloadDir:(NSString*)download_dir
 {
   NSCAssert(_wrapper_instance == nil, @"Use sharedInstance");
-  if (_wrapper_instance == nil)
+  dispatch_once(&_instance_token, ^
   {
     [InfinitStateWrapper setEnvironmentVariables];
     InfinitDirectoryManager* dir_manager = [InfinitDirectoryManager sharedInstance];
@@ -103,7 +105,7 @@ static BOOL _production = NO;
                                                        enable_mirroring,
                                                        max_mirror_size)
                               andMaxMirrorSize:max_mirror_size];
-  }
+  });
 }
 
 + (instancetype)sharedInstance
