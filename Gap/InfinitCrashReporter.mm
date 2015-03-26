@@ -86,7 +86,7 @@ static dispatch_once_t _instance_token = 0;
                                                             withTextFormat:format];
   NSString* crash_log_path = [InfinitLogManager sharedInstance].crash_report_path;
   [report writeToFile:crash_log_path
-           atomically:YES
+           atomically:NO
              encoding:NSUTF8StringEncoding
                 error:&error];
   if (error != nil)
@@ -117,10 +117,15 @@ static dispatch_once_t _instance_token = 0;
   {
     ELLE_ERR("%s: unable to purge last crash report", self.description.UTF8String);
   }
+  [self performSelector:@selector(delayedDeleteCrashReport) withObject:nil afterDelay:10.0f];
+}
+
+- (void)delayedDeleteCrashReport
+{
   NSString* report_path = [InfinitLogManager sharedInstance].crash_report_path;
   if ([[NSFileManager defaultManager] fileExistsAtPath:report_path])
   {
-    error = nil;
+    NSError* error = nil;
     [[NSFileManager defaultManager] removeItemAtPath:report_path error:&error];
     if (error != nil)
     {
