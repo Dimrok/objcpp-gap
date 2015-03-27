@@ -442,7 +442,7 @@ static dispatch_once_t _instance_token = 0;
   NSMutableArray* res = [NSMutableArray array];
   for (InfinitPeerTransaction* transaction in self.transactions)
   {
-    if ([transaction.sender isEqual:user] || [transaction.recipient isEqual:user])
+    if ([transaction.other_user isEqual:user])
       [res addObject:transaction];
   }
   return res;
