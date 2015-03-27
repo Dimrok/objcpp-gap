@@ -231,6 +231,28 @@ static dispatch_once_t _instance_token = 0;
         continue;
       }
     }
+    else if ([recipient isKindOfClass:InfinitUser.class])
+    {
+      InfinitUser* user = recipient;
+      if (user.id_.unsignedIntValue == 0)
+      {
+        ELLE_ERR("%s: unable to send, invalid user id: %s",
+                 self.description.UTF8String, user.description.UTF8String);
+        [res addObject:@0];
+        continue;
+      }
+    }
+    else if ([recipient isKindOfClass:InfinitDevice.class])
+    {
+      InfinitDevice* device = recipient;
+      if ([[InfinitDeviceManager sharedInstance] deviceWithId:device.id_] == nil)
+      {
+        ELLE_ERR("%s: unable to send, unknown user device: %s",
+                 self.description.UTF8String, device.description.UTF8String);
+        [res addObject:@0];
+        continue;
+      }
+    }
     NSNumber* transaction_id = [[InfinitStateManager sharedInstance] sendFiles:files
                                                                    toRecipient:recipient
                                                                    withMessage:message];
