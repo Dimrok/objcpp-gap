@@ -103,7 +103,15 @@ static dispatch_once_t _instance_token = 0;
 - (InfinitUser*)me
 {
   if (_me == nil)
+  {
+    InfinitUser* fetched_me = [self userWithId:[[InfinitStateManager sharedInstance] self_id]];
+    if (fetched_me.id_.unsignedIntValue == 0)
+    {
+      ELLE_ERR("%s: got invalid self user", self.description.UTF8String);
+      return fetched_me;
+    }
     _me = [self userWithId:[[InfinitStateManager sharedInstance] self_id]];
+  }
   return _me;
 }
 
