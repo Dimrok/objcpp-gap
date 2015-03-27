@@ -536,7 +536,15 @@ performSelector:(SEL)selector
   if (!self.logged_in)
     return nil;
   if (_self_id == nil)
-    _self_id = [self _numFromUint:gap_self_id(self.stateWrapper.state)];
+  {
+    NSNumber* fetched_id = [self _numFromUint:gap_self_id(self.stateWrapper.state)];
+    if (fetched_id.unsignedIntValue == 0)
+    {
+      ELLE_ERR("%s: got null_id when fetching self from state", self.description.UTF8String);
+      return fetched_id;
+    }
+    _self_id = fetched_id;
+  }
   return _self_id;
 }
 
