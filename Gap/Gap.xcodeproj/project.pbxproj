@@ -99,6 +99,8 @@
 		83E0AC231A6A61CD003F60C6 /* InfinitTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 83E0AC211A6A61CD003F60C6 /* InfinitTransaction.m */; };
 		83EBB08C1A93B6E400144BC6 /* InfinitConnectionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = 83EBB08A1A93B6E400144BC6 /* InfinitConnectionStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83EBB08D1A93B6E400144BC6 /* InfinitConnectionStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 83EBB08B1A93B6E400144BC6 /* InfinitConnectionStatus.m */; };
+		83EE4CBE1AC58A40006292C8 /* InfinitStoredMutableDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 83EE4CBC1AC58A40006292C8 /* InfinitStoredMutableDictionary.h */; };
+		83EE4CBF1AC58A40006292C8 /* InfinitStoredMutableDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 83EE4CBD1AC58A40006292C8 /* InfinitStoredMutableDictionary.m */; };
 		83F35D0D1A1CF08F00DF7F35 /* InfinitFeaturesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F35D0B1A1CF08F00DF7F35 /* InfinitFeaturesManager.h */; };
 		83F35D0E1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83F35D0C1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm */; };
 		83F4D0131A136E3C0068BEB2 /* InfinitStateWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568D9D1A136DEE00766DA3 /* InfinitStateWrapper.h */; };
@@ -288,6 +290,8 @@
 		83EBB08A1A93B6E400144BC6 /* InfinitConnectionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitConnectionStatus.h; sourceTree = "<group>"; };
 		83EBB08B1A93B6E400144BC6 /* InfinitConnectionStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitConnectionStatus.m; sourceTree = "<group>"; };
 		83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CrashReporter.xcodeproj; path = ../plcrashreporter/CrashReporter.xcodeproj; sourceTree = "<group>"; };
+		83EE4CBC1AC58A40006292C8 /* InfinitStoredMutableDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitStoredMutableDictionary.h; sourceTree = "<group>"; };
+		83EE4CBD1AC58A40006292C8 /* InfinitStoredMutableDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitStoredMutableDictionary.m; sourceTree = "<group>"; };
 		83F35D0B1A1CF08F00DF7F35 /* InfinitFeaturesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitFeaturesManager.h; sourceTree = "<group>"; };
 		83F35D0C1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitFeaturesManager.mm; sourceTree = "<group>"; };
 		83F35D221A1D02EE00DF7F35 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = "../Gap-OSX/Info.plist"; sourceTree = "<group>"; };
@@ -427,6 +431,8 @@
 				830AD1E21A6A943D00E2B058 /* InfinitDataSize.m */,
 				836405ED1AB88DE9005CC50C /* InfinitKeychain.h */,
 				836405EE1AB88DE9005CC50C /* InfinitKeychain.m */,
+				83EE4CBC1AC58A40006292C8 /* InfinitStoredMutableDictionary.h */,
+				83EE4CBD1AC58A40006292C8 /* InfinitStoredMutableDictionary.m */,
 				830AD1DD1A6A8D2400E2B058 /* InfinitTime.h */,
 				830AD1DE1A6A8D2400E2B058 /* InfinitTime.m */,
 				836D394D1A67F19200892206 /* NSString+email.h */,
@@ -629,6 +635,7 @@
 				836D39A51A694E5500892206 /* InfinitLogManager.h in Headers */,
 				83F4D0191A136E3C0068BEB2 /* InfinitUserManager.h in Headers */,
 				83F4D0131A136E3C0068BEB2 /* InfinitStateWrapper.h in Headers */,
+				83EE4CBE1AC58A40006292C8 /* InfinitStoredMutableDictionary.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -856,6 +863,7 @@
 			files = (
 				83F72CAE1A1513FA0088106E /* InfinitLinkTransactionManager.mm in Sources */,
 				839610711A2479B50044B874 /* InfinitManagedFiles.m in Sources */,
+				83EE4CBF1AC58A40006292C8 /* InfinitStoredMutableDictionary.m in Sources */,
 				83F72CAA1A1513810088106E /* InfinitLinkTransaction.m in Sources */,
 				83568DA41A136DF600766DA3 /* InfinitUser.m in Sources */,
 				83568DB01A136E1000766DA3 /* InfinitStateManager.mm in Sources */,
