@@ -51,6 +51,14 @@
  */
 - (InfinitLinkTransaction*)transactionWithId:(NSNumber*)id_;
 
+/** Cached Link Transaction with corresponding Meta ID.
+  This will only return a transaction if it is in the local model.
+ @param meta_id
+  Meta ID of transaction.
+ @return Link Transaction
+ */
+- (InfinitLinkTransaction*)transactionWithMetaId:(NSString*)meta_id;
+
 #pragma mark - User Interaction
 /** Create a link.
  @param files

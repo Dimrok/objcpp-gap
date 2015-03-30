@@ -122,6 +122,19 @@ static dispatch_once_t _instance_token = 0;
   }
 }
 
+- (InfinitLinkTransaction*)transactionWithMetaId:(NSString*)meta_id
+{
+  @synchronized(self.transaction_map)
+  {
+    for (InfinitLinkTransaction* transaction in self.transaction_map.allValues)
+    {
+      if ([transaction.meta_id isEqualToString:meta_id])
+        return transaction;
+    }
+  }
+  return nil;
+}
+
 #pragma mark - User Interaction
 
 - (NSNumber*)createLinkWithFiles:(NSArray*)files
