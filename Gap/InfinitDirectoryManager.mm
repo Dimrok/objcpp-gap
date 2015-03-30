@@ -209,13 +209,17 @@ static dispatch_once_t _instance_token = 0;
 {
 #if !TARGET_OS_IPHONE
   NSCAssert(false, @"Temporary files directory only used on iOS");
-#endif
-  NSString* res = [NSTemporaryDirectory() stringByAppendingPathComponent:@"managed_files"];
+  return nil;
+#else
+  NSString* cache_dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
+                                                            NSUserDomainMask,
+                                                            YES).firstObject;
+  NSString* res = [cache_dir stringByAppendingPathComponent:@"managed_files"];
   if (![[NSFileManager defaultManager] fileExistsAtPath:res])
   {
     NSError* error = nil;
     [[NSFileManager defaultManager] createDirectoryAtPath:res
-                              withIntermediateDirectories:NO
+                              withIntermediateDirectories:YES
                                                attributes:@{NSURLIsExcludedFromBackupKey: @YES}
                                                     error:&error];
     if (error)
@@ -226,13 +230,15 @@ static dispatch_once_t _instance_token = 0;
     }
   }
   return res;
+#endif
 }
 
 - (NSString*)thumbnail_cache_directory
 {
 #if !TARGET_OS_IPHONE
   NSCAssert(false, @"Thumbnail cache directory only used on iOS");
-#endif
+  return nil;
+#else
   NSString* cache_dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
                                                             NSUserDomainMask,
                                                             YES).firstObject;
@@ -252,13 +258,15 @@ static dispatch_once_t _instance_token = 0;
     }
   }
   return thumbnail_dir;
+#endif
 }
 
 - (NSString*)upload_thumbnail_cache_directory
 {
 #if !TARGET_OS_IPHONE
   NSCAssert(false, @"Upload thumbnail cache directory only used on iOS");
-#endif
+  return nil;
+#else
   NSString* cache_dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
                                                             NSUserDomainMask,
                                                             YES).firstObject;
@@ -278,6 +286,7 @@ static dispatch_once_t _instance_token = 0;
     }
   }
   return thumbnail_dir;
+#endif
 }
 
 #pragma mark - Disk Space
