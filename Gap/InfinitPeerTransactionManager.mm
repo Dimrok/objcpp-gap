@@ -12,6 +12,9 @@
 #import "InfinitDeviceManager.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitStateManager.h"
+#ifdef TARGET_OS_IPHONE
+# import "InfinitTemporaryFileManager.h"
+#endif
 
 #import "NSString+email.h"
 #import "NSString+PhoneNumber.h"
@@ -631,6 +634,12 @@ static dispatch_once_t _instance_token = 0;
   {
     [self _fillTransactionMap];
     [self postNotificationOnMainThreadName:INFINIT_PEER_TRANSACTION_MODEL_READY_NOTIFICATION];
+#if TARGET_OS_IPHONE
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
+      [InfinitTemporaryFileManager sharedInstance];
+    });
+#endif
   }
 }
 
