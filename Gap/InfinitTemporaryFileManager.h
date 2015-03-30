@@ -64,14 +64,6 @@
                   performSelector:(SEL)selector
                          onObject:(id)object;
 
-/** Remove a list of Asset Library URLs from managed files.
- @param list
-  List of URLs to be removed as NSURLs.
- @param uuid
-  The idetity of the managed files.
- */
-- (void)removeALAssetLibraryURLList:(NSArray*)list
-                   fromManagedFiles:(NSString*)uuid;
 
 /** Add an NSData object to be managed.
  @param data
@@ -98,15 +90,6 @@
 - (void)addFiles:(NSArray*)files
   toManagedFiles:(NSString*)uuid
             copy:(BOOL)copy;
-
-/** Remove files that are currently being managed. This will delete the files.
- @param files
-   List of NSString paths that you wish to remove.
- @param uuid
-   The identifying UUID.
- */
-- (void)removeFiles:(NSArray*)files
-   fromManagedFiles:(NSString*)uuid;
 
 /** Set the transaction IDs for the managed files.
  The files will then automatically be deleted when they're no longer needed.

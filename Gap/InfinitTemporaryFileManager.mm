@@ -13,6 +13,7 @@
 #import "InfinitManagedFiles.h"
 #import "InfinitPeerTransactionManager.h"
 #import "InfinitStateManager.h"
+#import "InfinitStoredMutableDictionary.h"
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <Photos/Photos.h>
@@ -24,30 +25,35 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.TemporaryFileManager");
 
 static InfinitTemporaryFileManager* _instance = nil;
 static dispatch_once_t _instance_token = 0;
+static ALAssetsLibrary* _library = nil;
+static dispatch_once_t _library_token = 0;
+
+@interface InfinitTemporaryFileManager ()
+
+@property (atomic, readonly) InfinitStoredMutableDictionary* files_map;
+@property (atomic, readonly) InfinitStoredMutableDictionary* transaction_map;
+
+@property (nonatomic, readonly) NSString* managed_root;
+@property (nonatomic, readonly) NSString* files_map_path;
+@property (nonatomic, readonly) NSString* transaction_map_path;
+
+@property (nonatomic, readonly) uint64_t max_mirror_size;
+
+@end
 
 @implementation InfinitTemporaryFileManager
-{
-@private
-  NSMutableDictionary* _files_map;
-  NSMutableDictionary* _transaction_map;
-
-  NSString* _managed_root;
-
-  uint64_t _max_mirror_size;
-
-  ALAssetsLibrary* _library;
-}
 
 - (id)init
 {
   NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
-    _max_mirror_size = [[InfinitStateManager sharedInstance] max_mirror_size];
-    _files_map = [NSMutableDictionary dictionary];
-    _transaction_map = [NSMutableDictionary dictionary];
+    _max_mirror_size = [InfinitStateManager sharedInstance].max_mirror_size;
     _managed_root = [InfinitDirectoryManager sharedInstance].temporary_files_directory;
-    [self _deleteFiles:@[_managed_root]];
+    _files_map_path = [self.managed_root stringByAppendingPathComponent:@"files_map"];
+    _transaction_map_path = [self.managed_root stringByAppendingPathComponent:@"transaction_map"];
+    [self _fillModel];
+    [self _cleanup];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_linkTransactionUpdated:)
                                                  name:INFINIT_LINK_TRANSACTION_STATUS_NOTIFICATION
@@ -57,15 +63,108 @@ static dispatch_once_t _instance_token = 0;
                                              selector:@selector(_peerTransactionUpdated:)
                                                  name:INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION
                                                object:nil];
-    _library = nil;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(clearModel) 
+                                                 name:UIApplicationWillTerminateNotification
+                                               object:nil];
   }
   return self;
 }
 
+- (void)clearModel
+{
+  _instance_token = 0;
+  _instance = nil;
+}
+
 - (void)dealloc
 {
-  [self _deleteFiles:@[_managed_root]];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  _transaction_map = nil;
+  _files_map = nil;
+}
+
+- (void)_fillModel
+{
+  _files_map = [InfinitStoredMutableDictionary dictionaryWithContentsOfFile:self.files_map_path];
+  _transaction_map =
+    [InfinitStoredMutableDictionary dictionaryWithContentsOfFile:self.transaction_map_path];
+  // Replace managed files objects in transaction map with those in files map.
+  for (InfinitManagedFiles* managed_files in self.files_map.allValues)
+  {
+    NSArray* keys = [self.transaction_map allKeysForObject:managed_files];
+    if (keys.count > 0)
+    {
+      for (NSString* key in keys)
+        [self.transaction_map setObject:managed_files forKey:key];
+    }
+  }
+}
+
+- (void)_cleanup
+{
+  NSString* old_managed_root =
+    [NSTemporaryDirectory() stringByAppendingPathComponent:self.managed_root.lastPathComponent];
+  // Remove old temporary files root.
+  if ([[NSFileManager defaultManager] fileExistsAtPath:old_managed_root isDirectory:NULL])
+  {
+    [[NSFileManager defaultManager] removeItemAtPath:old_managed_root error:nil];
+  }
+  NSMutableSet* remove_keys = [NSMutableSet set];
+  InfinitLinkTransactionManager* l_manager = [InfinitLinkTransactionManager sharedInstance];
+  InfinitPeerTransactionManager* p_manager = [InfinitPeerTransactionManager sharedInstance];
+  NSMutableArray* transactions = [NSMutableArray arrayWithArray:l_manager.transactions];
+  [transactions addObjectsFromArray:p_manager.transactions];
+  for (id key in self.transaction_map.allKeys)
+  {
+    InfinitManagedFiles* managed_files = [self.transaction_map objectForKey:key];
+    // Transactions without meta ids are useless as are ones that we no longer track in our managers
+    if (![key isKindOfClass:NSString.class] ||
+        !([l_manager transactionWithMetaId:key] || [p_manager transactionWithMetaId:key]))
+    {
+      [remove_keys addObjectsFromArray:[self.transaction_map allKeysForObject:managed_files]];
+      [self deleteManagedFiles:managed_files.uuid force:YES];
+    }
+    // It's possible during an update that our base path changed. If this happens, the files will
+    // no longer be in the same place. Transaction will fail but it happens early so we need to
+    // clean up.
+    else
+    {
+      if (![[NSFileManager defaultManager] fileExistsAtPath:managed_files.root_dir isDirectory:NULL])
+      {
+        [remove_keys addObjectsFromArray:[self.transaction_map allKeysForObject:managed_files]];
+        [remove_keys addObject:key];
+        [self deleteManagedFiles:managed_files.uuid force:YES];
+      }
+    }
+  }
+  for (id key in remove_keys)
+  {
+    [self.transaction_map removeObjectForKey:key];
+  }
+  NSError* error = nil;
+  NSArray* contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:self.managed_root
+                                                                          error:&error];
+  if (error)
+  {
+    ELLE_WARN("%s: unable to read root managed files folder", self.description.UTF8String);
+    return;
+  }
+  for (NSString* folder in contents)
+  {
+    if (![folder isEqualToString:self.files_map_path.lastPathComponent] &&
+        ![folder isEqualToString:self.transaction_map_path.lastPathComponent] &&
+        ![self.files_map objectForKey:folder])
+    {
+      NSString* path = [self.managed_root stringByAppendingPathComponent:folder];
+      [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
+      if (error)
+      {
+        ELLE_WARN("%s: unable to remove orphan managed files: %s",
+                  self.description.UTF8String, folder);
+      }
+    }
+  }
 }
 
 + (instancetype)sharedInstance
@@ -79,8 +178,10 @@ static dispatch_once_t _instance_token = 0;
 
 - (ALAssetsLibrary*)_sharedLibrary
 {
-  if (_library == nil)
+  dispatch_once(&_library_token, ^
+  {
     _library = [[ALAssetsLibrary alloc] init];
+  });
   return _library;
 }
 
@@ -104,38 +205,48 @@ static dispatch_once_t _instance_token = 0;
   }
 }
 
+- (void)_genericTransactionUpdate:(InfinitTransaction*)transaction
+{
+  if (!transaction.from_device || !transaction.meta_id.length)
+    return;
+  InfinitManagedFiles* temp = [self.transaction_map objectForKey:transaction.id_];
+  if (temp && transaction.meta_id.length)
+  {
+    [self.transaction_map removeObjectForKey:transaction.id_];
+    [self.transaction_map setObject:temp forKey:transaction.meta_id];
+  }
+
+  InfinitManagedFiles* managed_files = [self.transaction_map objectForKey:transaction.meta_id];
+  if (managed_files == nil)
+    return;
+
+  if (managed_files.total_size.unsignedIntegerValue < self.max_mirror_size ||
+      ![self _transactionFilesNeededForStatus:transaction.status])
+  {
+    ELLE_DEBUG("%s: no longer need files for transaction: %s",
+               self.description.UTF8String, transaction.meta_id.UTF8String);
+    [self.transaction_map removeObjectForKey:transaction.meta_id];
+    if ([self.transaction_map allKeysForObject:managed_files].count == 0)
+      [self deleteManagedFiles:managed_files.uuid];
+  }
+}
+
 - (void)_linkTransactionUpdated:(NSNotification*)notification
 {
   NSNumber* id_ = notification.userInfo[kInfinitTransactionId];
-  InfinitManagedFiles* managed_files = [_transaction_map objectForKey:id_];
-  if (managed_files == nil)
-    return;
   InfinitLinkTransaction* transaction =
     [[InfinitLinkTransactionManager sharedInstance] transactionWithId:id_];
-  if (managed_files.total_size.unsignedIntegerValue < _max_mirror_size ||
-      ![self _transactionFilesNeededForStatus:transaction.status])
-  {
-    [_transaction_map removeObjectForKey:id_];
-    if([_transaction_map allKeysForObject:managed_files].count == 0)
-      [self deleteManagedFiles:managed_files.uuid];
-  }
+
+  [self _genericTransactionUpdate:transaction];
 }
 
 - (void)_peerTransactionUpdated:(NSNotification*)notification
 {
   NSNumber* id_ = notification.userInfo[kInfinitTransactionId];
-  InfinitManagedFiles* managed_files = [_transaction_map objectForKey:id_];
-  if (managed_files == nil)
-    return;
   InfinitPeerTransaction* transaction =
     [[InfinitPeerTransactionManager sharedInstance] transactionWithId:id_];
-  if (managed_files.total_size.unsignedIntegerValue < _max_mirror_size ||
-      ![self _transactionFilesNeededForStatus:transaction.status])
-  {
-    [_transaction_map removeObjectForKey:id_];
-    if([_transaction_map allKeysForObject:managed_files].count == 0)
-      [self deleteManagedFiles:managed_files.uuid];
-  }
+
+  [self _genericTransactionUpdate:transaction];
 }
 
 #pragma mark - Public
@@ -143,14 +254,14 @@ static dispatch_once_t _instance_token = 0;
 - (NSString*)createManagedFiles
 {
   InfinitManagedFiles* managed_files = [[InfinitManagedFiles alloc] init];
-  [_files_map setObject:managed_files forKey:managed_files.uuid];
-  managed_files.root_dir = [_managed_root stringByAppendingPathComponent:managed_files.uuid];
+  [self.files_map setObject:managed_files forKey:managed_files.uuid];
+  managed_files.root_dir = [self.managed_root stringByAppendingPathComponent:managed_files.uuid];
   return managed_files.uuid;
 }
 
 - (NSArray*)pathsForManagedFiles:(NSString*)uuid
 {
-  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+  InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
   if (managed_files == nil)
   {
     ELLE_ERR("%s: unable to fetch files from %s, not in map",
@@ -162,7 +273,7 @@ static dispatch_once_t _instance_token = 0;
 
 - (NSNumber*)totalSizeOfManagedFiles:(NSString*)uuid
 {
-  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+  InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
   if (managed_files == nil)
   {
     ELLE_ERR("%s: unable to get total size, %s not in map",
@@ -180,7 +291,7 @@ static dispatch_once_t _instance_token = 0;
   dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
   dispatch_async(queue, ^
   {
-    InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+    InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
     if (managed_files == nil)
     {
       ELLE_ERR("%s: unable to add asset list, %s not in map",
@@ -256,7 +367,7 @@ static dispatch_once_t _instance_token = 0;
   dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
   dispatch_async(queue, ^
   {
-    InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+    InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
     if (managed_files == nil)
     {
       ELLE_ERR("%s: unable to add asset list, %s not in map",
@@ -275,28 +386,6 @@ static dispatch_once_t _instance_token = 0;
   });
 }
 
-- (void)removeALAssetLibraryURLList:(NSArray*)list
-                   fromManagedFiles:(NSString*)uuid
-{
-  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
-  if (managed_files == nil)
-  {
-    ELLE_ERR("%s: unable to add asset list, %s not in map",
-             self.description.UTF8String, uuid.UTF8String);
-    return;
-  }
-  NSMutableArray* paths = [NSMutableArray array];
-  for (NSURL* url in list)
-  {
-    NSString* path = [managed_files.asset_map objectForKey:url];
-    if (path == nil)
-      continue;
-    [paths addObject:path];
-  }
-  [managed_files.asset_map removeObjectsForKeys:list];
-  [self removeFiles:paths fromManagedFiles:uuid];
-}
-
 - (NSString*)addData:(NSData*)data
         withFilename:(NSString*)filename
       toManagedFiles:(NSString*)uuid
@@ -310,7 +399,7 @@ static dispatch_once_t _instance_token = 0;
              self.description.UTF8String, filename_.UTF8String);
     return nil;
   }
-  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+  InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
   if (managed_files == nil)
   {
     ELLE_ERR("%s: unable to write file to %s, not in map",
@@ -338,7 +427,7 @@ static dispatch_once_t _instance_token = 0;
 {
   ELLE_TRACE("%s: adding files to managed files (%s): %s",
              self.description.UTF8String, uuid.UTF8String, files.description.UTF8String);
-  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+  InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
   if (managed_files == nil)
   {
     ELLE_ERR("%s: unable to add files to %s, not in map",
@@ -358,28 +447,10 @@ static dispatch_once_t _instance_token = 0;
   managed_files.total_size = [self _folderSize:managed_files.root_dir];
 }
 
-- (void)removeFiles:(NSArray*)files
-   fromManagedFiles:(NSString*)uuid
-{
-  if (files == nil || files.count == 0)
-    return;
-
-  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
-  if (managed_files == nil)
-  {
-    ELLE_ERR("%s: unable to remove files from %s, not in map",
-             self.description.UTF8String, uuid.UTF8String);
-    return;
-  }
-  [managed_files.managed_paths removeObjectsInArray:files];
-  [self _deleteFiles:files];
-  managed_files.total_size = [self _folderSize:managed_files.root_dir];
-}
-
 - (void)setTransactionIds:(NSArray*)transaction_ids
           forManagedFiles:(NSString*)uuid
 {
-  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
+  InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
   if (managed_files == nil)
   {
     ELLE_ERR("%s: unable to set transaction_id, %s not in map",
@@ -388,20 +459,28 @@ static dispatch_once_t _instance_token = 0;
   }
   for (NSNumber* id_ in transaction_ids)
   {
-    [_transaction_map setObject:managed_files forKey:id_];
+    [self.transaction_map setObject:managed_files forKey:id_];
   }
 }
 
 - (void)deleteManagedFiles:(NSString*)uuid
 {
-  InfinitManagedFiles* managed_files = [_files_map objectForKey:uuid];
-  if (managed_files == nil)
+  [self deleteManagedFiles:uuid force:NO];
+}
+
+- (void)deleteManagedFiles:(NSString*)uuid
+                     force:(BOOL)force
+{
+  ELLE_DEBUG("%s: removing managed files with UUID: %s",
+             self.description.UTF8String, uuid.UTF8String);
+  InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
+  if (managed_files == nil && !force)
   {
     ELLE_ERR("%s: unable to delete managed files, %s not in map",
              self.description.UTF8String, uuid.UTF8String);
     return;
   }
-  [_files_map removeObjectForKey:uuid];
+  [self.files_map removeObjectForKey:uuid];
   [self _deleteFiles:@[managed_files.root_dir]];
 }
 
@@ -534,7 +613,7 @@ static dispatch_once_t _instance_token = 0;
     [[InfinitTemporaryFileManager sharedInstance] addData:data
                                              withFilename:filename
                                            toManagedFiles:managed_files.uuid];
-  [managed_files.asset_map setObject:path forKey:url];
+  [managed_files.asset_map setObject:path forKey:url.absoluteString];
 }
 
 - (void)_addPHAsset:(PHAsset*)asset
@@ -554,11 +633,27 @@ static dispatch_once_t _instance_token = 0;
   {
     NSURL* url = info[@"PHImageFileURLKey"];
     NSString* filename = url.lastPathComponent;
+    if (!imageData.length)
+    {
+      NSString* reason = @"unknown";
+      if (info[PHImageCancelledKey])
+        reason = @"fetch cancelled";
+      if (info[PHImageErrorKey])
+        reason = [info[PHImageErrorKey] description];
+      ELLE_WARN("%s: got empty file from PHImageManager for %s, reason: %s",
+                self.description.UTF8String, filename.UTF8String, reason.UTF8String);
+    }
+    else if (info[PHImageErrorKey])
+    {
+      ELLE_WARN("%s: error fetching PHAsset %s, reason: %s",
+                self.description.UTF8String, filename.UTF8String,
+                [info[PHImageErrorKey] description].UTF8String);
+    }
     NSString* path =
       [[InfinitTemporaryFileManager sharedInstance] addData:imageData
                                                withFilename:filename
                                              toManagedFiles:managed_files.uuid];
-    [managed_files.asset_map setObject:path forKey:url];
+    [managed_files.asset_map setObject:path forKey:url.absoluteString];
   }];
 }
 
