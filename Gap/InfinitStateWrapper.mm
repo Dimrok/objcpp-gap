@@ -48,6 +48,8 @@ static BOOL _production = NO;
 
   _production = YES;
 
+//  setenv("INFINIT_META_HOST", "preprod.meta.production.infinit.io", 0);
+
 //  std::string local_server = "192.168.0.83";
 //
 //  setenv("INFINIT_META_PROTOCOL", "http", 0);
@@ -56,15 +58,15 @@ static BOOL _production = NO;
 //
 //  setenv("INFINIT_TROPHONIUS_HOST", local_server.c_str(), 0);
 //  setenv("INFINIT_TROPHONIUS_PORT", "8181", 0);
-
+//
 //  setenv("ELLE_REAL_ASSERT", "1", 0);
-
+//
 //  setenv("INFINIT_CRASH_DEST", "chris@infinit.io", 0);
 //
 //  setenv("INFINIT_METRICS_INFINIT", "1", 0);
 //  setenv("INFINIT_METRICS_INFINIT_HOST", local_server.c_str(), 0);
 //  setenv("INFINIT_METRICS_INFINIT_PORT", "8282", 0);
-
+//
 //  std::string log_level =
 //    "elle.CrashReporter:DEBUG,"
 //    "*FIST*:TRACE,"
@@ -95,8 +97,8 @@ static BOOL _production = NO;
     NSString* download = download_dir ? download_dir : dir_manager.download_directory;
     NSString* persistent_config_dir = dir_manager.persistent_directory;
     NSString* non_persistent_config_dir = dir_manager.non_persistent_directory;
-    BOOL enable_mirroring = YES;
-    uint64_t max_mirror_size = 100 * 1024 * 1024;
+    BOOL enable_mirroring = NO;
+    uint64_t max_mirror_size = 0;
     _wrapper_instance =
     [[InfinitStateWrapper alloc] initWithState:gap_new(_production,
                                                        download.UTF8String,
