@@ -211,10 +211,10 @@ static dispatch_once_t _instance_token = 0;
   NSCAssert(false, @"Temporary files directory only used on iOS");
   return nil;
 #else
-  NSString* cache_dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
-                                                            NSUserDomainMask,
-                                                            YES).firstObject;
-  NSString* res = [cache_dir stringByAppendingPathComponent:@"managed_files"];
+  NSString* app_support_dir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+                                                                  NSUserDomainMask,
+                                                                  YES).firstObject;
+  NSString* res = [app_support_dir stringByAppendingPathComponent:@"managed_files"];
   if (![[NSFileManager defaultManager] fileExistsAtPath:res])
   {
     NSError* error = nil;
