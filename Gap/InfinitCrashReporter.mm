@@ -47,7 +47,8 @@ static dispatch_once_t _instance_token = 0;
     [_reporter enableCrashReporterAndReturnError:&error];
     if (error != nil)
     {
-      ELLE_ERR("%s: unable to configure crash reporter: %@", self.description.UTF8String, error);
+      ELLE_ERR("%s: unable to configure crash reporter: %s",
+               self.description.UTF8String, error.description.UTF8String);
     }
   }
   return self;
@@ -72,13 +73,15 @@ static dispatch_once_t _instance_token = 0;
   NSData* crash_data = [_reporter loadPendingCrashReportDataAndReturnError:&error];
   if (error != nil)
   {
-    ELLE_ERR("%s: unable to fetch crash report data: %@", self.description.UTF8String, error);
+    ELLE_ERR("%s: unable to fetch crash report data: %s",
+             self.description.UTF8String, error.description.UTF8String);
     return;
   }
   PLCrashReport* crash_log = [[PLCrashReport alloc] initWithData:crash_data error:&error];
   if (error != nil)
   {
-    ELLE_ERR("%s: unable to decode crash report data: %@", self.description.UTF8String, error);
+    ELLE_ERR("%s: unable to decode crash report data: %s",
+             self.description.UTF8String, error.description.UTF8String);
     return;
   }
   PLCrashReportTextFormat format = PLCrashReportTextFormatiOS;
@@ -91,7 +94,8 @@ static dispatch_once_t _instance_token = 0;
                 error:&error];
   if (error != nil)
   {
-    ELLE_ERR("%s: unable to write crash report: %@", self.description.UTF8String, error);
+    ELLE_ERR("%s: unable to write crash report: %s",
+             self.description.UTF8String, error.description.UTF8String);
     return;
   }
   NSString* state_log = [InfinitLogManager sharedInstance].last_log_path;
@@ -115,7 +119,8 @@ static dispatch_once_t _instance_token = 0;
   [_reporter purgePendingCrashReportAndReturnError:&error];
   if (error != nil)
   {
-    ELLE_ERR("%s: unable to purge last crash report", self.description.UTF8String);
+    ELLE_ERR("%s: unable to purge last crash report: %s",
+             self.description.UTF8String, error.description.UTF8String);
   }
   [self performSelector:@selector(delayedDeleteCrashReport) withObject:nil afterDelay:10.0f];
 }
