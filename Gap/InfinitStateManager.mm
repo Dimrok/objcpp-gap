@@ -12,6 +12,7 @@
 #import "InfinitConnectionManager.h"
 #import "InfinitCrashReporter.h"
 #import "InfinitDevice.h"
+#import "InfinitDeviceInformation.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitLinkTransaction.h"
 #import "InfinitLinkTransactionManager.h"
@@ -196,14 +197,16 @@ static NSString* _facebook_app_id = nil;
 
 #pragma mark - Register/Login/Logout
 
-#if TARGET_OS_IPHONE
 - (NSString*)countryCode
 {
+#if TARGET_OS_IPHONE
   CTTelephonyNetworkInfo* network_info = [[CTTelephonyNetworkInfo alloc] init];
   CTCarrier* carrier = [network_info subscriberCellularProvider];
   return carrier.isoCountryCode.uppercaseString;
-}
+#else
+  return nil;
 #endif
+}
 
 - (void)registerFullname:(NSString*)fullname
                    email:(NSString*)email
@@ -219,23 +222,23 @@ static NSString* _facebook_app_id = nil;
      boost::optional<std::string> device_push_token;
      if (manager.push_token != nil && manager.push_token.length > 0)
        device_push_token = manager.push_token.UTF8String;
-#if TARGET_OS_IPHONE
      boost::optional<std::string> country_code;
      if ([manager countryCode] != nil)
        country_code = std::string([manager countryCode].UTF8String);
+     boost::optional<std::string> device_model;
+     if ([InfinitDeviceInformation deviceModel].length)
+       device_model = std::string([InfinitDeviceInformation deviceModel].UTF8String);
+     boost::optional<std::string> device_name;
+     if ([InfinitDeviceInformation deviceName].length)
+       device_name = std::string([InfinitDeviceInformation deviceName].UTF8String);
      gap_Status res = gap_register(manager.stateWrapper.state,
                                    fullname.UTF8String,
                                    email.UTF8String,
                                    password.UTF8String,
                                    device_push_token,
-                                   country_code);
-#else
-     gap_Status res = gap_register(manager.stateWrapper.state,
-                                   fullname.UTF8String,
-                                   email.UTF8String,
-                                   password.UTF8String,
-                                   device_push_token);
-#endif
+                                   country_code,
+                                   device_model,
+                                   device_name);
      if (res == gap_ok)
      {
        manager.logged_in = YES;
@@ -279,23 +282,24 @@ performSelector:(SEL)selector
      [manager _clearSelf];
      [manager _startPolling];
      boost::optional<std::string> device_push_token;
-     if (manager.push_token != nil && manager.push_token.length > 0)
+     if (manager.push_token.length)
        device_push_token = manager.push_token.UTF8String;
-#if TARGET_OS_IPHONE
      boost::optional<std::string> country_code;
      if ([manager countryCode] != nil)
-      country_code = std::string([manager countryCode].UTF8String);
+       country_code = std::string([manager countryCode].UTF8String);
+     boost::optional<std::string> device_model;
+     if ([InfinitDeviceInformation deviceModel].length)
+       device_model = std::string([InfinitDeviceInformation deviceModel].UTF8String);
+     boost::optional<std::string> device_name;
+     if ([InfinitDeviceInformation deviceName].length)
+       device_name = std::string([InfinitDeviceInformation deviceName].UTF8String);
      gap_Status res = gap_login(manager.stateWrapper.state,
                                 email.UTF8String,
                                 password.UTF8String,
                                 device_push_token,
-                                country_code);
-#else
-     gap_Status res = gap_login(manager.stateWrapper.state,
-                                email.UTF8String,
-                                password.UTF8String,
-                                device_push_token);
-#endif
+                                country_code,
+                                device_model,
+                                device_name);
      if (res == gap_ok)
      {
        manager.logged_in = YES;
@@ -357,21 +361,22 @@ performSelector:(SEL)selector
     boost::optional<std::string> device_push_token;
     if (manager.push_token && manager.push_token.length > 0)
       device_push_token = manager.push_token.UTF8String;
-#if TARGET_OS_IPHONE
     boost::optional<std::string> country_code;
     if ([manager countryCode] != nil)
       country_code = std::string([manager countryCode].UTF8String);
+    boost::optional<std::string> device_model;
+    if ([InfinitDeviceInformation deviceModel].length)
+      device_model = std::string([InfinitDeviceInformation deviceModel].UTF8String);
+    boost::optional<std::string> device_name;
+    if ([InfinitDeviceInformation deviceName].length)
+      device_name = std::string([InfinitDeviceInformation deviceName].UTF8String);
     gap_Status res = gap_facebook_connect(manager.stateWrapper.state,
                                           facebook_token.UTF8String,
                                           preferred_email,
                                           device_push_token,
-                                          country_code);
-#else
-    gap_Status res = gap_facebook_connect(manager.stateWrapper.state,
-                                          facebook_token.UTF8String,
-                                          preferred_email,
-                                          device_push_token);
-#endif
+                                          country_code,
+                                          device_model,
+                                          device_name);
     if (res == gap_ok)
     {
       manager.logged_in = YES;
