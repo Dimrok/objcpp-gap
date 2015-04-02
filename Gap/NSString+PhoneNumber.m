@@ -8,17 +8,19 @@
 
 #import "NSString+PhoneNumber.h"
 
+static NSDataDetector* _number_detector = nil;
+
 @implementation NSString (PhoneNumber)
 
 - (BOOL)isPhoneNumber
 {
-  NSError* error = nil;
-  NSDataDetector* detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber
-                                                             error:&error];
-  if (error)
-    return NO;
+  if (_number_detector == nil)
+  {
+    _number_detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber
+                                                       error:nil];
+  }
   NSRange range = NSMakeRange(0, self.length);
-  NSArray* matches = [detector matchesInString:self options:0 range:range];
+  NSArray* matches = [_number_detector matchesInString:self options:0 range:range];
   if (matches.count != 1)
     return NO;
   NSTextCheckingResult* res = matches[0];
