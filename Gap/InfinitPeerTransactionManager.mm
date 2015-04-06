@@ -211,6 +211,8 @@ static dispatch_once_t _instance_token = 0;
          toRecipients:(NSArray*)recipients
           withMessage:(NSString*)message
 {
+  ELLE_TRACE("%s: send %lu files to %lu recipients",
+             self.description.UTF8String, files.count, recipients.count);
   NSMutableArray* res = [NSMutableArray array];
   for (id recipient in recipients)
   {

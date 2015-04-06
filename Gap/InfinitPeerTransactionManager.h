@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "InfinitDevice.h"
-#import "InfinitFileSystemErrors.h"
+#import "InfinitFileSystemError.h"
 #import "InfinitPeerTransaction.h"
 #import "InfinitUser.h"
 
