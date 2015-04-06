@@ -1253,6 +1253,9 @@ performSelector:(SEL)selector
   __weak typeof(self) weak_self = self;
   __block NSBlockOperation* block_operation = [NSBlockOperation blockOperationWithBlock:^(void)
    {
+     InfinitStateManager* strong_self = weak_self;
+     if (!strong_self)
+       return;
      if (block_operation.isCancelled)
      {
        ELLE_LOG("%s: cancelled operation: %s.%s",
@@ -1261,9 +1264,7 @@ performSelector:(SEL)selector
                 NSStringFromSelector(selector).UTF8String);
        return;
      }
-     if (weak_self == nil)
-       return;
-     gap_Status result = operation(weak_self, block_operation);
+     gap_Status result = operation(strong_self, block_operation);
      InfinitStateResult* operation_result = [[InfinitStateResult alloc] initWithStatus:result
                                                                                andData:data];
      if (block_operation.isCancelled)
