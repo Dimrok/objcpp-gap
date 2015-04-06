@@ -72,11 +72,14 @@
   Name of file to be created (including extension).
  @param uuid
   The identifying UUID.
+ @param error
+  Error object
  @return Path to created file.
  */
 - (NSString*)addData:(NSData*)data
         withFilename:(NSString*)filename
-      toManagedFiles:(NSString*)uuid;
+      toManagedFiles:(NSString*)uuid
+               error:(NSError**)error;
 
 /** Add files to be managed.
  @param files

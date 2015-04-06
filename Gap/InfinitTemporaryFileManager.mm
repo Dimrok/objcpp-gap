@@ -9,6 +9,7 @@
 #import "InfinitTemporaryFileManager.h"
 
 #import "InfinitDirectoryManager.h"
+#import "InfinitFileSystemError.h"
 #import "InfinitLinkTransactionManager.h"
 #import "InfinitManagedFiles.h"
 #import "InfinitPeerTransactionManager.h"
@@ -288,6 +289,8 @@ static dispatch_once_t _library_token = 0;
                   performSelector:(SEL)selector
                          onObject:(id)object
 {
+  ELLE_TRACE("%s: adding %lu items to %s",
+             self.description.UTF8String, list.count, uuid.UTF8String);
   dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
   dispatch_async(queue, ^
   {
@@ -364,6 +367,8 @@ static dispatch_once_t _library_token = 0;
                   performSelector:(SEL)selector
                          onObject:(id)object
 {
+  ELLE_TRACE("%s: adding %lu items to %s",
+             self.description.UTF8String, list.count, uuid.UTF8String);
   dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
   dispatch_async(queue, ^
   {
@@ -389,6 +394,7 @@ static dispatch_once_t _library_token = 0;
 - (NSString*)addData:(NSData*)data
         withFilename:(NSString*)filename
       toManagedFiles:(NSString*)uuid
+               error:(NSError**)error
 {
   if (data == nil)
   {
@@ -397,6 +403,17 @@ static dispatch_once_t _library_token = 0;
       filename_ = @"<empty filename>";
     ELLE_ERR("%s: unable to write file to %s, data is nil",
              self.description.UTF8String, filename_.UTF8String);
+    *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoDataToWrite];
+    return nil;
+  }
+  ELLE_DEBUG("%s: writing %lu to %s",
+             self.description.UTF8String, data.length, filename.UTF8String);
+  if (data.length > [InfinitDirectoryManager sharedInstance].free_space)
+  {
+    ELLE_ERR("%s: insufficient freespace: %lu > %lu",
+             self.description.UTF8String, data.length,
+             [InfinitDirectoryManager sharedInstance].free_space);
+    *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoFreeSpace];
     return nil;
   }
   InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
@@ -409,11 +426,13 @@ static dispatch_once_t _library_token = 0;
   NSString* path = [managed_files.root_dir stringByAppendingPathComponent:filename];
   if (![self _pathExists:managed_files.root_dir])
     [self _createDirectoryAtPath:managed_files.root_dir];
-  NSError* error;
-  if (![data writeToFile:path options:NSDataWritingAtomic error:&error])
+  NSError* operation_error = nil;
+  if (![data writeToFile:path options:NSDataWritingAtomic error:&operation_error])
   {
     ELLE_ERR("%s: unable to write file %s: %s", self.description.UTF8String,
-             path.UTF8String, error.description.UTF8String);
+             path.UTF8String, operation_error.description.UTF8String);
+    *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorUnableToWrite
+                                            reason:operation_error.description];
     return nil;
   }
   [managed_files.managed_paths addObject:path];
@@ -609,10 +628,19 @@ static dispatch_once_t _library_token = 0;
                                                         error:nil];
   NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
   NSString* filename = asset.defaultRepresentation.filename;
+  NSError* error = nil;
   NSString* path =
     [[InfinitTemporaryFileManager sharedInstance] addData:data
                                              withFilename:filename
-                                           toManagedFiles:managed_files.uuid];
+                                           toManagedFiles:managed_files.uuid
+                                                    error:&error];
+  if (error || !path.length)
+  {
+    ELLE_ERR("%s: unable to write data to managed files (%s): %s",
+             self.description.UTF8String, managed_files.uuid.UTF8String,
+             error.description.UTF8String);
+    return;
+  }
   [managed_files.asset_map setObject:path forKey:url.absoluteString];
 }
 
@@ -649,10 +677,19 @@ static dispatch_once_t _library_token = 0;
                 self.description.UTF8String, filename.UTF8String,
                 [info[PHImageErrorKey] description].UTF8String);
     }
+    NSError* error = nil;
     NSString* path =
       [[InfinitTemporaryFileManager sharedInstance] addData:imageData
                                                withFilename:filename
-                                             toManagedFiles:managed_files.uuid];
+                                             toManagedFiles:managed_files.uuid
+                                                      error:&error];
+    if (error || !path.length)
+    {
+      ELLE_ERR("%s: unable to write data to managed files (%s): %s",
+               self.description.UTF8String, managed_files.uuid.UTF8String,
+               error.description.UTF8String);
+      return;
+    }
     [managed_files.asset_map setObject:path forKey:url.absoluteString];
   }];
 }
