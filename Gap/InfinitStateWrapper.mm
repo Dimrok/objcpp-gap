@@ -8,8 +8,14 @@
 
 #import "InfinitStateWrapper.h"
 
+#import "InfinitDataSize.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitLogManager.h"
+
+#undef check
+#import <elle/log.hh>
+
+ELLE_LOG_COMPONENT("Gap-ObjC++.StateWrapper");
 
 static InfinitStateWrapper* _wrapper_instance = nil;
 static dispatch_once_t _instance_token = 0;
@@ -25,6 +31,10 @@ static BOOL _production = NO;
   {
     _state = state;
     _max_mirror_size = max_mirror_size;
+    NSString* free_space =
+      [InfinitDataSize fileSizeStringFrom:@([InfinitDirectoryManager sharedInstance].free_space)];
+    ELLE_LOG("%s: started state with %s of freespace",
+             self.description.UTF8String, free_space.UTF8String);
   }
   return self;
 }
@@ -97,16 +107,21 @@ static BOOL _production = NO;
     NSString* download = download_dir ? download_dir : dir_manager.download_directory;
     NSString* persistent_config_dir = dir_manager.persistent_directory;
     NSString* non_persistent_config_dir = dir_manager.non_persistent_directory;
-    BOOL enable_mirroring = NO;
-    uint64_t max_mirror_size = 0;
+    BOOL enable_mirroring = YES;
+    uint64_t max_mirror_size = 500 * 1024 * 1024; // 500 MiB.
+#if TARGET_OS_IPHONE
+    // No mirroring on iOS.
+    enable_mirroring = NO;
+    max_mirror_size = 0;
+#endif
     _wrapper_instance =
-    [[InfinitStateWrapper alloc] initWithState:gap_new(_production,
-                                                       download.UTF8String,
-                                                       persistent_config_dir.UTF8String,
-                                                       non_persistent_config_dir.UTF8String,
-                                                       enable_mirroring,
-                                                       max_mirror_size)
-                              andMaxMirrorSize:max_mirror_size];
+      [[InfinitStateWrapper alloc] initWithState:gap_new(_production,
+                                                         download.UTF8String,
+                                                         persistent_config_dir.UTF8String,
+                                                         non_persistent_config_dir.UTF8String,
+                                                         enable_mirroring,
+                                                         max_mirror_size)
+                                andMaxMirrorSize:max_mirror_size];
   });
 }
 
