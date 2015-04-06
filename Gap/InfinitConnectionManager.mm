@@ -111,9 +111,12 @@ static dispatch_once_t _instance_token = 0;
     [[InfinitStateManager sharedInstance] setNetworkConnectionStatus:self.network_status];
     NSDictionary* user_info =
       @{@"connection_type": [NSNumber numberWithInteger:self.network_status]};
-    [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_CONNECTION_TYPE_CHANGE
-                                                        object:self
-                                                      userInfo:user_info];
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
+      [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_CONNECTION_TYPE_CHANGE
+                                                          object:self
+                                                        userInfo:user_info];
+    });
   }
 }
 
@@ -137,9 +140,12 @@ static dispatch_once_t _instance_token = 0;
     InfinitConnectionStatus* res = [InfinitConnectionStatus connectionStatus:status
                                                                  stillTrying:trying
                                                                    lastError:error];
-    [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_CONNECTION_STATUS_CHANGE
-                                                        object:res
-                                                      userInfo:nil];
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
+      [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_CONNECTION_STATUS_CHANGE
+                                                          object:res
+                                                        userInfo:nil];
+    });
   }
 }
 
