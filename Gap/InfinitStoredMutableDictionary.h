@@ -23,5 +23,6 @@
 - (void)setObject:(id<NSCoding>)anObject
            forKey:(id<NSCoding, NSCopying>)aKey;
 
+- (void)finalize;
 
 @end

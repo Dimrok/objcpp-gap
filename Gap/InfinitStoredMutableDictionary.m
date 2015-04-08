@@ -10,7 +10,7 @@
 
 @interface InfinitStoredMutableDictionary () <NSKeyedUnarchiverDelegate>
 
-@property (atomic, readonly) BOOL deallocing;
+@property (atomic, readonly) BOOL finalizing;
 @property (atomic, readonly) NSMutableDictionary* dictionary;
 @property (nonatomic, readonly) NSString* path;
 
@@ -33,7 +33,7 @@
     if (self.dictionary == nil)
       _dictionary = [NSMutableDictionary dictionary];
 
-    _deallocing = NO;
+    _finalizing = NO;
     NSString* queue_name =
       [NSString stringWithFormat:@"io.Infinit.StoredMutableDictionary-%@", self.path.lastPathComponent];
     _disk_queue = dispatch_queue_create(queue_name.UTF8String, DISPATCH_QUEUE_SERIAL);
@@ -41,9 +41,9 @@
   return self;
 }
 
-- (void)dealloc
+- (void)finalize
 {
-  _deallocing = YES;
+  _finalizing = YES;
   dispatch_sync(self.disk_queue, ^{ /* Wait for all disk writes */ });
 }
 
@@ -79,7 +79,7 @@
 - (void)setObject:(id<NSCoding>)anObject
            forKey:(id<NSCoding, NSCopying>)aKey
 {
-  if (self.deallocing)
+  if (self.finalizing)
     return;
   [self.dictionary setObject:anObject forKey:aKey];
   dispatch_async(self.disk_queue, ^
@@ -90,7 +90,7 @@
 
 - (void)removeObjectForKey:(id<NSCoding>)aKey
 {
-  if (self.deallocing)
+  if (self.finalizing)
     return;
   [self.dictionary removeObjectForKey:aKey];
   dispatch_async(self.disk_queue, ^
