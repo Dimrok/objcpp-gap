@@ -55,11 +55,6 @@ recipient_device:(NSString*)recipient_device_id
   return self;
 }
 
-- (void)cancelerFromMetaIdCallback:(InfinitUser*)canceler
-{
-  _canceler_id = canceler.id_;
-}
-
 #pragma mark - Update Transaction
 
 - (void)updateWithTransaction:(InfinitPeerTransaction*)transaction
