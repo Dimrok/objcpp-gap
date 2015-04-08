@@ -107,12 +107,12 @@ static BOOL _production = NO;
     NSString* download = download_dir ? download_dir : dir_manager.download_directory;
     NSString* persistent_config_dir = dir_manager.persistent_directory;
     NSString* non_persistent_config_dir = dir_manager.non_persistent_directory;
+#if TARGET_OS_IPHONE
+    BOOL enable_mirroring = NO;
+    uint64_t max_mirror_size = 0;
+#else
     BOOL enable_mirroring = YES;
     uint64_t max_mirror_size = 500 * 1024 * 1024; // 500 MiB.
-#if TARGET_OS_IPHONE
-    // No mirroring on iOS.
-    enable_mirroring = NO;
-    max_mirror_size = 0;
 #endif
     _wrapper_instance =
       [[InfinitStateWrapper alloc] initWithState:gap_new(_production,
