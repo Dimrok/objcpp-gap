@@ -65,7 +65,7 @@ void ReachabilityCallback(SCNetworkReachabilityRef target,
 {
 #pragma unused (target, flags)
   NSCAssert(info != NULL, @"info was NULL in ReachabilityCallback");
-  NSCAssert([(__bridge NSObject*) info isKindOfClass: [InfinitReachability class]],
+  NSCAssert([(__bridge NSObject*)info isKindOfClass: [InfinitReachability class]],
             @"info was wrong class in ReachabilityCallback");
 
   InfinitReachability* note_object = (__bridge InfinitReachability*)info;
