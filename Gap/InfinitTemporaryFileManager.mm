@@ -59,7 +59,6 @@ static dispatch_once_t _library_token = 0;
                                              selector:@selector(_linkTransactionUpdated:)
                                                  name:INFINIT_LINK_TRANSACTION_STATUS_NOTIFICATION
                                                object:nil];
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_peerTransactionUpdated:)
                                                  name:INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION
@@ -81,8 +80,9 @@ static dispatch_once_t _library_token = 0;
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  _transaction_map = nil;
-  _files_map = nil;
+  [self _cleanOrphans];
+  [self.transaction_map finalize];
+  [self.files_map finalize];
 }
 
 - (void)_fillModel
@@ -90,6 +90,7 @@ static dispatch_once_t _library_token = 0;
   _files_map = [InfinitStoredMutableDictionary dictionaryWithContentsOfFile:self.files_map_path];
   _transaction_map =
     [InfinitStoredMutableDictionary dictionaryWithContentsOfFile:self.transaction_map_path];
+  NSMutableSet* old_install_files = [NSMutableSet set];
   // Replace managed files objects in transaction map with those in files map.
   for (InfinitManagedFiles* managed_files in self.files_map.allValues)
   {
@@ -99,6 +100,31 @@ static dispatch_once_t _library_token = 0;
       for (NSString* key in keys)
         [self.transaction_map setObject:managed_files forKey:key];
     }
+    if ([managed_files.root_dir rangeOfString:self.managed_root].location == NSNotFound)
+      [old_install_files addObject:managed_files.uuid];
+  }
+  for (NSString* uuid in old_install_files)
+    [self deleteManagedFiles:uuid force:YES];
+  dispatch_async(dispatch_get_main_queue(), ^
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_TEMPORARY_FILE_MANAGER_READY
+                                                        object:nil];
+  });
+}
+
+- (void)_cleanOrphans
+{
+  NSMutableSet* orphans = [NSMutableSet set];
+  for (InfinitManagedFiles* managed_files in self.files_map.allValues)
+  {
+    if ([self.transaction_map allKeysForObject:managed_files].count == 0)
+    {
+      [orphans addObject:managed_files.uuid];
+    }
+  }
+  for (NSString* uuid in orphans)
+  {
+    [self deleteManagedFiles:uuid force:YES];
   }
 }
 
@@ -500,7 +526,8 @@ static dispatch_once_t _library_token = 0;
     return;
   }
   [self.files_map removeObjectForKey:uuid];
-  [self _deleteFiles:@[managed_files.root_dir]];
+  if (managed_files.root_dir.length)
+    [self _deleteFiles:@[managed_files.root_dir]];
 }
 
 #pragma mark - Helpers
@@ -650,7 +677,7 @@ static dispatch_once_t _library_token = 0;
   PHImageRequestOptions* options = [[PHImageRequestOptions alloc] init];
   options.networkAccessAllowed = YES;
   options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-  options.version = PHImageRequestOptionsVersionOriginal;
+  options.version = PHImageRequestOptionsVersionCurrent;
   options.synchronous = YES;
   [[PHImageManager defaultManager] requestImageDataForAsset:asset
                                                     options:options
@@ -661,6 +688,21 @@ static dispatch_once_t _library_token = 0;
   {
     NSURL* url = info[@"PHImageFileURLKey"];
     NSString* filename = url.lastPathComponent;
+    if ([filename isEqualToString:@"FullSizeRender.jpg"])
+    {
+      NSArray* components = url.pathComponents;
+      for (NSString* component in components)
+      {
+        if ([component containsString:@"IMG"])
+        {
+          NSString* new_filename = [component stringByAppendingString:@".JPG"];
+          ELLE_DEBUG("%s: renaming file: %s -> %s",
+                     self.description.UTF8String, filename, new_filename);
+          filename = new_filename;
+          break;
+        }
+      }
+    }
     if (!imageData.length)
     {
       NSString* reason = @"unknown";

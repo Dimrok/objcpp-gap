@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+/** Notification sent when Temporary File Manager has initialized its model.
+ */
+#define INFINIT_TEMPORARY_FILE_MANAGER_READY @"INFINIT_TEMPORARY_FILE_MANAGER_READY"
+
 @interface InfinitTemporaryFileManager : NSObject
 
 + (instancetype)sharedInstance;
