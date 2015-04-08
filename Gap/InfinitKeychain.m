@@ -42,13 +42,16 @@ static NSString* _service_name = @"Infinit";
     return NO;
   NSMutableDictionary* dict = [self keychainDictionaryForAccount:account];
   dict[(__bridge id)kSecValueData] = [self encodeString:password];
-  OSStatus status = SecItemAdd((__bridge_retained CFDictionaryRef)dict, NULL);
+  CFDictionaryRef dict_ref = (__bridge_retained CFDictionaryRef)dict;
+  OSStatus status = SecItemAdd(dict_ref, NULL);
+  CFRelease(dict_ref);
   if (status != errSecSuccess)
   {
 #if TARGET_OS_IPHONE
     NSLog(@"Unable to add item: %d", (int)status);
 #else
-    NSLog(@"Unable to add item: %@", (__bridge NSString*)SecCopyErrorMessageString(status, NULL));
+    NSLog(@"Unable to add item: %@",
+          (__bridge_transfer NSString*)SecCopyErrorMessageString(status, NULL));
 #endif
     return NO;
   }
@@ -72,14 +75,16 @@ static NSString* _service_name = @"Infinit";
   dict[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitOne;
   dict[(__bridge id)kSecReturnData] = (id)kCFBooleanTrue;
   CFTypeRef result = NULL;
-  OSStatus status = SecItemCopyMatching((__bridge_retained CFDictionaryRef)dict, &result);
+  CFDictionaryRef dict_ref = (__bridge_retained CFDictionaryRef)dict;
+  OSStatus status = SecItemCopyMatching(dict_ref, &result);
+  CFRelease(dict_ref);
   if (status != errSecSuccess)
   {
 #if TARGET_OS_IPHONE
     NSLog(@"Unable to find password for account (%@): %d", account, (int)status);
 #else
     NSLog(@"Unable to find password for account (%@): %@",
-          account, (__bridge NSString*)SecCopyErrorMessageString(status, NULL));
+          account, (__bridge_transfer NSString*)SecCopyErrorMessageString(status, NULL));
 #endif
     return nil;
   }
@@ -91,14 +96,16 @@ static NSString* _service_name = @"Infinit";
   if (account == nil || account.length == 0)
     return NO;
   NSMutableDictionary* dict = [self keychainDictionaryForAccount:account];
-  OSStatus status = SecItemDelete((__bridge_retained CFDictionaryRef)dict);
+  CFDictionaryRef dict_ref = (__bridge_retained CFDictionaryRef)dict;
+  OSStatus status = SecItemDelete(dict_ref);
+  CFRelease(dict_ref);
   if (status != errSecSuccess)
   {
 #if TARGET_OS_IPHONE
     NSLog(@"Unable to delete keychain entry for account (%@): %d", account, (int)status);
 #else
     NSLog(@"Unable to delete keychain entry for account (%@): %@",
-          account, (__bridge NSString*)SecCopyErrorMessageString(status, NULL));
+          account, (__bridge_transfer NSString*)SecCopyErrorMessageString(status, NULL));
 #endif
     return NO;
   }
@@ -111,16 +118,19 @@ static NSString* _service_name = @"Infinit";
   if (account == nil || account.length == 0)
     return NO;
   NSMutableDictionary* dict = [self keychainDictionaryForAccount:account];
+  CFDictionaryRef dict_ref = (__bridge_retained CFDictionaryRef)dict;
   NSDictionary* update_dict = @{(__bridge id)kSecValueData: [self encodeString:password]};
-  OSStatus status = SecItemUpdate((__bridge_retained CFDictionaryRef)dict,
-                                  (__bridge_retained CFDictionaryRef)update_dict);
+  CFDictionaryRef update_dict_ref = (__bridge_retained CFDictionaryRef)update_dict;
+  OSStatus status = SecItemUpdate(dict_ref, update_dict_ref);
+  CFRelease(dict_ref);
+  CFRelease(update_dict_ref);
   if (status != errSecSuccess)
   {
 #if TARGET_OS_IPHONE
     NSLog(@"Unable to update password for account (%@): %d", account, (int)status);
 #else
     NSLog(@"Unable to update password for account (%@): %@",
-          account, (__bridge NSString*)SecCopyErrorMessageString(status, NULL));
+          account, (__bridge_transfer NSString*)SecCopyErrorMessageString(status, NULL));
 #endif
     return NO;
   }
@@ -139,14 +149,16 @@ static NSString* _service_name = @"Infinit";
   dict[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitOne;
   dict[(__bridge id)kSecReturnData] = (id)kCFBooleanTrue;
   CFTypeRef result = NULL;
-  OSStatus status = SecItemCopyMatching((__bridge_retained CFDictionaryRef)dict, &result);
+  CFDictionaryRef dict_ref = (__bridge_retained CFDictionaryRef)dict;
+  OSStatus status = SecItemCopyMatching(dict_ref, &result);
+  CFRelease(dict_ref);
   if (status != errSecSuccess)
   {
 #if TARGET_OS_IPHONE
     NSLog(@"Unable to find password for account (%@) server (%@): %d", account, host, (int)status);
 #else
     NSLog(@"Unable to find password for account (%@) server (%@): %@",
-          account, host, (__bridge NSString*)SecCopyErrorMessageString(status, NULL));
+          account, host, (__bridge_transfer NSString*)SecCopyErrorMessageString(status, NULL));
 #endif
     return nil;
   }
@@ -157,7 +169,8 @@ static NSString* _service_name = @"Infinit";
 
 - (NSString*)decodeString:(CFTypeRef)data
 {
-  return [[NSString alloc] initWithData:(__bridge NSData*)data encoding:NSUTF8StringEncoding];
+  return [[NSString alloc] initWithData:(__bridge_transfer NSData*)data
+                               encoding:NSUTF8StringEncoding];
 }
 
 - (id)encodeString:(NSString*)string
