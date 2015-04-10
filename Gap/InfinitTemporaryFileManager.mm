@@ -298,6 +298,18 @@ static dispatch_once_t _library_token = 0;
   return managed_files.managed_paths.array;
 }
 
+- (NSUInteger)fileCountForManagedFiles:(NSString*)uuid
+{
+  InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
+  if (managed_files == nil)
+  {
+    ELLE_ERR("%s: unable to fetch files from %s, not in map",
+             self.description.UTF8String, uuid.UTF8String);
+    return 0;
+  }
+  return managed_files.managed_paths.count;
+}
+
 - (NSNumber*)totalSizeOfManagedFiles:(NSString*)uuid
 {
   InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
@@ -312,14 +324,14 @@ static dispatch_once_t _library_token = 0;
 
 - (void)addALAssetsLibraryURLList:(NSArray*)list
                    toManagedFiles:(NSString*)uuid
-                  performSelector:(SEL)selector
-                         onObject:(id)object
+                  completionBlock:(InfinitTemporaryFileManagerCallback)block
 {
   ELLE_TRACE("%s: adding %lu items to %s",
              self.description.UTF8String, list.count, uuid.UTF8String);
   dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
   dispatch_async(queue, ^
   {
+    __block NSError* child_error = nil;
     InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
     if (managed_files == nil)
     {
@@ -327,10 +339,6 @@ static dispatch_once_t _library_token = 0;
                self.description.UTF8String, uuid.UTF8String);
       return;
     }
-    NSMethodSignature* method_signature = [object methodSignatureForSelector:selector];
-    NSInvocation* callback = [NSInvocation invocationWithMethodSignature:method_signature];
-    callback.target = object;
-    callback.selector = selector;
     dispatch_semaphore_t test_sema = dispatch_semaphore_create(0);
     dispatch_semaphore_t copy_sema = dispatch_semaphore_create(0);
     __block BOOL asset_nil_bug = NO;
@@ -352,9 +360,9 @@ static dispatch_once_t _library_token = 0;
       {
         [[self _sharedLibrary] assetForURL:url resultBlock:^(ALAsset* asset)
         {
-          [self _foundAsset:asset withURL:url forManagedFiles:managed_files];
+          [self _foundAsset:asset withURL:url forManagedFiles:managed_files withError:&child_error];
           dispatch_semaphore_signal(copy_sema);
-        } failureBlock:^(NSError *error)
+        } failureBlock:^(NSError* error)
         {
           ELLE_ERR("%s: unable to create file (%s): %s", self.description.UTF8String,
                    url.absoluteString.UTF8String, error.description.UTF8String);
@@ -373,25 +381,30 @@ static dispatch_once_t _library_token = 0;
             NSURL* url = result.defaultRepresentation.url;
             if ([list containsObject:url])
             {
-              [self _foundAsset:result withURL:url forManagedFiles:managed_files];
+              [self _foundAsset:result withURL:url
+                forManagedFiles:managed_files
+                      withError:&child_error];
               dispatch_semaphore_signal(copy_sema);
             }
           }];
-       } failureBlock:^(NSError *error)
+       } failureBlock:^(NSError* error)
        {
          dispatch_semaphore_signal(copy_sema);
        }];
     }
     for (NSUInteger i = 0; i < list.count; i++)
       dispatch_semaphore_wait(copy_sema, DISPATCH_TIME_FOREVER);
-    [callback invoke];
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
+      BOOL success = child_error;
+      block(success, child_error);
+    });
   });
 }
 
 - (void)addPHAssetsLibraryURLList:(NSArray*)list
                    toManagedFiles:(NSString*)uuid
-                  performSelector:(SEL)selector
-                         onObject:(id)object
+                  completionBlock:(InfinitTemporaryFileManagerCallback)block
 {
   ELLE_TRACE("%s: adding %lu items to %s",
              self.description.UTF8String, list.count, uuid.UTF8String);
@@ -405,15 +418,18 @@ static dispatch_once_t _library_token = 0;
                self.description.UTF8String, uuid.UTF8String);
       return;
     }
-    NSMethodSignature* method_signature = [object methodSignatureForSelector:selector];
-    NSInvocation* callback = [NSInvocation invocationWithMethodSignature:method_signature];
-    callback.target = object;
-    callback.selector = selector;
+    NSError* child_error = nil;
     for (PHAsset* asset in list)
     {
-      [self _addPHAsset:asset toManagedFiles:managed_files];
+      [self _addPHAsset:asset toManagedFiles:managed_files withError:&child_error];
+      if (child_error)
+        break;
     }
-    [callback invoke];
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
+      BOOL success = child_error;
+      block(success, child_error);
+    });
   });
 }
 
@@ -429,7 +445,8 @@ static dispatch_once_t _library_token = 0;
       filename_ = @"<empty filename>";
     ELLE_ERR("%s: unable to write file to %s, data is nil",
              self.description.UTF8String, filename_.UTF8String);
-    *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoDataToWrite];
+    if (error != NULL)
+      *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoDataToWrite];
     return nil;
   }
   ELLE_DEBUG("%s: writing %lu to %s",
@@ -439,7 +456,8 @@ static dispatch_once_t _library_token = 0;
     ELLE_ERR("%s: insufficient freespace: %lu > %lu",
              self.description.UTF8String, data.length,
              [InfinitDirectoryManager sharedInstance].free_space);
-    *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoFreeSpace];
+    if (error != NULL)
+      *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoFreeSpace];
     return nil;
   }
   InfinitManagedFiles* managed_files = [self.files_map objectForKey:uuid];
@@ -457,8 +475,11 @@ static dispatch_once_t _library_token = 0;
   {
     ELLE_ERR("%s: unable to write file %s: %s", self.description.UTF8String,
              path.UTF8String, operation_error.description.UTF8String);
-    *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorUnableToWrite
-                                            reason:operation_error.description];
+    if (error != NULL)
+    {
+      *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorUnableToWrite
+                                              reason:operation_error.description];
+    }
     return nil;
   }
   [managed_files.managed_paths addObject:path];
@@ -646,6 +667,7 @@ static dispatch_once_t _library_token = 0;
 - (void)_foundAsset:(ALAsset*)asset
             withURL:(NSURL*)url
     forManagedFiles:(InfinitManagedFiles*)managed_files
+          withError:(NSError**)error
 {
   NSUInteger asset_size = (NSUInteger)asset.defaultRepresentation.size;
   Byte* buffer = (Byte*)malloc(asset_size);
@@ -655,17 +677,16 @@ static dispatch_once_t _library_token = 0;
                                                         error:nil];
   NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
   NSString* filename = asset.defaultRepresentation.filename;
-  NSError* error = nil;
   NSString* path =
     [[InfinitTemporaryFileManager sharedInstance] addData:data
                                              withFilename:filename
                                            toManagedFiles:managed_files.uuid
-                                                    error:&error];
-  if (error || !path.length)
+                                                    error:error];
+  if (*error || !path.length)
   {
     ELLE_ERR("%s: unable to write data to managed files (%s): %s",
              self.description.UTF8String, managed_files.uuid.UTF8String,
-             error.description.UTF8String);
+             (*error).description.UTF8String);
     return;
   }
   [managed_files.asset_map setObject:path forKey:url.absoluteString];
@@ -673,6 +694,7 @@ static dispatch_once_t _library_token = 0;
 
 - (void)_addPHAsset:(PHAsset*)asset
      toManagedFiles:(InfinitManagedFiles*)managed_files
+          withError:(NSError**)error
 {
   PHImageRequestOptions* options = [[PHImageRequestOptions alloc] init];
   options.networkAccessAllowed = YES;
@@ -719,17 +741,16 @@ static dispatch_once_t _library_token = 0;
                 self.description.UTF8String, filename.UTF8String,
                 [info[PHImageErrorKey] description].UTF8String);
     }
-    NSError* error = nil;
     NSString* path =
       [[InfinitTemporaryFileManager sharedInstance] addData:imageData
                                                withFilename:filename
                                              toManagedFiles:managed_files.uuid
-                                                      error:&error];
-    if (error || !path.length)
+                                                      error:error];
+    if (*error || !path.length)
     {
       ELLE_ERR("%s: unable to write data to managed files (%s): %s",
                self.description.UTF8String, managed_files.uuid.UTF8String,
-               error.description.UTF8String);
+               (*error).description.UTF8String);
       return;
     }
     [managed_files.asset_map setObject:path forKey:url.absoluteString];

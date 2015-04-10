@@ -12,6 +12,8 @@
  */
 #define INFINIT_TEMPORARY_FILE_MANAGER_READY @"INFINIT_TEMPORARY_FILE_MANAGER_READY"
 
+typedef void (^InfinitTemporaryFileManagerCallback)(BOOL, NSError*);
+
 @interface InfinitTemporaryFileManager : NSObject
 
 + (instancetype)sharedInstance;
@@ -28,6 +30,13 @@
  */
 - (NSArray*)pathsForManagedFiles:(NSString*)uuid;
 
+/** File count of managed files.
+ @param uuid
+  The identifying UUID.
+ @return File count.
+ */
+- (NSUInteger)fileCountForManagedFiles:(NSString*)uuid;
+
 /** Total size of managed files.
  @param uuid
   The identifying UUID.
@@ -43,30 +52,24 @@
   List of Assets Library URLs as NSURLs.
  @param uuid
   The identifying UUID.
- @param selector
-  The selector to call when the process has been completed.
- @param object
-  The object on which to call the selector when done.
+ @param block
+  Block to be run when done.
  */
 - (void)addALAssetsLibraryURLList:(NSArray*)list
                    toManagedFiles:(NSString*)uuid
-                  performSelector:(SEL)selector
-                         onObject:(id)object;
+                  completionBlock:(InfinitTemporaryFileManagerCallback)block;
 
 /** Add a list of PHAssets to be managed.
  @param list
   List of PHAssets.
  @param uuid
   The identifying UUID.
- @param selector
-  The selector to call when the process has been completed.
- @param object
-  The object on which to call the selector when done.
+ @param block
+  Block to be run when done.
  */
 - (void)addPHAssetsLibraryURLList:(NSArray*)list
                    toManagedFiles:(NSString*)uuid
-                  performSelector:(SEL)selector
-                         onObject:(id)object;
+                  completionBlock:(InfinitTemporaryFileManagerCallback)block;
 
 
 /** Add an NSData object to be managed.
