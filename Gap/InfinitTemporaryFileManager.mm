@@ -396,7 +396,9 @@ static dispatch_once_t _library_token = 0;
       dispatch_semaphore_wait(copy_sema, DISPATCH_TIME_FOREVER);
     dispatch_async(dispatch_get_main_queue(), ^
     {
-      BOOL success = child_error;
+      BOOL success = YES;
+      if (child_error)
+        success = NO;
       block(success, child_error);
     });
   });
@@ -427,7 +429,9 @@ static dispatch_once_t _library_token = 0;
     }
     dispatch_async(dispatch_get_main_queue(), ^
     {
-      BOOL success = child_error;
+      BOOL success = YES;
+      if (child_error)
+        success = NO;
       block(success, child_error);
     });
   });
