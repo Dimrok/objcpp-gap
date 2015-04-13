@@ -49,26 +49,32 @@ static dispatch_once_t _library_token = 0;
   NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
+    _ready = NO;
     _max_mirror_size = [InfinitStateManager sharedInstance].max_mirror_size;
     _managed_root = [InfinitDirectoryManager sharedInstance].temporary_files_directory;
     _files_map_path = [self.managed_root stringByAppendingPathComponent:@"files_map"];
     _transaction_map_path = [self.managed_root stringByAppendingPathComponent:@"transaction_map"];
-    [self _fillModel];
-    [self _cleanup];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_linkTransactionUpdated:)
-                                                 name:INFINIT_LINK_TRANSACTION_STATUS_NOTIFICATION
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_peerTransactionUpdated:)
-                                                 name:INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(clearModel) 
-                                                 name:UIApplicationWillTerminateNotification
-                                               object:nil];
   }
   return self;
+}
+
+- (void)start
+{
+  [self _fillModel];
+  [self _cleanup];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_linkTransactionUpdated:)
+                                               name:INFINIT_LINK_TRANSACTION_STATUS_NOTIFICATION
+                                             object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_peerTransactionUpdated:)
+                                               name:INFINIT_PEER_TRANSACTION_STATUS_NOTIFICATION
+                                             object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(clearModel)
+                                               name:UIApplicationWillTerminateNotification
+                                             object:nil];
+  _ready = YES;
 }
 
 - (void)clearModel

@@ -16,7 +16,14 @@ typedef void (^InfinitTemporaryFileManagerCallback)(BOOL, NSError*);
 
 @interface InfinitTemporaryFileManager : NSObject
 
+@property (atomic, readonly) BOOL ready;
+
 + (instancetype)sharedInstance;
+
+
+/** Start the Temporary File Manager. This should be done when the transaction manager is ready.
+ */
+- (void)start;
 
 /** Create a set of managed files.
  @returns UUID used to identify the managed files.
