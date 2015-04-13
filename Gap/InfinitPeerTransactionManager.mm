@@ -639,7 +639,7 @@ static dispatch_once_t _instance_token = 0;
 #if TARGET_OS_IPHONE
     dispatch_async(dispatch_get_main_queue(), ^
     {
-      [InfinitTemporaryFileManager sharedInstance];
+      [[InfinitTemporaryFileManager sharedInstance] start];
     });
 #endif
   }
