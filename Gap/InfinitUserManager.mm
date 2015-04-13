@@ -78,12 +78,16 @@ static dispatch_once_t _instance_token = 0;
 
 - (void)_fillMapWithSwaggers
 {
-  _user_map = [NSMutableDictionary dictionary];
-  NSArray* swaggers = [[InfinitStateManager sharedInstance] swaggers];
-  for (InfinitUser* swagger in swaggers)
+  @synchronized(self.user_map)
   {
-    swagger.favorite = NO;
-    [self.user_map setObject:swagger forKey:swagger.id_];
+    _user_map = [NSMutableDictionary dictionary];
+    NSArray* swaggers = [[InfinitStateManager sharedInstance] swaggers];
+    for (InfinitUser* swagger in swaggers)
+    {
+      swagger.favorite = NO;
+      [self.user_map setObject:swagger forKey:swagger.id_];
+    }
+    [self _fetchFavorites];
   }
 }
 
@@ -120,7 +124,15 @@ static dispatch_once_t _instance_token = 0;
   NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"fullname"
                                                        ascending:YES
                                                         selector:@selector(caseInsensitiveCompare:)];
-  return [[self time_ordered_swaggers] sortedArrayUsingDescriptors:@[sort]];
+  NSMutableArray* swaggers = [NSMutableArray array];
+  for (InfinitUser* user in self.user_map.allValues)
+  {
+    if (user.swagger)
+      [swaggers addObject:user];
+  }
+  [swaggers removeObject:[self me]];
+  [swaggers removeObjectsInArray:[self favorites]];
+  return [swaggers sortedArrayUsingDescriptors:@[sort]];
 }
 
 - (NSArray*)time_ordered_swaggers
@@ -531,7 +543,6 @@ static dispatch_once_t _instance_token = 0;
   if (!self.filled_model && connection_status.status)
   {
     [self _fillMapWithSwaggers];
-    [self _fetchFavorites];
   }
 }
 
