@@ -56,20 +56,18 @@ static BOOL _production = NO;
 
   setenv("ELLE_LOG_TIME", "1", 0);
 
-  _production = YES;
+#ifdef DEBUG
 
-//  setenv("INFINIT_META_HOST", "preprod.meta.production.infinit.io", 0);
+  std::string local_server = "192.168.0.83";
 
-//  std::string local_server = "192.168.0.83";
-//
-//  setenv("INFINIT_META_PROTOCOL", "http", 0);
-//  setenv("INFINIT_META_HOST", local_server.c_str(), 0);
-//  setenv("INFINIT_META_PORT", "8080", 0);
-//
-//  setenv("INFINIT_TROPHONIUS_HOST", local_server.c_str(), 0);
-//  setenv("INFINIT_TROPHONIUS_PORT", "8181", 0);
-//
-//  setenv("ELLE_REAL_ASSERT", "1", 0);
+  setenv("INFINIT_META_PROTOCOL", "http", 0);
+  setenv("INFINIT_META_HOST", local_server.c_str(), 0);
+  setenv("INFINIT_META_PORT", "8080", 0);
+
+  setenv("INFINIT_TROPHONIUS_HOST", local_server.c_str(), 0);
+  setenv("INFINIT_TROPHONIUS_PORT", "8181", 0);
+
+  setenv("ELLE_REAL_ASSERT", "1", 0);
 //
 //  setenv("INFINIT_CRASH_DEST", "chris@infinit.io", 0);
 //
@@ -93,6 +91,13 @@ static BOOL _production = NO;
 //    "iOS*:DEBUG,"
 //    "*trophonius*:TRACE";
 //  setenv("ELLE_LOG_LEVEL", log_level.c_str(), 0);
+
+#else
+
+  _production = YES;
+//  setenv("INFINIT_META_HOST", "preprod.meta.production.infinit.io", 0);
+
+#endif
 }
 
 #pragma mark - Setup Instace
