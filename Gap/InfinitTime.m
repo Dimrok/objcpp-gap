@@ -162,4 +162,16 @@ static NSDateFormatter* _other_formatter_long = nil;
   return res;
 }
 
++ (NSString*)stringFromDuration:(NSTimeInterval)duration
+{
+  NSInteger ti = (NSInteger)duration;
+  NSInteger seconds = ti % 60;
+  NSInteger minutes = (ti / 60) % 60;
+  NSInteger hours = (ti / 3600);
+  if (ti >= 60 * 60)
+    return [NSString stringWithFormat:@"%ld:%02ld:%02ld", (long)hours, (long)minutes, (long)seconds];
+  else
+    return [NSString stringWithFormat:@"%ld:%02ld", (long)minutes, (long)seconds];
+}
+
 @end

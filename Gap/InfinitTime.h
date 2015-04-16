@@ -15,4 +15,6 @@
 
 + (NSString*)timeRemainingFrom:(NSTimeInterval)seconds_left;
 
++ (NSString*)stringFromDuration:(NSTimeInterval)duration;
+
 @end
