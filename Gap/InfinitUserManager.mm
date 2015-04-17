@@ -85,7 +85,7 @@ static dispatch_once_t _instance_token = 0;
     for (InfinitUser* swagger in swaggers)
     {
       swagger.favorite = NO;
-      [self.user_map setObject:swagger forKey:swagger.id_];
+      self.user_map[swagger.id_] = swagger;
     }
     [self _fetchFavorites];
   }
@@ -125,11 +125,11 @@ static dispatch_once_t _instance_token = 0;
                                                        ascending:YES
                                                         selector:@selector(caseInsensitiveCompare:)];
   NSMutableArray* swaggers = [NSMutableArray array];
-  for (InfinitUser* user in self.user_map.allValues)
+  [self.user_map enumerateKeysAndObjectsUsingBlock:^(NSNumber* id_, InfinitUser* user, BOOL* stop)
   {
     if (user.swagger)
       [swaggers addObject:user];
-  }
+  }];
   [swaggers removeObject:[self me]];
   [swaggers removeObjectsInArray:[self favorites]];
   return [swaggers sortedArrayUsingDescriptors:@[sort]];
@@ -160,11 +160,11 @@ static dispatch_once_t _instance_token = 0;
 - (NSArray*)favorites
 {
   NSMutableArray* res = [NSMutableArray array];
-  for (InfinitUser* user in self.user_map.allValues)
+  [self.user_map enumerateKeysAndObjectsUsingBlock:^(NSNumber* id_, InfinitUser* user, BOOL* stop)
   {
     if (user.favorite)
       [res addObject:user];
-  }
+  }];
   [res removeObject:[self me]];
   NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"fullname"
                                                        ascending:YES
@@ -299,16 +299,16 @@ static dispatch_once_t _instance_token = 0;
                                      NSAnchoredSearch|
                                      NSWidthInsensitiveSearch);
     NSUInteger name_search_mask = (NSCaseInsensitiveSearch|NSWidthInsensitiveSearch);
-    for (InfinitUser* user in self.user_map.allValues)
+    [self.user_map enumerateKeysAndObjectsUsingBlock:^(NSNumber* id_, InfinitUser* user, BOOL* stop)
     {
-      if (user.deleted)
-        continue;
-
-      if ([user.handle rangeOfString:text options:handle_search_mask].location != NSNotFound)
-        [handle_matches addObject:user];
-      else if ([user.fullname rangeOfString:text options:name_search_mask].location != NSNotFound)
-        [fullname_matches addObject:user];
-    }
+      if (!user.deleted)
+      {
+        if ([user.handle rangeOfString:text options:handle_search_mask].location != NSNotFound)
+          [handle_matches addObject:user];
+        else if ([user.fullname rangeOfString:text options:name_search_mask].location != NSNotFound)
+          [fullname_matches addObject:user];
+      }
+    }];
   }
   NSMutableArray* combined_results = [NSMutableArray arrayWithArray:handle_matches];
   [combined_results addObjectsFromArray:fullname_matches];
@@ -431,14 +431,18 @@ static dispatch_once_t _instance_token = 0;
        performSelector:(SEL)selector
               onObject:(id)object
 {
-  for (InfinitUser* user in self.user_map.allValues)
+  __block BOOL found = NO;
+  [self.user_map enumerateKeysAndObjectsUsingBlock:^(NSNumber* id_, InfinitUser* user, BOOL* stop)
   {
     if ([user.meta_id isEqualToString:meta_id] && [object respondsToSelector:selector])
     {
       [object performSelector:selector withObject:user afterDelay:0.0f];
-      return;
+      found = YES;
+      *stop = YES;
     }
-  }
+  }];
+  if (found)
+    return;
   NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithDictionary:@{
     @"selector": NSStringFromSelector(selector),
     @"object": object}];
@@ -450,12 +454,16 @@ static dispatch_once_t _instance_token = 0;
 
 - (InfinitUser*)localUserWithMetaId:(NSString*)meta_id
 {
-  for (InfinitUser* user in self.user_map.allValues)
+  __block InfinitUser* res = nil;
+  [self.user_map enumerateKeysAndObjectsUsingBlock:^(NSNumber* id_, InfinitUser* user, BOOL* stop)
   {
-    if ([user.meta_id isEqualToString:meta_id])
-      return user;
-  }
-  return nil;
+    if ([user.meta_id isEqual:meta_id])
+    {
+      res = user;
+      *stop = YES;
+    }
+  }];
+  return res;
 }
 
 - (void)userWithMetaIdCallback:(InfinitStateResult*)result
@@ -473,7 +481,7 @@ static dispatch_once_t _instance_token = 0;
     InfinitUser* user = [self userWithId:dict[kInfinitUserId]];
     @synchronized(self.user_map)
     {
-      if (self.user_map[user.id_] == nil)
+      if (self.user_map[user.id_] == nil && user != nil)
         [self.user_map setObject:user forKey:user.id_];
     }
     [object performSelector:selector
