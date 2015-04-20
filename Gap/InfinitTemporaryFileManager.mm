@@ -371,7 +371,7 @@ static dispatch_once_t _library_token = 0;
         } failureBlock:^(NSError* error)
         {
           ELLE_ERR("%s: unable to create file (%s): %s", self.description.UTF8String,
-                   url.absoluteString.UTF8String, error.description.UTF8String);
+                   url.path.UTF8String, error.description.UTF8String);
           dispatch_semaphore_signal(copy_sema);
         }];
       }
@@ -699,7 +699,7 @@ static dispatch_once_t _library_token = 0;
              (*error).description.UTF8String);
     return;
   }
-  [managed_files.asset_map setObject:path forKey:url.absoluteString];
+  [managed_files.asset_map setObject:path forKey:url.path];
 }
 
 - (void)_addPHAsset:(PHAsset*)asset
@@ -763,7 +763,7 @@ static dispatch_once_t _library_token = 0;
                (*error).description.UTF8String);
       return;
     }
-    [managed_files.asset_map setObject:path forKey:url.absoluteString];
+    [managed_files.asset_map setObject:path forKey:url.path];
   }];
 }
 
