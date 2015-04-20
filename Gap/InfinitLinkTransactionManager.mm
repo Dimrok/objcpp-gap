@@ -10,6 +10,7 @@
 
 #import "InfinitConnectionManager.h"
 #import "InfinitStateManager.h"
+#import "InfinitThreadSafeDictionary.h"
 
 #undef check
 #import <elle/log.hh>
@@ -22,7 +23,7 @@ static dispatch_once_t _instance_token = 0;
 @interface InfinitLinkTransactionManager ()
 
 @property (atomic, readonly) BOOL filled_model;
-@property (atomic, readonly) NSMutableDictionary* transaction_map;
+@property (atomic, readonly) InfinitThreadSafeDictionary* transaction_map;
 
 @end
 
@@ -71,10 +72,7 @@ static dispatch_once_t _instance_token = 0;
 
 - (void)_fillTransactionMap
 {
-  if (self.transaction_map == nil)
-    _transaction_map = [NSMutableDictionary dictionary];
-  else
-    [self.transaction_map removeAllObjects];
+  _transaction_map = [[InfinitThreadSafeDictionary alloc] initWithName:@"LinkTransactionModel"];
   NSArray* transactions = [[InfinitStateManager sharedInstance] linkTransactions];
   for (InfinitLinkTransaction* transaction in transactions)
   {
