@@ -12,6 +12,7 @@
 #import "InfinitDeviceManager.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitStateManager.h"
+#import "InfinitThreadSafeDictionary.h"
 #ifdef TARGET_OS_IPHONE
 # import "InfinitTemporaryFileManager.h"
 #endif
@@ -31,7 +32,7 @@ static dispatch_once_t _instance_token = 0;
 
 @property (atomic, readonly) NSMutableArray* archived_transaction_ids;
 @property (atomic, readonly) BOOL filled_model;
-@property (atomic, readonly) NSMutableDictionary* transaction_map;
+@property (atomic, readonly) InfinitThreadSafeDictionary* transaction_map;
 
 @end
 
@@ -103,7 +104,7 @@ static dispatch_once_t _instance_token = 0;
 
 - (void)_fillTransactionMap
 {
-  _transaction_map = [NSMutableDictionary dictionary];
+  _transaction_map = [[InfinitThreadSafeDictionary alloc] initWithName:@"PeerTransactionModel"];
   NSArray* transactions = [[InfinitStateManager sharedInstance] peerTransactions];
   for (InfinitPeerTransaction* transaction in transactions)
   {
