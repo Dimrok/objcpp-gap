@@ -72,18 +72,6 @@
  */
 - (InfinitUser*)userWithId:(NSNumber*)id_;
 
-/** User with corresponding Meta ID.
- @param meta_id
-  User's Meta ID.
- @param selector
-  Function to call when complete.
- @param object
-  Calling object.
- */
-- (void)userWithMetaId:(NSString*)meta_id
-       performSelector:(SEL)selector
-              onObject:(id)object;
-
 /** User locally in model with corresponding Meta ID.
  @param meta_id
   User's Meta ID.
@@ -91,53 +79,12 @@
  */
 - (InfinitUser*)localUserWithMetaId:(NSString*)meta_id;
 
-/** Asynchronously fetch user with corresponding handle.
- When the result has been fetched, the selector of the object is called with a user object or nil
- if none was found.
- @param handle
-  User's handle.
- @param selector
-  Function to call when complete.
- @param object
-  Calling object.
- */
-- (void)userWithHandle:(NSString*)handle
-       performSelector:(SEL)selector
-              onObject:(id)object;
-
 /** Search in the local user map for users.
  @param text
-  Search text.
+ Search text.
  @return Array of users.
  */
 - (NSArray*)searchLocalUsers:(NSString*)text;
-
-/** Asynchronously fetch users whose fullname or handle contains text.
- When the results have been fetched, the selector of the object is called with an array of Users.
- @param text
-  Text to search for.
- @param selector
-  Function to call when complete.
- @param object
-  Calling object.
- */
-- (void)searchRemoteUsers:(NSString*)text
-          performSelector:(SEL)selector
-                 onObject:(id)object;
-
-/** Asynchronously fetch users whose emails match those provided.
- When the results have been fetched, the selector of the object is called with a dictionary:
- {email_0: user_0, ... email_n: user_n}.
- @param emails
-  A list of email addresses to search for.
- @param selector
-  Function to call when complete.
- @param object
-  Calling object.
- */
-- (void)searchEmails:(NSArray*)emails
-     performSelector:(SEL)selector
-            onObject:(id)object;
 
 
 #pragma mark - State Manager Callbacks
