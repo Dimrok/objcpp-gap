@@ -63,8 +63,9 @@
           "link: %@\n"
           "name: %@\n"
           "click count: %@\n"
+          "message: %@\n"
           "%@ screenshot>",
-          self.meta_id, self.id_, self.status_text, self.sender_device_id, self.link, self.name, self.click_count, self.screenshot ? @"is" : @"not"];
+          self.meta_id, self.id_, self.status_text, self.sender_device_id, self.link, self.name, self.click_count, self.message, self.screenshot ? @"is" : @"not"];
 }
 
 @end
