@@ -463,7 +463,7 @@ static dispatch_once_t _library_token = 0;
              self.description.UTF8String, data.length, filename.UTF8String);
   if (data.length > [InfinitDirectoryManager sharedInstance].free_space)
   {
-    ELLE_ERR("%s: insufficient freespace: %lu > %lu",
+    ELLE_ERR("%s: insufficient free space: %lu > %lu",
              self.description.UTF8String, data.length,
              [InfinitDirectoryManager sharedInstance].free_space);
     if (error != NULL)
@@ -718,6 +718,7 @@ static dispatch_once_t _library_token = 0;
                                                               UIImageOrientation orientation,
                                                               NSDictionary* info)
   {
+    __block NSString* path = nil;
     NSURL* url = info[@"PHImageFileURLKey"];
     NSString* filename = url.lastPathComponent;
     if ([filename isEqualToString:@"FullSizeRender.jpg"])
@@ -744,6 +745,41 @@ static dispatch_once_t _library_token = 0;
         reason = [info[PHImageErrorKey] description];
       ELLE_WARN("%s: got empty file from PHImageManager for %s, reason: %s",
                 self.description.UTF8String, filename.UTF8String, reason.UTF8String);
+      PHVideoRequestOptions* video_options = [[PHVideoRequestOptions alloc] init];
+      video_options.networkAccessAllowed = YES;
+      video_options.version = PHVideoRequestOptionsVersionCurrent;
+      video_options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+      dispatch_semaphore_t get_path_sema = dispatch_semaphore_create(0);
+      [[PHImageManager defaultManager] requestAVAssetForVideo:asset
+                                                      options:video_options
+                                                resultHandler:^(AVAsset* asset,
+                                                                AVAudioMix* audioMix,
+                                                                NSDictionary* info)
+      {
+        if ([asset isKindOfClass:AVURLAsset.class])
+        {
+          AVURLAsset* url_asset = (AVURLAsset*)asset;
+          path = url_asset.URL.path;
+          NSDictionary* attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:path
+                                                                                 error:nil];
+
+          NSNumber* file_size_number = [attrs objectForKey:NSFileSize];
+          uint64_t free_space = [InfinitDirectoryManager sharedInstance].free_space;
+          if (free_space > [file_size_number unsignedLongValue])
+          {
+            if (error != NULL)
+              *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoFreeSpace];
+          }
+          else
+          {
+            [[InfinitTemporaryFileManager sharedInstance] addFiles:@[path]
+                                                    toManagedFiles:managed_files.uuid
+                                                              copy:YES];
+          }
+        }
+        dispatch_semaphore_signal(get_path_sema);
+      }];
+      dispatch_semaphore_wait(get_path_sema, DISPATCH_TIME_FOREVER);
     }
     else if (info[PHImageErrorKey])
     {
@@ -751,11 +787,13 @@ static dispatch_once_t _library_token = 0;
                 self.description.UTF8String, filename.UTF8String,
                 [info[PHImageErrorKey] description].UTF8String);
     }
-    NSString* path =
-      [[InfinitTemporaryFileManager sharedInstance] addData:imageData
-                                               withFilename:filename
-                                             toManagedFiles:managed_files.uuid
-                                                      error:error];
+    if (imageData.length)
+    {
+      path = [[InfinitTemporaryFileManager sharedInstance] addData:imageData
+                                                      withFilename:filename
+                                                    toManagedFiles:managed_files.uuid
+                                                             error:error];
+    }
     if (*error || !path.length)
     {
       ELLE_ERR("%s: unable to write data to managed files (%s): %s",
