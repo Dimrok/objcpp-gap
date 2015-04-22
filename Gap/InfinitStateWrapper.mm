@@ -33,7 +33,7 @@ static BOOL _production = NO;
     _max_mirror_size = max_mirror_size;
     NSString* free_space =
       [InfinitDataSize fileSizeStringFrom:@([InfinitDirectoryManager sharedInstance].free_space)];
-    ELLE_LOG("%s: started state with %s of freespace",
+    ELLE_LOG("%s: started state with %s of free space",
              self.description.UTF8String, free_space.UTF8String);
   }
   return self;
