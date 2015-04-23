@@ -261,6 +261,11 @@ performSelector:(SEL)selector
              withMethod:(NSString*)method
       andAdditionalData:(NSDictionary*)additional;
 
+- (void)sendMetricGhostSMSSent:(BOOL)success
+                          code:(NSString*)code
+                    failReason:(NSString*)fail_reason;
+
+
 #pragma mark - Proxy
 
 - (void)setProxy:(gap_ProxyType)type

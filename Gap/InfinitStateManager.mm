@@ -1094,6 +1094,22 @@ performSelector:(SEL)selector
   }];
 }
 
+- (void)sendMetricGhostSMSSent:(BOOL)success
+                          code:(NSString*)code
+                    failReason:(NSString*)fail_reason_
+{
+  if (!code.length)
+    return;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    std::string fail_reason = fail_reason_.length ? std::string(fail_reason_.UTF8String) : "";
+    return gap_send_sms_ghost_code_metric(manager.stateWrapper.state,
+                                          success,
+                                          code.UTF8String,
+                                          fail_reason);
+  }];
+}
+
 #pragma mark - Proxy
 
 - (void)setProxy:(gap_ProxyType)type
