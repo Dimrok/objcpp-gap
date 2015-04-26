@@ -31,6 +31,11 @@
   return self;
 }
 
++ (instancetype)resultWithStatus:(gap_Status)status
+{
+  return [[InfinitStateResult alloc] initWithStatus:status];
+}
+
 - (BOOL)success
 {
   return (self.status == gap_ok);

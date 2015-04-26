@@ -16,6 +16,8 @@
 @property (nonatomic, readonly) id data;
 @property (nonatomic, readonly) BOOL success;
 
++ (instancetype)resultWithStatus:(gap_Status)status;
+
 - (id)initWithStatus:(gap_Status)status;
 - (id)initWithStatus:(gap_Status)status
              andData:(id)data;
