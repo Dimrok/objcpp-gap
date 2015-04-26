@@ -18,7 +18,6 @@
 #import "InfinitLinkTransactionManager.h"
 #import "InfinitPeerTransaction.h"
 #import "InfinitPeerTransactionManager.h"
-#import "InfinitStateResult.h"
 #import "InfinitStateWrapper.h"
 #import "InfinitTemporaryFileManager.h"
 #import "InfinitUser.h"
@@ -43,6 +42,7 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.StateManager");
 
 // Block type to queue gap operation
 typedef gap_Status(^gap_operation_t)(InfinitStateManager*, NSOperation*);
+typedef void(^gap_void_operation_t)(InfinitStateManager*, NSOperation*);
 
 static InfinitStateManager* _manager_instance = nil;
 static dispatch_once_t _instance_token = 0;
@@ -208,57 +208,110 @@ static NSString* _facebook_app_id = nil;
 #endif
 }
 
+- (void)accountStatusForEmail:(NSString*)email
+              completionBlock:(InfinitEmailAccountStatusBlock)completion_block
+{
+  [self _addOperationCustomResultBlock:^void(InfinitStateManager* manager, NSOperation* operation)
+  {
+    AccountStatus account_status;
+    gap_Status status = gap_account_status_for_email(manager.stateWrapper.state,
+                                                     email.UTF8String,
+                                                     account_status);
+    if (operation.cancelled)
+      return;
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
+      completion_block([InfinitStateResult resultWithStatus:status], email, account_status);
+    });
+  }];
+}
+
+- (gap_operation_t)operationRegisterFullname:(NSString*)fullname
+                                       email:(NSString*)email
+                                    password:(NSString*)password
+{
+  return ^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    gap_clean_state(manager.stateWrapper.state);
+    [manager _clearSelf];
+    [manager _startPolling];
+    boost::optional<std::string> device_push_token;
+    if (manager.push_token != nil && manager.push_token.length > 0)
+      device_push_token = manager.push_token.UTF8String;
+    boost::optional<std::string> country_code;
+    if ([manager countryCode] != nil)
+      country_code = std::string([manager countryCode].UTF8String);
+    boost::optional<std::string> device_model;
+    if ([InfinitDeviceInformation deviceModel].length)
+      device_model = std::string([InfinitDeviceInformation deviceModel].UTF8String);
+    boost::optional<std::string> device_name;
+    if ([InfinitDeviceInformation deviceName].length)
+      device_name = std::string([InfinitDeviceInformation deviceName].UTF8String);
+    gap_Status res = gap_register(manager.stateWrapper.state,
+                                  fullname.UTF8String,
+                                  email.UTF8String,
+                                  password.UTF8String,
+                                  device_push_token,
+                                  country_code,
+                                  device_model,
+                                  device_name);
+    if (res == gap_ok)
+    {
+      manager.logged_in = YES;
+      std::string self_email = gap_self_email(manager.stateWrapper.state);
+      if (self_email.length() > 0)
+        [manager setCurrent_user:[NSString stringWithUTF8String:self_email.c_str()]];
+      else
+        [manager setCurrent_user:email];
+      [InfinitStateManager _startModelManagers];
+      [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
+                                                        stillTrying:NO
+                                                          lastError:@""];
+      [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
+    }
+    else
+    {
+      [manager _stopPolling];
+    }
+    return res;
+  };
+}
+
 - (void)registerFullname:(NSString*)fullname
                    email:(NSString*)email
                 password:(NSString*)password
          performSelector:(SEL)selector
                 onObject:(id)object
 {
-  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
-   {
-     gap_clean_state(manager.stateWrapper.state);
-     [manager _clearSelf];
-     [manager _startPolling];
-     boost::optional<std::string> device_push_token;
-     if (manager.push_token != nil && manager.push_token.length > 0)
-       device_push_token = manager.push_token.UTF8String;
-     boost::optional<std::string> country_code;
-     if ([manager countryCode] != nil)
-       country_code = std::string([manager countryCode].UTF8String);
-     boost::optional<std::string> device_model;
-     if ([InfinitDeviceInformation deviceModel].length)
-       device_model = std::string([InfinitDeviceInformation deviceModel].UTF8String);
-     boost::optional<std::string> device_name;
-     if ([InfinitDeviceInformation deviceName].length)
-       device_name = std::string([InfinitDeviceInformation deviceName].UTF8String);
-     gap_Status res = gap_register(manager.stateWrapper.state,
-                                   fullname.UTF8String,
-                                   email.UTF8String,
-                                   password.UTF8String,
-                                   device_push_token,
-                                   country_code,
-                                   device_model,
-                                   device_name);
-     if (res == gap_ok)
-     {
-       manager.logged_in = YES;
-       std::string self_email = gap_self_email(manager.stateWrapper.state);
-       if (self_email.length() > 0)
-         [manager setCurrent_user:[NSString stringWithUTF8String:self_email.c_str()]];
-       else
-         [manager setCurrent_user:email];
-       [InfinitStateManager _startModelManagers];
-       [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
-                                                         stillTrying:NO
-                                                           lastError:@""];
-       [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
-     }
-     else
-     {
-       [manager _stopPolling];
-     }
-     return res;
-   } performSelector:selector onObject:object];
+  [self _addOperation:[self operationRegisterFullname:fullname email:email password:password]
+      performSelector:selector
+             onObject:object];
+}
+
+- (void)registerFullname:(NSString*)fullname
+                   email:(NSString*)email
+                password:(NSString*)password
+         completionBlock:(InfinitStateCompletionBlock)completion_block
+{
+  [self _addOperation:[self operationRegisterFullname:fullname email:email password:password]
+      completionBlock:completion_block];
+}
+
+- (void)ghostCodeExists:(NSString*)code
+        completionBlock:(InfinitGhostCodeExistsBlock)completion_block
+{
+  [self _addOperationCustomResultBlock:^(InfinitStateManager* manager, NSOperation* operation)
+  {
+    // XXX check code function.
+    gap_Status status = gap_ok;
+    if (operation.isCancelled)
+      return;
+
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
+      completion_block([InfinitStateResult resultWithStatus:status], code, YES);
+    });
+  }];
 }
 
 - (void)useGhostCode:(NSString*)code
@@ -271,55 +324,80 @@ static NSString* _facebook_app_id = nil;
   } performSelector:selector onObject:object];
 }
 
+- (void)useGhostCode:(NSString*)code
+     completionBlock:(InfinitStateCompletionBlock)completion_block
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    return gap_use_ghost_code(manager.stateWrapper.state, code.UTF8String);
+  } completionBlock:completion_block];
+}
+
+- (gap_operation_t)operationLogin:(NSString*)email
+                         password:(NSString*)password
+{
+  return ^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    gap_clean_state(manager.stateWrapper.state);
+    [manager _clearSelf];
+    [manager _startPolling];
+    boost::optional<std::string> device_push_token;
+    if (manager.push_token.length)
+      device_push_token = manager.push_token.UTF8String;
+    boost::optional<std::string> country_code;
+    if ([manager countryCode] != nil)
+      country_code = std::string([manager countryCode].UTF8String);
+    boost::optional<std::string> device_model;
+    if ([InfinitDeviceInformation deviceModel].length)
+      device_model = std::string([InfinitDeviceInformation deviceModel].UTF8String);
+    boost::optional<std::string> device_name;
+    if ([InfinitDeviceInformation deviceName].length)
+      device_name = std::string([InfinitDeviceInformation deviceName].UTF8String);
+    gap_Status res = gap_login(manager.stateWrapper.state,
+                               email.UTF8String,
+                               password.UTF8String,
+                               device_push_token,
+                               country_code,
+                               device_model,
+                               device_name);
+    if (res == gap_ok)
+    {
+      manager.logged_in = YES;
+      std::string self_email = gap_self_email(manager.stateWrapper.state);
+      if (self_email.length() > 0)
+        [manager setCurrent_user:[NSString stringWithUTF8String:self_email.c_str()]];
+      else
+        [manager setCurrent_user:email];
+      [InfinitStateManager _startModelManagers];
+      [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
+                                                        stillTrying:NO
+                                                          lastError:@""];
+      [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
+    }
+    else
+    {
+      [manager _stopPolling];
+    }
+    return res;
+  };
+}
+
 - (void)login:(NSString*)email
      password:(NSString*)password
 performSelector:(SEL)selector
      onObject:(id)object
 {
-  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
-   {
-     gap_clean_state(manager.stateWrapper.state);
-     [manager _clearSelf];
-     [manager _startPolling];
-     boost::optional<std::string> device_push_token;
-     if (manager.push_token.length)
-       device_push_token = manager.push_token.UTF8String;
-     boost::optional<std::string> country_code;
-     if ([manager countryCode] != nil)
-       country_code = std::string([manager countryCode].UTF8String);
-     boost::optional<std::string> device_model;
-     if ([InfinitDeviceInformation deviceModel].length)
-       device_model = std::string([InfinitDeviceInformation deviceModel].UTF8String);
-     boost::optional<std::string> device_name;
-     if ([InfinitDeviceInformation deviceName].length)
-       device_name = std::string([InfinitDeviceInformation deviceName].UTF8String);
-     gap_Status res = gap_login(manager.stateWrapper.state,
-                                email.UTF8String,
-                                password.UTF8String,
-                                device_push_token,
-                                country_code,
-                                device_model,
-                                device_name);
-     if (res == gap_ok)
-     {
-       manager.logged_in = YES;
-       std::string self_email = gap_self_email(manager.stateWrapper.state);
-       if (self_email.length() > 0)
-         [manager setCurrent_user:[NSString stringWithUTF8String:self_email.c_str()]];
-       else
-         [manager setCurrent_user:email];
-       [InfinitStateManager _startModelManagers];
-       [[InfinitConnectionManager sharedInstance] setConnectedStatus:YES
-                                                         stillTrying:NO
-                                                           lastError:@""];
-       [[InfinitCrashReporter sharedInstance] sendExistingCrashReport];
-     }
-     else
-     {
-       [manager _stopPolling];
-     }
-     return res;
-   } performSelector:selector onObject:object];
+  [self _addOperation:[self operationLogin:email password:password]
+      performSelector:selector
+             onObject:object];
+}
+
+- (void)login:(NSString*)email
+     password:(NSString*)password
+completionBlock:(InfinitStateCompletionBlock)completion_block
+{
+  [self _addOperation:[self operationLogin:email password:password]
+      completionBlock:completion_block];
 }
 
 - (void)userRegisteredWithFacebookId:(NSString*)facebook_id
@@ -338,6 +416,25 @@ performSelector:(SEL)selector
   } performSelector:selector onObject:object withData:data];
 }
 
+- (void)userRegisteredWithFacebookId:(NSString*)facebook_id
+                     completionBlock:(InfinitFacebookUserRegistered)completion_block
+{
+  [self _addOperationCustomResultBlock:^void(InfinitStateManager* manager, NSOperation* operation)
+  {
+    bool registered;
+    gap_Status status = gap_facebook_already_registered(manager.stateWrapper.state,
+                                                        facebook_id.UTF8String,
+                                                        registered);
+    if (operation.isCancelled)
+      return;
+
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
+      completion_block([InfinitStateResult resultWithStatus:status], registered);
+    });
+  }];
+}
+
 - (NSString*)facebookApplicationId
 {
   if (_facebook_app_id == nil)
@@ -345,12 +442,10 @@ performSelector:(SEL)selector
   return _facebook_app_id;
 }
 
-- (void)facebookConnect:(NSString*)facebook_token
-           emailAddress:(NSString*)email
-        performSelector:(SEL)selector
-               onObject:(id)object
+- (gap_operation_t)operationFacebookConnect:(NSString*)facebook_token
+                                      email:(NSString*)email;
 {
-  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  return ^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
     gap_clean_state(manager.stateWrapper.state);
     [manager _clearSelf];
@@ -398,7 +493,25 @@ performSelector:(SEL)selector
       [manager _stopPolling];
     }
     return res;
-  } performSelector:selector onObject:object];
+  };
+}
+
+- (void)facebookConnect:(NSString*)facebook_token
+           emailAddress:(NSString*)email
+        performSelector:(SEL)selector
+               onObject:(id)object
+{
+  [self _addOperation:[self operationFacebookConnect:facebook_token email:email]
+      performSelector:selector
+             onObject:object];
+}
+
+- (void)facebookConnect:(NSString*)facebook_token
+           emailAddress:(NSString*)email
+        completionBlock:(InfinitStateCompletionBlock)completion_block
+{
+  [self _addOperation:[self operationFacebookConnect:facebook_token email:email]
+      completionBlock:completion_block];
 }
 
 - (void)cancelAllOperationsExcluding:(NSOperation*)exclude
@@ -1298,6 +1411,66 @@ performSelector:(SEL)selector
                              waitUntilDone:NO];
      }
    }];
+  [_queue addOperation:block_operation];
+}
+
+- (void)_addOperation:(gap_operation_t)operation
+      completionBlock:(InfinitStateCompletionBlock)completion_block
+{
+  [self _addOperation:operation withData:nil completionBlock:completion_block];
+}
+
+- (void)_addOperation:(gap_operation_t)operation
+             withData:(id)data
+      completionBlock:(InfinitStateCompletionBlock)completion_block
+{
+  __weak typeof(self) weak_self = self;
+  __block NSBlockOperation* block_operation = [NSBlockOperation blockOperationWithBlock:^(void)
+  {
+    InfinitStateManager* strong_self = weak_self;
+    if (!strong_self)
+      return;
+    if (block_operation.isCancelled)
+    {
+      ELLE_LOG("%s: cancelled operation", self.description.UTF8String);
+      return;
+    }
+    gap_Status result = operation(strong_self, block_operation);
+    InfinitStateResult* operation_result = [[InfinitStateResult alloc] initWithStatus:result
+                                                                              andData:data];
+    if (block_operation.isCancelled)
+    {
+      ELLE_LOG("%s: cancelled operation", self.description.UTF8String);
+      return;
+    }
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
+      completion_block(operation_result);
+    });
+  }];
+  [_queue addOperation:block_operation];
+}
+
+- (void)_addOperationCustomResultBlock:(gap_void_operation_t)operation
+{
+  __weak typeof(self) weak_self = self;
+  __block NSBlockOperation* block_operation = [NSBlockOperation blockOperationWithBlock:^(void)
+  {
+    InfinitStateManager* strong_self = weak_self;
+    if (!strong_self)
+      return;
+    if (block_operation.isCancelled)
+    {
+      ELLE_LOG("%s: cancelled operation", self.description.UTF8String);
+      return;
+    }
+    operation(strong_self, block_operation);
+    if (block_operation.isCancelled)
+    {
+      ELLE_LOG("%s: cancelled operation", self.description.UTF8String);
+      return;
+    }
+  }];
   [_queue addOperation:block_operation];
 }
 

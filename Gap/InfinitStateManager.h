@@ -18,6 +18,7 @@
 #import "InfinitConnectionManager.h"
 #import "InfinitLinkTransaction.h"
 #import "InfinitPeerTransaction.h"
+#import "InfinitStateResult.h"
 #import "InfinitUser.h"
 
 #import <surface/gap/enums.hh>
@@ -32,6 +33,9 @@
  */
 #define INFINIT_WILL_LOGOUT_NOTIFICATION     @"INFINIT_WILL_LOGOUT_NOTIFICATION"
 
+// Generic block queue operation completion.
+typedef void(^InfinitStateCompletionBlock)(InfinitStateResult* result);
+
 @interface InfinitStateManager : NSObject
 
 @property (nonatomic, readwrite) BOOL logged_in;
@@ -45,6 +49,18 @@
 + (void)stopState;
 
 #pragma mark - Register/Login/Logout
+/** Check account type by email.
+ @param email
+  The user's email.
+ @param completion_block
+  Block to run on completion.
+ */
+typedef void(^InfinitEmailAccountStatusBlock)(InfinitStateResult* result,
+                                              NSString* email,
+                                              AccountStatus status);
+- (void)accountStatusForEmail:(NSString*)email
+              completionBlock:(InfinitEmailAccountStatusBlock)completion_block;
+
 /** Register a new user.
  @param fullname
   The user's fullname.
@@ -63,6 +79,32 @@
          performSelector:(SEL)selector
                 onObject:(id)object;
 
+/** Register a new user.
+ @param fullname
+  The user's fullname.
+ @param email
+  The user's email address.
+ @param password
+  The user's email password.
+ @param completion_block
+  Block called on completion.
+ */
+
+- (void)registerFullname:(NSString*)fullname
+                   email:(NSString*)email
+                password:(NSString*)password
+         completionBlock:(InfinitStateCompletionBlock)completion_block;
+
+/** Check a ghost code exists.
+ @param code
+  Code to check.
+ @param completion_block
+  Block to run on completion.
+ */
+typedef void(^InfinitGhostCodeExistsBlock)(InfinitStateResult* result, NSString* code, BOOL valid);
+- (void)ghostCodeExists:(NSString*)code
+        completionBlock:(InfinitGhostCodeExistsBlock)completion_block;
+
 /** Use a ghost code.
  @param code
   Code to activate.
@@ -74,6 +116,15 @@
 - (void)useGhostCode:(NSString*)code
      performSelector:(SEL)selector
             onObject:(id)object;
+
+/** Use a ghost code.
+ @param code
+  Code to activate.
+ @param completion_block
+  Block to run on completion.
+ */
+- (void)useGhostCode:(NSString*)code
+     completionBlock:(InfinitStateCompletionBlock)completion_block;
 
 /** Log a user in.
  @param email
@@ -90,6 +141,18 @@
 performSelector:(SEL)selector
      onObject:(id)object;
 
+/** Log a user in.
+ @param email
+  The user's email address.
+ @param password
+  The user's email password.
+ @param completion_block
+  Block to run on completion.
+ */
+- (void)login:(NSString*)email
+     password:(NSString*)password
+completionBlock:(InfinitStateCompletionBlock)completion_block;
+
 /** User registered with Facebook id.
  @param facebook_id
   Facebook id of user.
@@ -104,6 +167,16 @@ performSelector:(SEL)selector
                      performSelector:(SEL)selector
                             onObject:(id)object
                             withData:(NSMutableDictionary*)data;
+
+/** User registered with Facebook id.
+ @param facebook_id
+  Facebook id of user.
+ @param completion_block
+  Block run on completion.
+ */
+typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL registered);
+- (void)userRegisteredWithFacebookId:(NSString*)facebook_id
+                     completionBlock:(InfinitFacebookUserRegistered)completion_block;
 
 /** Facebook application ID.
  return Facebook application ID as string.
@@ -123,6 +196,17 @@ performSelector:(SEL)selector
            emailAddress:(NSString*)email
         performSelector:(SEL)selector
                onObject:(id)object;
+
+/** Connect user using Facebook.
+ Will either register and login the user or just log the user in using Facebook.
+ @param token
+  Facebook client token.
+ @param completion_block
+  Block called on completion.
+ */
+- (void)facebookConnect:(NSString*)facebook_token
+           emailAddress:(NSString*)email
+        completionBlock:(InfinitStateCompletionBlock)completion_block;
 
 /** Log the current user out.
  @param selector
