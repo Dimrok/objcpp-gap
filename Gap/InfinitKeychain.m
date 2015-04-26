@@ -38,7 +38,7 @@ static NSString* _service_name = @"Infinit";
 - (BOOL)addPassword:(NSString*)password
          forAccount:(NSString*)account
 {
-  if (account == nil || account.length == 0)
+  if (!account.length || !password.length)
     return NO;
   NSMutableDictionary* dict = [self keychainDictionaryForAccount:account];
   dict[(__bridge id)kSecValueData] = [self encodeString:password];
@@ -60,7 +60,7 @@ static NSString* _service_name = @"Infinit";
 
 - (BOOL)credentialsForAccountInKeychain:(NSString*)account
 {
-  if (account == nil || account.length == 0)
+  if (!account.length)
     return NO;
   if ([self passwordForAccount:account] == nil)
     return NO;
@@ -69,7 +69,7 @@ static NSString* _service_name = @"Infinit";
 
 - (NSString*)passwordForAccount:(NSString*)account
 {
-  if (account == nil || account.length == 0)
+  if (!account.length)
     return nil;
   NSMutableDictionary* dict = [self keychainDictionaryForAccount:account];
   dict[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitOne;
@@ -93,7 +93,7 @@ static NSString* _service_name = @"Infinit";
 
 - (BOOL)removeAccount:(NSString*)account
 {
-  if (account == nil || account.length == 0)
+  if (!account.length)
     return NO;
   NSMutableDictionary* dict = [self keychainDictionaryForAccount:account];
   CFDictionaryRef dict_ref = (__bridge_retained CFDictionaryRef)dict;
@@ -115,7 +115,7 @@ static NSString* _service_name = @"Infinit";
 - (BOOL)updatePassword:(NSString*)password
             forAccount:(NSString*)account
 {
-  if (account == nil || account.length == 0)
+  if (!account.length || !password.length)
     return NO;
   NSMutableDictionary* dict = [self keychainDictionaryForAccount:account];
   CFDictionaryRef dict_ref = (__bridge_retained CFDictionaryRef)dict;
@@ -142,7 +142,7 @@ static NSString* _service_name = @"Infinit";
                                 host:(NSString*)host
                                 port:(UInt16)port
 {
-  if (account == nil || account.length == 0)
+  if (!account.length)
     return nil;
   NSMutableDictionary* dict =
     [self keychainDictionaryForProxyAccount:account protocol:protocol host:host port:port];
