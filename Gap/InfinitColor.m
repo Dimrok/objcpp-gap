@@ -26,7 +26,7 @@
 }
 
 + (INFINIT_COLOR*)colorWithRed:(NSUInteger)red green:(NSUInteger)green blue:(NSUInteger)blue
-                         alpha:(CGFloat)alpha
+                 alpha:(CGFloat)alpha
 {
 #if TARGET_OS_IPHONE
   return [UIColor colorWithRed:(red/255.0f) green:(green/255.0f) blue:(blue/255.0f) alpha:alpha];
@@ -38,11 +38,11 @@
 
 + (INFINIT_COLOR*)colorFromPalette:(InfinitPaletteColors)color
 {
-  return [InfinitColor colorFromPalette:color alpha:1.0];
+  return [InfinitColor colorFromPalette:color alpha:1.0f];
 }
 
 + (INFINIT_COLOR*)colorFromPalette:(InfinitPaletteColors)color
-                             alpha:(CGFloat)alpha
+                       alpha:(CGFloat)alpha
 {
   switch (color)
   {
@@ -56,9 +56,11 @@
       return [InfinitColor colorWithGray:243 alpha:alpha];
     case InfinitPaletteColorSendBlack:
       return [InfinitColor colorWithGray:46 alpha:alpha];
+    case InfinitPaletteColorLoginBlack:
+      return [InfinitColor colorWithRed:91 green:99 blue:106 alpha:alpha];
 
     default:
-      return [InfinitColor colorWithRed:0 green:0 blue:0 alpha:alpha];
+      NSCAssert(NO, @"InfinitPaletteColor does not exist.");
   }
 }
 
