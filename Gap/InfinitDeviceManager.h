@@ -19,4 +19,6 @@
 
 - (InfinitDevice*)deviceWithId:(NSString*)id_;
 
+- (void)updateDevices;
+
 @end
