@@ -217,6 +217,21 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
 - (void)logoutPerformSelector:(SEL)selector
                      onObject:(id)object;
 
+/** Log the current user out.
+ @param completion_block
+  Block to call on completion.
+ */
+- (void)logoutWithCompletionBlock:(InfinitStateCompletionBlock)completion_block;
+
+#pragma mark - Local Contacts
+/** Upload contacts.
+ @param contacts.
+  Array with dictionary for each contact of the form:
+  {"email_addresses": [...], "phone_numbers": [...]}
+ */
+- (void)uploadContacts:(NSArray*)contacts
+       completionBlock:(InfinitStateCompletionBlock)completion_block;
+
 #pragma mark - User
 /// Users should be accessed using the User Manager.
 - (NSArray*)swaggers;

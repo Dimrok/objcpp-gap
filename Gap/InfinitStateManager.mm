@@ -302,7 +302,7 @@ static NSString* _facebook_app_id = nil;
 {
   [self _addOperationCustomResultBlock:^(InfinitStateManager* manager, NSOperation* operation)
   {
-    // XXX check code function.
+    // XXX TODO
     gap_Status status = gap_ok;
     if (operation.isCancelled)
       return;
@@ -523,20 +523,53 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   }
 }
 
+- (gap_operation_t)operationLogout
+{
+  return ^gap_Status(InfinitStateManager* manager, NSOperation* operation)
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_WILL_LOGOUT_NOTIFICATION
+                                                        object:nil];
+    [manager cancelAllOperationsExcluding:operation];
+    [manager _clearSelfAndModel:YES];
+    [manager _stopPolling];
+    manager.logged_in = NO;
+    gap_Status res = gap_logout(manager.stateWrapper.state);
+    return res;
+  };
+}
+
 - (void)logoutPerformSelector:(SEL)selector
                      onObject:(id)object
 {
-  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation* operation)
-   {
-     [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_WILL_LOGOUT_NOTIFICATION
-                                                         object:nil];
-     [manager cancelAllOperationsExcluding:operation];
-     [manager _clearSelfAndModel:YES];
-     [manager _stopPolling];
-     manager.logged_in = NO;
-     gap_Status res = gap_logout(manager.stateWrapper.state);
-     return res;
-   } performSelector:selector onObject:object];
+  [self _addOperation:[self operationLogout] performSelector:selector onObject:object];
+}
+
+- (void)logoutWithCompletionBlock:(InfinitStateCompletionBlock)completion_block
+{
+  [self _addOperation:[self operationLogout] completionBlock:completion_block];
+}
+
+#pragma mark - Local Contacts
+
+- (void)uploadContacts:(NSArray*)contacts_
+       completionBlock:(InfinitStateCompletionBlock)completion_block
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    if (!manager.logged_in)
+      return gap_not_logged_in;
+    std::vector<AddressBookContact> contacts;
+    for (NSDictionary* contact_ in contacts_)
+    {
+      AddressBookContact contact;
+      if (contact_[@"phone_numbers"])
+        contact.phone_numbers = [manager _strVectorFromNSArray:contact_[@"phone_numbers"]];
+      if (contact_[@"email_addresses"])
+        contact.email_addresses = [manager _strVectorFromNSArray:contact_[@"email_addresses"]];
+      contacts.push_back(contact);
+    }
+    return gap_upload_address_book(manager.stateWrapper.state, contacts);
+  } completionBlock:completion_block];
 }
 
 #pragma mark - Polling
@@ -894,7 +927,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 {
   if (!self.logged_in)
     return nil;
-  std::vector<surface::gap::Device> devices_;
+  std::vector<surface::gap::Device const*> devices_;
   gap_Status status = gap_devices(self.stateWrapper.state, devices_);
   NSMutableArray* res = [NSMutableArray array];
   if (status == gap_ok)
@@ -1250,11 +1283,23 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 
 #pragma mark - Conversions
 
-- (InfinitDevice*)_convertDevice:(surface::gap::Device const&)device
+- (InfinitDevice*)_convertDevice:(surface::gap::Device const*)device
 {
-  InfinitDevice* res = [[InfinitDevice alloc] initWithId:[self _nsString:device.id]
-                                                    name:[self _nsString:device.name]
-                                                      os:[self _nsString:device.os]];
+  InfinitDevice* res = [[InfinitDevice alloc] initWithId:[self _nsString:device->id.repr()]
+                                                    name:[self _nsString:device->name]
+                                                      os:[self _nsStringOptional:device->os]
+                                                   model:[self _nsStringOptional:device->model]];
+  return res;
+}
+
+- (std::vector<std::string>)_strVectorFromNSArray:(NSArray*)array
+{
+  std::vector<std::string> res;
+  for (NSString* element in array)
+  {
+    if (element.length)
+      res.push_back(element.UTF8String);
+  }
   return res;
 }
 
@@ -1263,7 +1308,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   std::vector<std::string> res;
   for (NSString* element in array)
   {
-    if (element)
+    if (element.length)
       res.push_back(element.fileSystemRepresentation);
   }
   return res;
@@ -1272,6 +1317,13 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 - (NSString*)_nsString:(std::string const&)string
 {
   return [NSString stringWithUTF8String:string.c_str()];
+}
+
+- (NSString*)_nsStringOptional:(boost::optional<std::string>)optional
+{
+  if (optional)
+    return [self _nsString:optional.get()];
+  return @"";
 }
 
 - (NSNumber*)_numFromUint:(uint32_t)id_
