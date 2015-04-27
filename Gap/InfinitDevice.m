@@ -10,6 +10,8 @@
 
 #import "InfinitStateManager.h"
 
+#import "NSString+UUID.h"
+
 @implementation InfinitDevice
 
 #pragma mark - Init
@@ -17,25 +19,44 @@
 - (instancetype)initWithId:(NSString*)id_
                       name:(NSString*)name
                         os:(NSString*)os
+                     model:(NSString*)model
 {
   if (self = [super init])
   {
     _id_ = id_;
-    _name = name;
-    _type = [self _typeFromOSString:os];
+    _model = model;
+    _os = os;
+    _type = [self _typeFromOSString:os model:model];
+    if (name.infinit_isUUID)
+      _name = [self _nameFromType:self.type];
+    else
+      _name = name;
   }
   return self;
 }
 
 - (InfinitDeviceType)_typeFromOSString:(NSString*)os
+                                 model:(NSString*)model
 {
   InfinitDeviceType res;
   if ([os isEqualToString:@"Android"])
     res = InfinitDeviceTypeAndroid;
   else if ([os isEqualToString:@"iOS"])
-    res = InfinitDeviceTypeiPhone;
+  {
+    if ([model rangeOfString:@"iPad"].location != NSNotFound)
+      res = InfinitDeviceTypeiPad;
+    else if ([model rangeOfString:@"iPod"].location != NSNotFound)
+      res = InfinitDeviceTypeiPod;
+    else
+      res = InfinitDeviceTypeiPhone;
+  }
   else if ([os isEqualToString:@"MacOSX"])
-    res = InfinitDeviceTypeMacLaptop;
+  {
+    if ([model rangeOfString:@"MacBook"].location != NSNotFound)
+      res = InfinitDeviceTypeMacLaptop;
+    else
+      res = InfinitDeviceTypeMacDesktop;
+  }
   else if ([os isEqualToString:@"Linux"])
     res = InfinitDeviceTypePCLinux;
   else if ([os isEqualToString:@"Windows"])
@@ -45,48 +66,37 @@
   return res;
 }
 
-#pragma mark - General
-
-- (NSString*)friendly_name
+- (NSString*)_nameFromType:(InfinitDeviceType)type
 {
-  switch (self.type)
+  switch (type)
   {
     case InfinitDeviceTypeAndroid:
       return NSLocalizedString(@"My Mobile", nil);
+    case InfinitDeviceTypeiPad:
+      return NSLocalizedString(@"My iPad", nil);
     case  InfinitDeviceTypeiPhone:
       return NSLocalizedString(@"My iPhone", nil);
-    case InfinitDeviceTypeMacLaptop:
+    case InfinitDeviceTypeiPod:
+      return NSLocalizedString(@"My iPod", nil);
+    case InfinitDeviceTypeMacDesktop:
       return NSLocalizedString(@"My Mac", nil);
+    case InfinitDeviceTypeMacLaptop:
+      return NSLocalizedString(@"My MacBook", nil);
     case InfinitDeviceTypePCLinux:
     case InfinitDeviceTypePCWindows:
       return NSLocalizedString(@"My Computer", nil);
+
     case InfinitDeviceTypeUnknown:
+    default:
       return NSLocalizedString(@"Unknown", nil);
   }
 }
 
+#pragma mark - General
+
 - (BOOL)is_self
 {
   return [[InfinitStateManager sharedInstance].self_device_id isEqualToString:self.id_];
-}
-
-- (NSString*)os_string
-{
-  switch (self.type)
-  {
-    case InfinitDeviceTypeAndroid:
-      return @"Android";
-    case InfinitDeviceTypeiPhone:
-      return @"iPhone";
-    case InfinitDeviceTypeMacLaptop:
-      return @"Mac";
-    case InfinitDeviceTypePCLinux:
-      return @"Linux";
-    case InfinitDeviceTypePCWindows:
-      return @"Windows";
-    case InfinitDeviceTypeUnknown:
-      return @"Unknown";
-  }
 }
 
 #pragma mark - NSObject
@@ -108,7 +118,7 @@
 
 - (NSString*)description
 {
-  return [NSString stringWithFormat:@"<%@ (%@): %@>", self.name, self.id_, self.os_string];
+  return [NSString stringWithFormat:@"<%@ (%@): %@ (%@)>", self.name, self.id_, self.os, self.model];
 }
 
 @end

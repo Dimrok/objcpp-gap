@@ -11,7 +11,10 @@
 typedef NS_ENUM(NSUInteger, InfinitDeviceType)
 {
   InfinitDeviceTypeAndroid,
+  InfinitDeviceTypeiPad,
   InfinitDeviceTypeiPhone,
+  InfinitDeviceTypeiPod,
+  InfinitDeviceTypeMacDesktop,
   InfinitDeviceTypeMacLaptop,
   InfinitDeviceTypePCLinux,
   InfinitDeviceTypePCWindows,
@@ -21,15 +24,16 @@ typedef NS_ENUM(NSUInteger, InfinitDeviceType)
 
 @interface InfinitDevice : NSObject
 
-@property (nonatomic, readonly) NSString* friendly_name;
 @property (nonatomic, readonly) NSString* id_;
 @property (nonatomic, readonly) BOOL is_self;
 @property (nonatomic, readonly) NSString* name;
-@property (nonatomic, readonly) NSString* os_string;
+@property (nonatomic, readonly) NSString* model;
+@property (nonatomic, readonly) NSString* os;
 @property (nonatomic, readonly) InfinitDeviceType type;
 
 - (instancetype)initWithId:(NSString*)id_
                       name:(NSString*)name
-                        os:(NSString*)os;
+                        os:(NSString*)os
+                     model:(NSString*)model;
 
 @end
