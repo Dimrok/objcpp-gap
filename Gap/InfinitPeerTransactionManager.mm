@@ -9,6 +9,7 @@
 #import "InfinitPeerTransactionManager.h"
 
 #import "InfinitConnectionManager.h"
+#import "InfinitDataSize.h"
 #import "InfinitDeviceManager.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitStateManager.h"
@@ -229,7 +230,7 @@ static dispatch_once_t _instance_token = 0;
     if ([recipient isKindOfClass:NSString.class])
     {
       NSString* string = recipient;
-      if (!string.isEmail && !string.isPhoneNumber)
+      if (!string.infinit_isEmail && !string.infinit_isPhoneNumber)
       {
         ELLE_ERR("%s: unable to send, string is not valid email or phone number: %s",
                  self.description.UTF8String, string.UTF8String);
@@ -304,8 +305,13 @@ static dispatch_once_t _instance_token = 0;
               self.description.UTF8String, transaction.status_text.UTF8String);
     return YES;
   }
-  if ([InfinitDirectoryManager sharedInstance].free_space < transaction.size.unsignedIntegerValue)
+  uint64_t free_space = [InfinitDirectoryManager sharedInstance].free_space;
+  if (free_space < transaction.size.unsignedIntegerValue)
   {
+    ELLE_WARN("%s: insufficient free space to accept: %s < %s",
+              self.description.UTF8String,
+              [InfinitDataSize fileSizeStringFrom:@(free_space)].UTF8String,
+              [InfinitDataSize fileSizeStringFrom:transaction.size].UTF8String);
     if (error != NULL)
     {
       *error = [NSError errorWithDomain:INFINIT_FILE_SYSTEM_ERROR_DOMAIN
