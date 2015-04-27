@@ -1,6 +1,6 @@
 //
 //  InfinitColor.h
-//  Infinit
+//  Gap
 //
 //  Created by Christopher Crone on 08/01/15.
 //  Copyright (c) 2015 Infinit. All rights reserved.
