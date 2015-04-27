@@ -262,9 +262,9 @@ avatarToDiskCache:(NSImage*)avatar
 #endif
 {
 #if TARGET_OS_IPHONE
-  if (user.fullname.isPhoneNumber)
+  if (user.fullname.infinit_isPhoneNumber)
     return _phone_avatar;
-  else if (user.fullname.isEmail)
+  else if (user.fullname.infinit_isEmail)
     return _email_avatar;
 #endif
   INFINIT_COLOR* fill_color = [InfinitColor colorWithRed:202 green:217 blue:223];
@@ -273,7 +273,7 @@ avatarToDiskCache:(NSImage*)avatar
   NSMutableString* text = [[NSMutableString alloc] init];
   if (user.fullname.length == 0)
     [text appendFormat:@" "];
-  else if (user.fullname.isEmail)
+  else if (user.fullname.infinit_isEmail)
     [text appendFormat:@"@"];
   else
   {
