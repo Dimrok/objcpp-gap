@@ -105,6 +105,10 @@
 		83A7599E1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A7599B1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m */; };
 		83A7599F1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A7599B1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m */; };
 		83B4BBC71AB765E9004B8E76 /* libtransaction.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 83B4BBC61AB765E9004B8E76 /* libtransaction.dylib */; };
+		83C06D6B1AEE324100761237 /* NSString+UUID.h in Headers */ = {isa = PBXBuildFile; fileRef = 83C06D691AEE324000761237 /* NSString+UUID.h */; };
+		83C06D6C1AEE324100761237 /* NSString+UUID.h in Headers */ = {isa = PBXBuildFile; fileRef = 83C06D691AEE324000761237 /* NSString+UUID.h */; };
+		83C06D6D1AEE324100761237 /* NSString+UUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C06D6A1AEE324000761237 /* NSString+UUID.m */; };
+		83C06D6E1AEE324100761237 /* NSString+UUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C06D6A1AEE324000761237 /* NSString+UUID.m */; };
 		83E0AC221A6A61CD003F60C6 /* InfinitTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 83E0AC201A6A61CD003F60C6 /* InfinitTransaction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83E0AC231A6A61CD003F60C6 /* InfinitTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 83E0AC211A6A61CD003F60C6 /* InfinitTransaction.m */; };
 		83EBB08C1A93B6E400144BC6 /* InfinitConnectionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = 83EBB08A1A93B6E400144BC6 /* InfinitConnectionStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -300,6 +304,8 @@
 		83A7599A1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitThreadSafeDictionary.h; sourceTree = "<group>"; };
 		83A7599B1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitThreadSafeDictionary.m; sourceTree = "<group>"; };
 		83B4BBC61AB765E9004B8E76 /* libtransaction.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtransaction.dylib; path = ../../../_build/macosx64/lib/libtransaction.dylib; sourceTree = "<group>"; };
+		83C06D691AEE324000761237 /* NSString+UUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UUID.h"; sourceTree = "<group>"; };
+		83C06D6A1AEE324000761237 /* NSString+UUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UUID.m"; sourceTree = "<group>"; };
 		83E0AC201A6A61CD003F60C6 /* InfinitTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitTransaction.h; sourceTree = "<group>"; };
 		83E0AC211A6A61CD003F60C6 /* InfinitTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitTransaction.m; sourceTree = "<group>"; };
 		83EBB08A1A93B6E400144BC6 /* InfinitConnectionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitConnectionStatus.h; sourceTree = "<group>"; };
@@ -458,6 +464,8 @@
 				836D394E1A67F19200892206 /* NSString+email.m */,
 				83F9628B1AAB10A9003F2DE7 /* NSString+PhoneNumber.h */,
 				83F9628C1AAB10A9003F2DE7 /* NSString+PhoneNumber.m */,
+				83C06D691AEE324000761237 /* NSString+UUID.h */,
+				83C06D6A1AEE324000761237 /* NSString+UUID.m */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -658,6 +666,7 @@
 				83F4D0191A136E3C0068BEB2 /* InfinitUserManager.h in Headers */,
 				83F4D0131A136E3C0068BEB2 /* InfinitStateWrapper.h in Headers */,
 				83EE4CBE1AC58A40006292C8 /* InfinitStoredMutableDictionary.h in Headers */,
+				83C06D6B1AEE324100761237 /* NSString+UUID.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -665,6 +674,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83C06D6C1AEE324100761237 /* NSString+UUID.h in Headers */,
 				8372B30C1AB3354D00F1B8B8 /* InfinitAvatarManager.h in Headers */,
 				8372B30D1AB3354D00F1B8B8 /* InfinitConnectionStatus.h in Headers */,
 				8372B30E1AB3354D00F1B8B8 /* InfinitConnectionManager.h in Headers */,
@@ -889,6 +899,7 @@
 				839610711A2479B50044B874 /* InfinitManagedFiles.m in Sources */,
 				83EE4CBF1AC58A40006292C8 /* InfinitStoredMutableDictionary.m in Sources */,
 				83A7599E1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m in Sources */,
+				83C06D6D1AEE324100761237 /* NSString+UUID.m in Sources */,
 				83F72CAA1A1513810088106E /* InfinitLinkTransaction.m in Sources */,
 				83568DA41A136DF600766DA3 /* InfinitUser.m in Sources */,
 				83568DB01A136E1000766DA3 /* InfinitStateManager.mm in Sources */,
@@ -947,6 +958,7 @@
 				8372B3051AB3353B00F1B8B8 /* InfinitUser.m in Sources */,
 				8372B3061AB3353B00F1B8B8 /* InfinitUserManager.mm in Sources */,
 				8372B3071AB3353B00F1B8B8 /* InfinitColor.m in Sources */,
+				83C06D6E1AEE324100761237 /* NSString+UUID.m in Sources */,
 				8372B3081AB3353B00F1B8B8 /* InfinitDataSize.m in Sources */,
 				8372B3091AB3353B00F1B8B8 /* InfinitTime.m in Sources */,
 				8372B30A1AB3353B00F1B8B8 /* NSString+email.m in Sources */,
@@ -971,9 +983,11 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../elle/das/src,
 					../../../elle/elle/src,
 					../../../fist/src,
 					../../../oracles/src,
+					../../../oracles/meta/client/src,
 					../plcrashreporter/Source,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "$(PUBLIC_HEADERS_FOLDER_PATH)/Private";
@@ -987,9 +1001,11 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../elle/das/src,
 					../../../elle/elle/src,
 					../../../fist/src,
 					../../../oracles/src,
+					../../../oracles/meta/client/src,
 					../plcrashreporter/Source,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "$(PUBLIC_HEADERS_FOLDER_PATH)/Private";
