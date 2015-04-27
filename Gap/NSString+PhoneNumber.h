@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSString (PhoneNumber)
+@interface NSString (infinit_PhoneNumber)
 
-@property (nonatomic, readonly) BOOL isPhoneNumber;
+@property (nonatomic, readonly) BOOL infinit_isPhoneNumber;
 
 @end
