@@ -6,6 +6,9 @@
 //  Copyright (c) 2014 Christopher Crone. All rights reserved.
 //
 
+#ifndef INFINIT_USER_H
+# define INFINIT_USER_H
+
 #import <Foundation/Foundation.h>
 #if TARGET_OS_IPHONE
 # import <UIKit/UIImage.h>
@@ -59,3 +62,5 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
 - (void)updateWithUser:(InfinitUser*)user;
 
 @end
+
+#endif
