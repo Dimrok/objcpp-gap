@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSString (email)
+@interface NSString (infinit_email)
 
-@property (nonatomic, readonly) BOOL isEmail;
+@property (nonatomic, readonly) BOOL infinit_isEmail;
 
 @end
