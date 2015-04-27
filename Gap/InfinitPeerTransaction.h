@@ -9,10 +9,9 @@
 #import <Foundation/Foundation.h>
 
 #import "InfinitTransaction.h"
+#import "InfinitUser.h"
 
 #import <surface/gap/enums.hh>
-
-#import "InfinitUser.h"
 
 @interface InfinitPeerTransaction : InfinitTransaction
 
