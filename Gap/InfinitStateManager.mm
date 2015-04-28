@@ -302,14 +302,14 @@ static NSString* _facebook_app_id = nil;
 {
   [self _addOperationCustomResultBlock:^(InfinitStateManager* manager, NSOperation* operation)
   {
-    // XXX TODO
-    gap_Status status = gap_ok;
+    BOOL res = NO;
+    gap_Status status = gap_check_ghost_code(manager.stateWrapper.state, code.UTF8String, res);
     if (operation.isCancelled)
       return;
 
     dispatch_async(dispatch_get_main_queue(), ^
     {
-      completion_block([InfinitStateResult resultWithStatus:status], code, YES);
+      completion_block([InfinitStateResult resultWithStatus:status], code, res);
     });
   }];
 }
@@ -562,10 +562,8 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     for (NSDictionary* contact_ in contacts_)
     {
       AddressBookContact contact;
-      if (contact_[@"phone_numbers"])
-        contact.phone_numbers = [manager _strVectorFromNSArray:contact_[@"phone_numbers"]];
-      if (contact_[@"email_addresses"])
-        contact.email_addresses = [manager _strVectorFromNSArray:contact_[@"email_addresses"]];
+      contact.phone_numbers = [manager _strVectorFromNSArray:contact_[@"phone_numbers"]];
+      contact.email_addresses = [manager _strVectorFromNSArray:contact_[@"email_addresses"]];
       contacts.push_back(contact);
     }
     return gap_upload_address_book(manager.stateWrapper.state, contacts);
