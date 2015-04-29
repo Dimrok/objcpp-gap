@@ -302,7 +302,7 @@ static NSString* _facebook_app_id = nil;
 {
   [self _addOperationCustomResultBlock:^(InfinitStateManager* manager, NSOperation* operation)
   {
-    BOOL res = NO;
+    bool res = NO;
     gap_Status status = gap_check_ghost_code(manager.stateWrapper.state, code.UTF8String, res);
     if (operation.isCancelled)
       return;
