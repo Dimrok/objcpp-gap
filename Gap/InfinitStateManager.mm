@@ -221,7 +221,8 @@ static NSString* _facebook_app_id = nil;
       return;
     dispatch_async(dispatch_get_main_queue(), ^
     {
-      completion_block([InfinitStateResult resultWithStatus:status], email, account_status);
+      if (completion_block)
+        completion_block([InfinitStateResult resultWithStatus:status], email, account_status);
     });
   }];
 }
@@ -309,7 +310,8 @@ static NSString* _facebook_app_id = nil;
 
     dispatch_async(dispatch_get_main_queue(), ^
     {
-      completion_block([InfinitStateResult resultWithStatus:status], code, res);
+      if (completion_block)
+        completion_block([InfinitStateResult resultWithStatus:status], code, res);
     });
   }];
 }
@@ -430,7 +432,8 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 
     dispatch_async(dispatch_get_main_queue(), ^
     {
-      completion_block([InfinitStateResult resultWithStatus:status], registered);
+      if (completion_block)
+        completion_block([InfinitStateResult resultWithStatus:status], registered);
     });
   }];
 }
@@ -1495,7 +1498,8 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     }
     dispatch_async(dispatch_get_main_queue(), ^
     {
-      completion_block(operation_result);
+      if (completion_block)
+        completion_block(operation_result);
     });
   }];
   [_queue addOperation:block_operation];
