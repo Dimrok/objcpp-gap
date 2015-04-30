@@ -113,6 +113,7 @@
 		83C06D6E1AEE324100761237 /* NSString+UUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C06D6A1AEE324000761237 /* NSString+UUID.m */; };
 		83E0AC221A6A61CD003F60C6 /* InfinitTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 83E0AC201A6A61CD003F60C6 /* InfinitTransaction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83E0AC231A6A61CD003F60C6 /* InfinitTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 83E0AC211A6A61CD003F60C6 /* InfinitTransaction.m */; };
+		83EAE9791AF15624009D2886 /* libmetaclient.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 83EAE9781AF15624009D2886 /* libmetaclient.dylib */; };
 		83EBB08C1A93B6E400144BC6 /* InfinitConnectionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = 83EBB08A1A93B6E400144BC6 /* InfinitConnectionStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83EBB08D1A93B6E400144BC6 /* InfinitConnectionStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 83EBB08B1A93B6E400144BC6 /* InfinitConnectionStatus.m */; };
 		83EE4CBE1AC58A40006292C8 /* InfinitStoredMutableDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 83EE4CBC1AC58A40006292C8 /* InfinitStoredMutableDictionary.h */; };
@@ -310,6 +311,7 @@
 		83C06D6A1AEE324000761237 /* NSString+UUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UUID.m"; sourceTree = "<group>"; };
 		83E0AC201A6A61CD003F60C6 /* InfinitTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitTransaction.h; sourceTree = "<group>"; };
 		83E0AC211A6A61CD003F60C6 /* InfinitTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitTransaction.m; sourceTree = "<group>"; };
+		83EAE9781AF15624009D2886 /* libmetaclient.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmetaclient.dylib; path = ../../../_build/macosx64/lib/libmetaclient.dylib; sourceTree = "<group>"; };
 		83EBB08A1A93B6E400144BC6 /* InfinitConnectionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitConnectionStatus.h; sourceTree = "<group>"; };
 		83EBB08B1A93B6E400144BC6 /* InfinitConnectionStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitConnectionStatus.m; sourceTree = "<group>"; };
 		83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CrashReporter.xcodeproj; path = ../plcrashreporter/CrashReporter.xcodeproj; sourceTree = "<group>"; };
@@ -346,6 +348,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83EAE9791AF15624009D2886 /* libmetaclient.dylib in Frameworks */,
 				8372B32B1AB337CE00F1B8B8 /* libCrashReporter-MacOSX-Static.a in Frameworks */,
 				8372B2DF1AB3349500F1B8B8 /* libc++.1.dylib in Frameworks */,
 				8372B2E01AB3349500F1B8B8 /* libc++abi.dylib in Frameworks */,
@@ -518,6 +521,7 @@
 				8372B2BF1AB3349500F1B8B8 /* libc++abi.dylib */,
 				8372B2C41AB3349500F1B8B8 /* libelle.dylib */,
 				8372B2C61AB3349500F1B8B8 /* libgap.dylib */,
+				83EAE9781AF15624009D2886 /* libmetaclient.dylib */,
 				83B4BBC61AB765E9004B8E76 /* libtransaction.dylib */,
 			);
 			name = "Infinit Libraries";
