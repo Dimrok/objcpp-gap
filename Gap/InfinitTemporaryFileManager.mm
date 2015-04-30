@@ -110,7 +110,10 @@ static dispatch_once_t _library_token = 0;
       [old_install_files addObject:managed_files.uuid];
   }
   for (NSString* uuid in old_install_files)
+  {
+    ELLE_WARN("%s: removing old files: %s", self.description.UTF8String, uuid.UTF8String);
     [self deleteManagedFiles:uuid force:YES];
+  }
   dispatch_async(dispatch_get_main_queue(), ^
   {
     [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_TEMPORARY_FILE_MANAGER_READY
@@ -130,6 +133,7 @@ static dispatch_once_t _library_token = 0;
   }
   for (NSString* uuid in orphans)
   {
+    ELLE_WARN("%s: deleting orphan file: %s", self.description.UTF8String, uuid.UTF8String);
     [self deleteManagedFiles:uuid force:YES];
   }
 }
@@ -155,6 +159,8 @@ static dispatch_once_t _library_token = 0;
     if (![key isKindOfClass:NSString.class] ||
         !([l_manager transactionWithMetaId:key] || [p_manager transactionWithMetaId:key]))
     {
+      ELLE_WARN("%s: removing files for transaction without meta ID: %s",
+                self.description.UTF8String, managed_files.uuid.UTF8String);
       [remove_keys addObjectsFromArray:[self.transaction_map allKeysForObject:managed_files]];
       [self deleteManagedFiles:managed_files.uuid force:YES];
     }
@@ -167,6 +173,8 @@ static dispatch_once_t _library_token = 0;
       {
         [remove_keys addObjectsFromArray:[self.transaction_map allKeysForObject:managed_files]];
         [remove_keys addObject:key];
+        ELLE_WARN("%s: removing files because of base path change: %s",
+                  self.description.UTF8String, managed_files.uuid);
         [self deleteManagedFiles:managed_files.uuid force:YES];
       }
     }
@@ -190,6 +198,7 @@ static dispatch_once_t _library_token = 0;
         ![self.files_map objectForKey:folder])
     {
       NSString* path = [self.managed_root stringByAppendingPathComponent:folder];
+      ELLE_WARN("%s: removing orphan: %s", self.description.UTF8String, folder.UTF8String);
       [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
       if (error)
       {
@@ -256,8 +265,8 @@ static dispatch_once_t _library_token = 0;
   if (managed_files.total_size.unsignedIntegerValue < self.max_mirror_size ||
       ![self _transactionFilesNeededForStatus:transaction.status])
   {
-    ELLE_DEBUG("%s: no longer need files for transaction: %s",
-               self.description.UTF8String, transaction.meta_id.UTF8String);
+    ELLE_LOG("%s: no longer need files for transaction: %s",
+             self.description.UTF8String, transaction.meta_id.UTF8String);
     [self.transaction_map removeObjectForKey:transaction.meta_id];
     if ([self.transaction_map allKeysForObject:managed_files].count == 0)
       [self deleteManagedFiles:managed_files.uuid];
