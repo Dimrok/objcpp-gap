@@ -702,7 +702,7 @@ static dispatch_once_t _library_token = 0;
   return [NSNumber numberWithUnsignedInteger:res];
 }
 
-- (void)_foundAsset:(ALAsset*)asset
+- (BOOL)_foundAsset:(ALAsset*)asset
             withURL:(NSURL*)url
     forManagedFiles:(InfinitManagedFiles*)managed_files
           withError:(NSError**)error
@@ -728,15 +728,17 @@ static dispatch_once_t _library_token = 0;
     ELLE_ERR("%s: unable to write data to managed files (%s): %s",
              self.description.UTF8String, managed_files.uuid.UTF8String,
              (*error).description.UTF8String);
-    return;
+    return NO;
   }
   [managed_files.asset_map setObject:path forKey:url.path];
+  return YES;
 }
 
-- (void)_addPHAsset:(PHAsset*)asset
+- (BOOL)_addPHAsset:(PHAsset*)asset
      toManagedFiles:(InfinitManagedFiles*)managed_files
           withError:(NSError**)error
 {
+  __block BOOL res = YES;
   PHImageRequestOptions* options = [[PHImageRequestOptions alloc] init];
   options.networkAccessAllowed = YES;
   options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
@@ -835,10 +837,12 @@ static dispatch_once_t _library_token = 0;
       ELLE_ERR("%s: unable to write data to managed files (%s): %s",
                self.description.UTF8String, managed_files.uuid.UTF8String,
                (*error).description.UTF8String);
-      return;
+      res = NO;
     }
-    [managed_files.asset_map setObject:path forKey:url.path];
+    if (path.length)
+      [managed_files.asset_map setObject:path forKey:url.path];
   }];
+  return res;
 }
 
 @end
