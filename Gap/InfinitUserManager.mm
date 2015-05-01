@@ -81,7 +81,7 @@ static dispatch_once_t _instance_token = 0;
 {
   @synchronized(self.user_map)
   {
-    _user_map = [[InfinitThreadSafeDictionary alloc] initWithName:@"UserModel"];
+    _user_map = [InfinitThreadSafeDictionary initWithName:@"UserModel"];
     NSArray* swaggers = [[InfinitStateManager sharedInstance] swaggers];
     for (InfinitUser* swagger in swaggers)
     {
