@@ -105,7 +105,7 @@ static dispatch_once_t _instance_token = 0;
 
 - (void)_fillTransactionMap
 {
-  _transaction_map = [[InfinitThreadSafeDictionary alloc] initWithName:@"PeerTransactionModel"];
+  _transaction_map = [InfinitThreadSafeDictionary initWithName:@"PeerTransactionModel"];
   NSArray* transactions = [[InfinitStateManager sharedInstance] peerTransactions];
   for (InfinitPeerTransaction* transaction in transactions)
   {
