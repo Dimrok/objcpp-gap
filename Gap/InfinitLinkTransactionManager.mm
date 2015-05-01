@@ -72,7 +72,7 @@ static dispatch_once_t _instance_token = 0;
 
 - (void)_fillTransactionMap
 {
-  _transaction_map = [[InfinitThreadSafeDictionary alloc] initWithName:@"LinkTransactionModel"];
+  _transaction_map = [InfinitThreadSafeDictionary initWithName:@"LinkTransactionModel"];
   NSArray* transactions = [[InfinitStateManager sharedInstance] linkTransactions];
   for (InfinitLinkTransaction* transaction in transactions)
   {
