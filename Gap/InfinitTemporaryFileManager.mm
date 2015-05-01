@@ -457,6 +457,16 @@ static dispatch_once_t _library_token = 0;
       toManagedFiles:(NSString*)uuid
                error:(NSError**)error
 {
+  return [self addData:data withFilename:filename toManagedFiles:uuid error:error];
+}
+
+- (NSString*)addData:(NSData*)data
+        withFilename:(NSString*)filename
+        creationDate:(NSDate*)creation_date
+    modificationDate:(NSDate*)modification_date
+      toManagedFiles:(NSString*)uuid
+               error:(NSError**)error
+{
   if (data == nil)
   {
     NSString* filename_ = filename;
@@ -503,6 +513,15 @@ static dispatch_once_t _library_token = 0;
   }
   [managed_files.managed_paths addObject:path];
   managed_files.total_size = [self _folderSize:managed_files.root_dir];
+
+  NSMutableDictionary* attributes = [NSMutableDictionary dictionary];
+  if (creation_date)
+    [attributes setObject:creation_date forKey:NSFileCreationDate];
+  if (modification_date)
+    [attributes setObject:modification_date forKey:NSFileModificationDate];
+  if (attributes)
+    [[NSFileManager defaultManager] setAttributes:attributes ofItemAtPath:path error:nil];
+
   return path;
 }
 
@@ -696,9 +715,12 @@ static dispatch_once_t _library_token = 0;
                                                         error:nil];
   NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
   NSString* filename = asset.defaultRepresentation.filename;
+  NSDate* creation_date = [asset valueForProperty:ALAssetPropertyDate];
   NSString* path =
     [[InfinitTemporaryFileManager sharedInstance] addData:data
                                              withFilename:filename
+                                             creationDate:creation_date
+                                         modificationDate:nil
                                            toManagedFiles:managed_files.uuid
                                                     error:error];
   if (*error || !path.length)
@@ -803,6 +825,8 @@ static dispatch_once_t _library_token = 0;
     {
       path = [[InfinitTemporaryFileManager sharedInstance] addData:imageData
                                                       withFilename:filename
+                                                      creationDate:asset.creationDate
+                                                  modificationDate:asset.modificationDate
                                                     toManagedFiles:managed_files.uuid
                                                              error:error];
     }
