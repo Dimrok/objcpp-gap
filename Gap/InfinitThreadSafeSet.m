@@ -29,7 +29,7 @@
     _queue_name = [NSString stringWithFormat:@"io.Infinit.ThreadSafeSet-%@", name];
     _queue = dispatch_queue_create(self.queue_name.UTF8String, DISPATCH_QUEUE_SERIAL);
     _set = [NSMutableSet set];
-    _finalize = nil;
+    _finalize = NO;
   }
   return self;
 }
