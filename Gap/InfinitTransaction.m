@@ -81,15 +81,11 @@ sender_device_id:(NSString*)sender_device_id
 
 - (float)progress
 {
-  float progress = 1.0f;
-  if (!self.done)
-  {
-    progress = [[InfinitStateManager sharedInstance] transactionProgressForId:self.id_];
-    if (self.status == gap_transaction_transferring)
-    {
-      [self updateTimeRemainingWithCurrentProgress:progress];
-    }
-  }
+  if (self.done)
+    return 1.0f;
+  float progress = [[InfinitStateManager sharedInstance] transactionProgressForId:self.id_];
+  if (self.status == gap_transaction_transferring)
+    [self updateTimeRemainingWithCurrentProgress:progress];
   return progress;
 }
 
