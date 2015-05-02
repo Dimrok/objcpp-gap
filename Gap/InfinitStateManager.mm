@@ -573,6 +573,29 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   } completionBlock:completion_block];
 }
 
+#pragma mark - Device
+
+- (void)updateDeviceName:(NSString*)name_
+                   model:(NSString*)model_
+                      os:(NSString*)os_
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    if (!manager.logged_in)
+      return gap_not_logged_in;
+    boost::optional<std::string> name;
+    if (name_.length)
+      name = std::string(name_.UTF8String);
+    boost::optional<std::string> model;
+    if (model_.length)
+      model = std::string(model_.UTF8String);
+    boost::optional<std::string> os;
+    if (os_.length)
+      os = std::string(os_.UTF8String);
+    return gap_update_device(manager.stateWrapper.state, name, model, os);
+  }];
+}
+
 #pragma mark - Polling
 
 - (BOOL)_polling

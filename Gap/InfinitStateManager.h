@@ -232,6 +232,20 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
 - (void)uploadContacts:(NSArray*)contacts
        completionBlock:(InfinitStateCompletionBlock)completion_block;
 
+#pragma mark - Device
+/** Update current device name, model and OS.
+ All variables are optional.
+ @param name
+  User friendly name of the device.
+ @param model
+  Model of device (e.g.: iPad4,1)
+ @param os
+  OS of device.
+ */
+- (void)updateDeviceName:(NSString*)name
+                   model:(NSString*)model
+                      os:(NSString*)os;
+
 #pragma mark - User
 /// Users should be accessed using the User Manager.
 - (NSArray*)swaggers;
