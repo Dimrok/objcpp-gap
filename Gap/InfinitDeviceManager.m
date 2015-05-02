@@ -10,11 +10,15 @@
 
 #import "InfinitConnectionManager.h"
 #import "InfinitDevice.h"
+#import "InfinitDeviceInformation.h"
 #import "InfinitStateManager.h"
+#import "InfinitThreadSafeDictionary.h"
+
+#import "NSString+UUID.h"
 
 @interface InfinitDeviceManager ()
 
-@property (atomic, readonly) NSMutableDictionary* device_map;
+@property (atomic, readonly) InfinitThreadSafeDictionary* device_map;
 
 @end
 
@@ -38,7 +42,9 @@ static dispatch_once_t _instance_token = 0;
                                              selector:@selector(clearModel)
                                                  name:INFINIT_CLEAR_MODEL_NOTIFICATION
                                                object:nil];
+    _device_map = [InfinitThreadSafeDictionary initWithName:@"deviceModel"];
     [self updateDevices];
+    [self updateDeviceIfNeeded];
   }
   return self;
 }
@@ -55,6 +61,21 @@ static dispatch_once_t _instance_token = 0;
     _instance = [[InfinitDeviceManager alloc] init];
   });
   return _instance;
+}
+
+- (void)updateDeviceIfNeeded
+{
+  NSString* name = nil;
+  if (self.this_device.meta_name.infinit_isUUID)
+    name = [InfinitDeviceInformation deviceName];
+  NSString* model = nil;
+  if (!self.this_device.model.length)
+    model = [InfinitDeviceInformation deviceModel];
+  if (name.length || model.length)
+  {
+    [[InfinitStateManager sharedInstance] updateDeviceName:name model:model os:nil];
+    [self updateDevices];
+  }
 }
 
 #pragma mark - General
@@ -87,11 +108,23 @@ static dispatch_once_t _instance_token = 0;
   return res;
 }
 
+- (InfinitDevice*)this_device
+{
+  NSString* device_id = [InfinitStateManager sharedInstance].self_device_id;
+  InfinitDevice* res = self.device_map[device_id];
+  if (res == nil)
+  {
+    [self updateDevices];
+    res = self.device_map[device_id];
+  }
+  return res;
+}
+
 #pragma mark - Connection Status
 
 - (void)updateDevices
 {
-  _device_map = [NSMutableDictionary dictionary];
+  [self.device_map removeAllObjects];
   for (InfinitDevice* device in [InfinitStateManager sharedInstance].devices)
   {
     if (device.id_)

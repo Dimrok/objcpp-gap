@@ -14,6 +14,7 @@
 
 @property (nonatomic, readonly) NSArray* all_devices;
 @property (nonatomic, readonly) NSArray* other_devices;
+@property (nonatomic, readonly) InfinitDevice* this_device;
 
 + (instancetype)sharedInstance;
 
