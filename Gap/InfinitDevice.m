@@ -27,6 +27,7 @@
     _model = model;
     _os = os;
     _type = [self _typeFromOSString:os model:model];
+    _meta_name = name;
     if (name.infinit_isUUID)
       _name = [self _nameFromType:self.type];
     else
