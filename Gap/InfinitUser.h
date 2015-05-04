@@ -60,6 +60,10 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
      phoneNumber:(NSString*)phone_number;
 
 - (void)updateWithUser:(InfinitUser*)user;
+#if TARGET_OS_IPHONE
+- (void)updateGhostWithFullname:(NSString*)fullname
+                         avatar:(UIImage*)avatar;
+#endif
 
 @end
 

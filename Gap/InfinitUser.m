@@ -90,7 +90,8 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
 - (void)updateWithUser:(InfinitUser*)user
 {
   _status = user.status;
-  _fullname = user.fullname;
+  if (!user.ghost)
+    _fullname = user.fullname;
   _handle = user.handle;
   _swagger = user.swagger;
   _deleted = user.deleted;
@@ -102,6 +103,17 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
   if (user.phone_number.length > 0)
     _phone_number = user.phone_number;
 }
+
+#if TARGET_OS_IPHONE
+- (void)updateGhostWithFullname:(NSString*)fullname
+                         avatar:(UIImage*)avatar
+{
+  if (!self.ghost)
+    return;
+  _fullname = [fullname copy];
+  [[InfinitAvatarManager sharedInstance] setAvatar:avatar forUser:self];
+}
+#endif
 
 #pragma mark - NSObject
 
