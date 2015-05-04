@@ -12,6 +12,7 @@
 #import "InfinitDirectoryManager.h"
 #import "InfinitStateManager.h"
 #import "InfinitStateResult.h"
+#import "InfinitThreadSafeDictionary.h"
 #import "InfinitUserManager.h"
 
 #import "NSString+email.h"
@@ -39,15 +40,13 @@ static NSImage* _phone_avatar = nil;
 
 @interface InfinitAvatarManager ()
 
-@property (readonly) NSString* avatar_dir;
+@property (atomic, readonly) NSString* avatar_dir;
+@property (nonatomic, readonly) InfinitThreadSafeDictionary* avatar_map;
+@property (atomic, readonly) NSMutableSet* requested_avatars;
 
 @end
 
 @implementation InfinitAvatarManager
-{
-  NSMutableDictionary* _avatar_map;
-  NSMutableSet* _requested_avatars;
-}
 
 #pragma mark - Init
 
@@ -59,7 +58,7 @@ static NSImage* _phone_avatar = nil;
                                              selector:@selector(clearModel)
                                                  name:INFINIT_CLEAR_MODEL_NOTIFICATION
                                                object:nil];
-    _avatar_map = [NSMutableDictionary dictionary];
+    _avatar_map = [InfinitThreadSafeDictionary initWithName:@"AvatarModel"];
     _requested_avatars = [NSMutableSet set];
     if (_phone_avatar == nil)
     {
@@ -167,7 +166,7 @@ avatarToDiskCache:(NSImage*)avatar
 #endif
       if (avatar != nil && user_id != nil)
       {
-        [_avatar_map setObject:avatar forKey:user_id];
+        [self.avatar_map setObject:avatar forKey:user_id];
         return avatar;
       }
     }
@@ -201,7 +200,7 @@ avatarToDiskCache:(NSImage*)avatar
                                       performSelector:@selector(setAvatarCallback:)
                                              onObject:self];
   InfinitUser* me = [InfinitUserManager sharedInstance].me;
-  [_avatar_map setObject:avatar forKey:me.meta_id];
+  [self.avatar_map setObject:avatar forKey:me.meta_id];
 }
 
 - (void)setAvatarCallback:(InfinitStateResult*)result
@@ -226,13 +225,13 @@ avatarToDiskCache:(NSImage*)avatar
   if (user.id_.unsignedIntegerValue == 0)
     return nil;
 #if TARGET_OS_IPHONE
-  UIImage* avatar = [_avatar_map objectForKey:user.meta_id];
+  UIImage* avatar = [self.avatar_map objectForKey:user.meta_id];
 #else
-  NSImage* avatar = [_avatar_map objectForKey:user.meta_id];
+  NSImage* avatar = [self.avatar_map objectForKey:user.meta_id];
 #endif
-  if (![_requested_avatars containsObject:user.meta_id])
+  if (avatar == nil && ![self.requested_avatars containsObject:user.meta_id])
   {
-    [_requested_avatars addObject:user.meta_id];
+    [self.requested_avatars addObject:user.meta_id];
     avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:user.id_];
   }
   if (avatar == nil)
@@ -241,7 +240,7 @@ avatarToDiskCache:(NSImage*)avatar
     if (avatar == nil)
     {
       avatar = [self generateAvatarForUser:user];
-      [_avatar_map setObject:avatar forKey:user.meta_id];
+      [self.avatar_map setObject:avatar forKey:user.meta_id];
     }
   }
   return avatar;
@@ -250,7 +249,16 @@ avatarToDiskCache:(NSImage*)avatar
 - (void)clearAvatarForUser:(InfinitUser*)user
 {
   [self removeDiskCacheForUser:user];
-  [_avatar_map removeObjectForKey:user.meta_id];
+  [self.avatar_map removeObjectForKey:user.meta_id];
+}
+
+- (void)setAvatar:(INFINIT_IMAGE*)avatar
+          forUser:(InfinitUser*)user
+{
+  [self.avatar_map setObject:avatar forKey:user.meta_id];
+  [self writeUser:user avatarToDiskCache:avatar];
+  [self.requested_avatars removeObject:user.meta_id];
+  [self sendAvatarNotificationForUser:user];
 }
 
 #pragma mark - Generate Avatar
@@ -330,20 +338,15 @@ avatarToDiskCache:(NSImage*)avatar
 
 - (void)gotAvatarForUserWithId:(NSNumber*)id_
 {
-  @synchronized(_avatar_map)
-  {
 #if TARGET_OS_IPHONE
-    UIImage* avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:id_];
+  UIImage* avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:id_];
 #else
-    NSImage* avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:id_];
+  NSImage* avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:id_];
 #endif
-    if (avatar != nil)
-    {
-      InfinitUser* user = [[InfinitUserManager sharedInstance] userWithId:id_];
-      [_avatar_map setObject:avatar forKey:user.meta_id];
-      [self sendAvatarNotificationForUser:user];
-      [self writeUser:user avatarToDiskCache:avatar];
-    }
+  if (avatar != nil)
+  {
+    InfinitUser* user = [[InfinitUserManager sharedInstance] userWithId:id_];
+    [self setAvatar:avatar forUser:user];
   }
 }
 
@@ -362,7 +365,7 @@ avatarToDiskCache:(NSImage*)avatar
 
 - (void)clearCachedAvatars
 {
-  [_avatar_map removeAllObjects];
+  [self.avatar_map removeAllObjects];
 }
 
 @end
