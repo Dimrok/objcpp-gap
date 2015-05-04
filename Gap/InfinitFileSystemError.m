@@ -36,7 +36,7 @@
     case InfinitFileSystemErrorPathDoesntExist:
       return NSLocalizedString(@"Path doesn't exist", nil);
     case InfinitFileSystemErrorNoFreeSpace:
-      return NSLocalizedString(@"Not enough freespace", nil);
+      return NSLocalizedString(@"Not enough free space", nil);
     case InfinitFileSystemErrorUnableToWrite:
       return NSLocalizedString(@"Unable to write", nil);
   }
