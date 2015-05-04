@@ -241,10 +241,13 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
   Model of device (e.g.: iPad4,1)
  @param os
   OS of device.
+ @param completion_block
+  Block to run on completion.
  */
 - (void)updateDeviceName:(NSString*)name
                    model:(NSString*)model
-                      os:(NSString*)os;
+                      os:(NSString*)os
+         completionBlock:(InfinitStateCompletionBlock)completion_block;
 
 #pragma mark - User
 /// Users should be accessed using the User Manager.

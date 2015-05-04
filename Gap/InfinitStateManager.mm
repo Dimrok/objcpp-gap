@@ -578,6 +578,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 - (void)updateDeviceName:(NSString*)name_
                    model:(NSString*)model_
                       os:(NSString*)os_
+         completionBlock:(InfinitStateCompletionBlock)completion_block
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
@@ -593,7 +594,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     if (os_.length)
       os = std::string(os_.UTF8String);
     return gap_update_device(manager.stateWrapper.state, name, model, os);
-  }];
+  } completionBlock:completion_block];
 }
 
 #pragma mark - Polling
