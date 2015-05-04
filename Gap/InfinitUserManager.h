@@ -81,7 +81,7 @@
 
 /** Search in the local user map for users.
  @param text
- Search text.
+  Search text.
  @return Array of users.
  */
 - (NSArray*)searchLocalUsers:(NSString*)text;
