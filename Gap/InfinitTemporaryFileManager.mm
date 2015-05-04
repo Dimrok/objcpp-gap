@@ -38,8 +38,6 @@ static dispatch_once_t _library_token = 0;
 @property (nonatomic, readonly) NSString* files_map_path;
 @property (nonatomic, readonly) NSString* transaction_map_path;
 
-@property (nonatomic, readonly) uint64_t max_mirror_size;
-
 @end
 
 @implementation InfinitTemporaryFileManager
@@ -50,7 +48,6 @@ static dispatch_once_t _library_token = 0;
   if (self = [super init])
   {
     _ready = NO;
-    _max_mirror_size = [InfinitStateManager sharedInstance].max_mirror_size;
     _managed_root = [InfinitDirectoryManager sharedInstance].temporary_files_directory;
     _files_map_path = [self.managed_root stringByAppendingPathComponent:@"files_map"];
     _transaction_map_path = [self.managed_root stringByAppendingPathComponent:@"transaction_map"];
@@ -262,8 +259,7 @@ static dispatch_once_t _library_token = 0;
   if (managed_files == nil)
     return;
 
-  if (managed_files.total_size.unsignedIntegerValue < self.max_mirror_size ||
-      ![self _transactionFilesNeededForStatus:transaction.status])
+  if (![self _transactionFilesNeededForStatus:transaction.status])
   {
     ELLE_LOG("%s: no longer need files for transaction: %s",
              self.description.UTF8String, transaction.meta_id.UTF8String);
