@@ -73,8 +73,14 @@ static dispatch_once_t _instance_token = 0;
     model = [InfinitDeviceInformation deviceModel];
   if (name.length || model.length)
   {
-    [[InfinitStateManager sharedInstance] updateDeviceName:name model:model os:nil];
-    [self updateDevices];
+    [[InfinitStateManager sharedInstance] updateDeviceName:name
+                                                     model:model
+                                                        os:nil 
+                                           completionBlock:^(InfinitStateResult* result)
+    {
+      if (result.success)
+        [[InfinitDeviceManager sharedInstance] updateDevices];
+    }];
   }
 }
 
