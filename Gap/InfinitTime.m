@@ -8,6 +8,8 @@
 
 #import "InfinitTime.h"
 
+#import "InfinitGapLocalizedString.h"
+
 static NSCalendar* _calendar = nil;
 
 static NSDateFormatter* _today_formatter = nil;
@@ -27,12 +29,12 @@ static NSDateFormatter* _other_formatter_long = nil;
   NSString* res;
   if (timestamp < now && timestamp > (now - 3 * 60.0)) // 3 min ago
   {
-    res = NSLocalizedString(@"Now", nil);
+    res = GapLocalizedString(@"Now", nil);
   }
   else if (timestamp < now && timestamp > (now - 60 * 60.0)) // an hour ago
   {
     NSTimeInterval time_ago = floor((now - timestamp) / 60.0);
-    res = [NSString stringWithFormat:@"%.0f %@", time_ago, NSLocalizedString(@"min ago", nil)];
+    res = [NSString stringWithFormat:@"%.0f %@", time_ago, GapLocalizedString(@"min ago", nil)];
   }
   else if ([InfinitTime isToday:transaction_date])
   {
@@ -138,11 +140,11 @@ static NSDateFormatter* _other_formatter_long = nil;
   NSString* res;
 
   if (seconds_left < 10)
-    res = NSLocalizedString(@"less than 10 s", @"less than 10 s");
+    res = GapLocalizedString(@"less than 10 s", @"less than 10 s");
   else if (seconds_left < 60)
-    res = NSLocalizedString(@"less than 1 min", @"less than 1 min");
+    res = GapLocalizedString(@"less than 1 min", @"less than 1 min");
   else if (seconds_left < 90)
-    res = NSLocalizedString(@"about 1 min", @"about 1 min");
+    res = GapLocalizedString(@"about 1 min", @"about 1 min");
   else if (seconds_left < 3600)
     res = [NSString stringWithFormat:@"%.0f min", seconds_left / 60];
   else if (seconds_left < 86400)
@@ -156,7 +158,7 @@ static NSDateFormatter* _other_formatter_long = nil;
   }
   else
   {
-    res = NSLocalizedString(@"more than two days", @"more than two days");
+    res = GapLocalizedString(@"more than two days", @"more than two days");
   }
 
   return res;

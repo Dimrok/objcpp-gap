@@ -8,6 +8,8 @@
 
 #import "InfinitDataSize.h"
 
+#import "InfinitGapLocalizedString.h"
+
 @implementation InfinitDataSize
 
 // Do not confuse MB and MiB. Apple use MB, GB, etc for their file and storage sizes.
@@ -15,7 +17,7 @@
 {
   NSString* res;
   double size = file_size.doubleValue;
-  NSString* bytes = NSLocalizedString(@"B", @"bytes");
+  NSString* bytes = GapLocalizedString(@"B", @"bytes");
   if (size < pow(10.0, 3.0))
     res = [NSString stringWithFormat:@"%.0f %@", size, bytes];
   else if (size < pow(10.0, 6.0))

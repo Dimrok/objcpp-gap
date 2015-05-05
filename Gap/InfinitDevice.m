@@ -8,6 +8,7 @@
 
 #import "InfinitDevice.h"
 
+#import "InfinitGapLocalizedString.h"
 #import "InfinitStateManager.h"
 
 #import "NSString+UUID.h"
@@ -72,24 +73,24 @@
   switch (type)
   {
     case InfinitDeviceTypeAndroid:
-      return NSLocalizedString(@"My Mobile", nil);
+      return GapLocalizedString(@"My Mobile", nil);
     case InfinitDeviceTypeiPad:
-      return NSLocalizedString(@"My iPad", nil);
+      return GapLocalizedString(@"My iPad", nil);
     case  InfinitDeviceTypeiPhone:
-      return NSLocalizedString(@"My iPhone", nil);
+      return GapLocalizedString(@"My iPhone", nil);
     case InfinitDeviceTypeiPod:
-      return NSLocalizedString(@"My iPod", nil);
+      return GapLocalizedString(@"My iPod", nil);
     case InfinitDeviceTypeMacDesktop:
-      return NSLocalizedString(@"My Mac", nil);
+      return GapLocalizedString(@"My Mac", nil);
     case InfinitDeviceTypeMacLaptop:
-      return NSLocalizedString(@"My MacBook", nil);
+      return GapLocalizedString(@"My MacBook", nil);
     case InfinitDeviceTypePCLinux:
     case InfinitDeviceTypePCWindows:
-      return NSLocalizedString(@"My Computer", nil);
+      return GapLocalizedString(@"My Computer", nil);
 
     case InfinitDeviceTypeUnknown:
     default:
-      return NSLocalizedString(@"Unknown", nil);
+      return GapLocalizedString(@"Unknown", nil);
   }
 }
 

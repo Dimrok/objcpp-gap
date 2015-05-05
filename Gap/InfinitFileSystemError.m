@@ -8,6 +8,8 @@
 
 #import "InfinitFileSystemError.h"
 
+#import "InfinitGapLocalizedString.h"
+
 @implementation InfinitFileSystemError
 
 + (instancetype)errorWithCode:(InfinitFileSystemErrorCode)code
@@ -32,13 +34,13 @@
   switch (code)
   {
     case InfinitFileSystemErrorNoDataToWrite:
-      return NSLocalizedString(@"No data to write", nil);
+      return GapLocalizedString(@"No data to write", nil);
     case InfinitFileSystemErrorPathDoesntExist:
-      return NSLocalizedString(@"Path doesn't exist", nil);
+      return GapLocalizedString(@"Path doesn't exist", nil);
     case InfinitFileSystemErrorNoFreeSpace:
-      return NSLocalizedString(@"Not enough free space", nil);
+      return GapLocalizedString(@"Not enough free space", nil);
     case InfinitFileSystemErrorUnableToWrite:
-      return NSLocalizedString(@"Unable to write", nil);
+      return GapLocalizedString(@"Unable to write", nil);
   }
 }
 
