@@ -65,6 +65,8 @@ static NSString* _facebook_app_id = nil;
   BOOL _polling; // Use boolean to guard polling as NSTimer valid is iOS 8.0+.
 }
 
+@synthesize logged_in = _logged_in;
+
 #pragma mark - Start
 
 - (id)init
@@ -258,7 +260,7 @@ static NSString* _facebook_app_id = nil;
                                   device_name);
     if (res == gap_ok)
     {
-      manager.logged_in = YES;
+      manager->_logged_in = YES;
       std::string self_email = gap_self_email(manager.stateWrapper.state);
       if (self_email.length() > 0)
         [manager setCurrent_user:[NSString stringWithUTF8String:self_email.c_str()]];
@@ -364,7 +366,7 @@ static NSString* _facebook_app_id = nil;
                                device_name);
     if (res == gap_ok)
     {
-      manager.logged_in = YES;
+      manager->_logged_in = YES;
       std::string self_email = gap_self_email(manager.stateWrapper.state);
       if (self_email.length() > 0)
         [manager setCurrent_user:[NSString stringWithUTF8String:self_email.c_str()]];
@@ -477,7 +479,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
                                           device_name);
     if (res == gap_ok)
     {
-      manager.logged_in = YES;
+      manager->_logged_in = YES;
       std::string self_email = gap_self_email(manager.stateWrapper.state);
       if (self_email.length() > 0)
         [manager setCurrent_user:[NSString stringWithUTF8String:self_email.c_str()]];
@@ -535,7 +537,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     [manager cancelAllOperationsExcluding:operation];
     [manager _clearSelfAndModel:YES];
     [manager _stopPolling];
-    manager.logged_in = NO;
+    manager->_logged_in = NO;
     gap_Status res = gap_logout(manager.stateWrapper.state);
     return res;
   };
@@ -1580,7 +1582,14 @@ on_connection_callback(bool status, bool still_retrying, std::string const& last
     if (!last_error.empty())
       error = [NSString stringWithUTF8String:last_error.c_str()];
     if (!status && !still_retrying)
-      [InfinitStateManager sharedInstance].logged_in = NO;
+    {
+      [InfinitStateManager sharedInstance]->_logged_in = NO;
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(500 * NSEC_PER_MSEC)),
+                     dispatch_get_main_queue(), ^
+      {
+        [[InfinitStateManager sharedInstance] _clearSelfAndModel:YES];
+      });
+    }
     [[InfinitConnectionManager sharedInstance] setConnectedStatus:status
                                                       stillTrying:still_retrying
                                                         lastError:error];
