@@ -1,0 +1,57 @@
+/* bytes */
+"B" = "o";
+
+/* No comment provided by engineer. */
+"My Computer" = "Mon ordinateur";
+
+/* No comment provided by engineer. */
+"My Mac" = "Mon Mac";
+
+/* No comment provided by engineer. */
+"My MacBook" = "Mon MacBook";
+
+/* No comment provided by engineer. */
+"My Mobile" = "Mon mobile";
+
+/* No comment provided by engineer. */
+"My iPad" = "Mon iPad";
+
+/* No comment provided by engineer. */
+"My iPhone" = "Mon iPhone";
+
+/* No comment provided by engineer. */
+"My iPod" = "Mon iPod";
+
+/* No comment provided by engineer. */
+"No data to write" = "Aucune données reçues";
+
+/* No comment provided by engineer. */
+"Not enough free space" = "Pas assez d'espace libre !";
+
+/* No comment provided by engineer. */
+"Now" = "Maintenant";
+
+/* No comment provided by engineer. */
+"Path doesn't exist" = "Le chemin n'existe pas";
+
+/* No comment provided by engineer. */
+"Unable to write" = "Impossible d'écrire";
+
+/* No comment provided by engineer. */
+"Unknown" = "Inconnu";
+
+/* about 1 min */
+"about 1 min" = "environ 1 minute";
+
+/* less than 1 min */
+"less than 1 min" = "moins de 1 minute";
+
+/* less than 10 s */
+"less than 10 s" = "moins de 10 sec";
+
+/* No comment provided by engineer. */
+"min ago" = "minutes";
+
+/* more than two days */
+"more than two days" = "il y a plus de 2 jours";
+

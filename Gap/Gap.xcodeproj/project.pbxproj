@@ -17,7 +17,14 @@
 		830AD1E41A6A943D00E2B058 /* InfinitDataSize.m in Sources */ = {isa = PBXBuildFile; fileRef = 830AD1E21A6A943D00E2B058 /* InfinitDataSize.m */; };
 		83157EEF1A73D84800F8E87F /* InfinitDirectoryManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83157EED1A73D84800F8E87F /* InfinitDirectoryManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83157EF01A73D84800F8E87F /* InfinitDirectoryManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83157EEE1A73D84800F8E87F /* InfinitDirectoryManager.mm */; };
-		832B00771AF8D359006E5E75 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 832B00791AF8D359006E5E75 /* Localizable.strings */; };
+		832C12FE1AF915B40014895D /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8372B2BE1AB3349500F1B8B8 /* libc++.1.dylib */; };
+		832C12FF1AF915B40014895D /* libc++abi.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8372B2BF1AB3349500F1B8B8 /* libc++abi.dylib */; };
+		832C13001AF915B40014895D /* libelle.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8372B2C41AB3349500F1B8B8 /* libelle.dylib */; };
+		832C13011AF915B40014895D /* libgap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8372B2C61AB3349500F1B8B8 /* libgap.dylib */; };
+		832C13021AF915B40014895D /* libmetaclient.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 83EAE9781AF15624009D2886 /* libmetaclient.dylib */; };
+		832C13031AF915B40014895D /* libtransaction.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 83B4BBC61AB765E9004B8E76 /* libtransaction.dylib */; };
+		832C13061AF917CC0014895D /* InfinitGapLocalizedString.h in Headers */ = {isa = PBXBuildFile; fileRef = 832C13051AF917CC0014895D /* InfinitGapLocalizedString.h */; };
+		832C13071AF917CC0014895D /* InfinitGapLocalizedString.h in Headers */ = {isa = PBXBuildFile; fileRef = 832C13051AF917CC0014895D /* InfinitGapLocalizedString.h */; };
 		83376F191AEFC2C80001A61E /* InfinitKeychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 836405ED1AB88DE9005CC50C /* InfinitKeychain.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83376F1A1AEFC2DD0001A61E /* InfinitKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 836405EE1AB88DE9005CC50C /* InfinitKeychain.m */; };
 		83568D9F1A136DEE00766DA3 /* InfinitStateWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568D9E1A136DEE00766DA3 /* InfinitStateWrapper.mm */; };
@@ -145,6 +152,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		830D1A111AF93BAA007E3B9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 05CD31620EE93905000FDE88;
+			remoteInfo = "CrashReporter-iOS-Simulator";
+		};
 		8372B3291AB3375D00F1B8B8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
@@ -258,6 +272,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8301A6F41AF91EA100E9FABF /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
 		830778E11AD2E7920047F8E6 /* InfinitFileSystemError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitFileSystemError.h; sourceTree = "<group>"; };
 		830778E21AD2E7920047F8E6 /* InfinitFileSystemError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitFileSystemError.m; sourceTree = "<group>"; };
 		830AD1DD1A6A8D2400E2B058 /* InfinitTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitTime.h; sourceTree = "<group>"; };
@@ -266,7 +281,15 @@
 		830AD1E21A6A943D00E2B058 /* InfinitDataSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitDataSize.m; sourceTree = "<group>"; };
 		83157EED1A73D84800F8E87F /* InfinitDirectoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitDirectoryManager.h; sourceTree = "<group>"; };
 		83157EEE1A73D84800F8E87F /* InfinitDirectoryManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitDirectoryManager.mm; sourceTree = "<group>"; };
-		832B00781AF8D359006E5E75 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		832C13041AF916280014895D /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
+		832C13051AF917CC0014895D /* InfinitGapLocalizedString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitGapLocalizedString.h; sourceTree = "<group>"; };
+		8336B2281AF9350200472470 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
+		8336B2381AF9380300472470 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
+		8336B2391AF9380F00472470 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
+		8336B23A1AF9381700472470 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
+		8336B23B1AF9381F00472470 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Gap_Localizable.strings"; sourceTree = "<group>"; };
+		8336B23C1AF9382500472470 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
+		8336B23D1AF9382C00472470 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
 		83568D791A136D7700766DA3 /* libGap-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libGap-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		83568D9D1A136DEE00766DA3 /* InfinitStateWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitStateWrapper.h; sourceTree = "<group>"; };
 		83568D9E1A136DEE00766DA3 /* InfinitStateWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitStateWrapper.mm; sourceTree = "<group>"; };
@@ -346,7 +369,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				832C13031AF915B40014895D /* libtransaction.dylib in Frameworks */,
+				832C13001AF915B40014895D /* libelle.dylib in Frameworks */,
+				832C13011AF915B40014895D /* libgap.dylib in Frameworks */,
+				832C13021AF915B40014895D /* libmetaclient.dylib in Frameworks */,
 				836D39851A690DFF00892206 /* libCrashReporter-iphoneos.a in Frameworks */,
+				832C12FE1AF915B40014895D /* libc++.1.dylib in Frameworks */,
+				832C12FF1AF915B40014895D /* libc++abi.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,7 +408,7 @@
 		83568D6B1A136D5D00766DA3 = {
 			isa = PBXGroup;
 			children = (
-				832B00791AF8D359006E5E75 /* Localizable.strings */,
+				832C12FC1AF915A00014895D /* Gap_Localizable.strings */,
 				8372B1731AB32C7A00F1B8B8 /* Infinit Libraries */,
 				83FE9C8E1A16367A00FC1CFD /* Avatars */,
 				836F5C7C1A165AD2007C9C4E /* Connection */,
@@ -464,6 +493,7 @@
 				830AD1E21A6A943D00E2B058 /* InfinitDataSize.m */,
 				839716BC1ACC0AAA00357702 /* InfinitDeviceInformation.h */,
 				839716BD1ACC0AAA00357702 /* InfinitDeviceInformation.m */,
+				832C13051AF917CC0014895D /* InfinitGapLocalizedString.h */,
 				836405ED1AB88DE9005CC50C /* InfinitKeychain.h */,
 				836405EE1AB88DE9005CC50C /* InfinitKeychain.m */,
 				83EE4CBC1AC58A40006292C8 /* InfinitStoredMutableDictionary.h */,
@@ -669,6 +699,7 @@
 				836D394F1A67F19200892206 /* NSString+email.h in Headers */,
 				83376F191AEFC2C80001A61E /* InfinitKeychain.h in Headers */,
 				83F9628D1AAB10A9003F2DE7 /* NSString+PhoneNumber.h in Headers */,
+				832C13061AF917CC0014895D /* InfinitGapLocalizedString.h in Headers */,
 				8396106C1A2479A40044B874 /* InfinitTemporaryFileManager.h in Headers */,
 				8372B1641AB3240D00F1B8B8 /* InfinitColor.h in Headers */,
 				83A7599C1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h in Headers */,
@@ -700,6 +731,7 @@
 				8372B3121AB3354D00F1B8B8 /* InfinitDeviceManager.h in Headers */,
 				8372B3131AB3354D00F1B8B8 /* InfinitDirectoryManager.h in Headers */,
 				8372B3151AB3354D00F1B8B8 /* InfinitFeaturesManager.h in Headers */,
+				832C13071AF917CC0014895D /* InfinitGapLocalizedString.h in Headers */,
 				8372B3161AB3354D00F1B8B8 /* InfinitStateManager.h in Headers */,
 				8372B3171AB3354D00F1B8B8 /* InfinitStateResult.h in Headers */,
 				8372B31A1AB3354D00F1B8B8 /* InfinitLinkTransaction.h in Headers */,
@@ -739,6 +771,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				830D1A121AF93BAA007E3B9C /* PBXTargetDependency */,
 			);
 			name = "Gap-iOS";
 			productName = "Gap-iOS";
@@ -786,6 +819,15 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
+				fr,
+				de,
+				es,
+				tr,
+				ru,
+				"pt-BR",
+				nl,
+				it,
 			);
 			mainGroup = 83568D6B1A136D5D00766DA3;
 			productRefGroup = 83568D7A1A136D7700766DA3 /* Products */;
@@ -903,7 +945,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				832B00771AF8D359006E5E75 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -997,6 +1038,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		830D1A121AF93BAA007E3B9C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "CrashReporter-iOS-Simulator";
+			targetProxy = 830D1A111AF93BAA007E3B9C /* PBXContainerItemProxy */;
+		};
 		8372B32A1AB3375D00F1B8B8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "CrashReporter-MacOSX-Static";
@@ -1005,12 +1051,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		832B00791AF8D359006E5E75 /* Localizable.strings */ = {
+		832C12FC1AF915A00014895D /* Gap_Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				832B00781AF8D359006E5E75 /* fr */,
+				832C13041AF916280014895D /* Base */,
+				8301A6F41AF91EA100E9FABF /* fr */,
+				8336B2281AF9350200472470 /* de */,
+				8336B2381AF9380300472470 /* es */,
+				8336B2391AF9380F00472470 /* tr */,
+				8336B23A1AF9381700472470 /* ru */,
+				8336B23B1AF9381F00472470 /* pt-BR */,
+				8336B23C1AF9382500472470 /* nl */,
+				8336B23D1AF9382C00472470 /* it */,
 			);
-			name = Localizable.strings;
+			name = Gap_Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -1097,6 +1151,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"/Users/chris/sandbox/ios-infinit/surface/ios/plcrashreporter/build/Debug-iphoneos",
+					/Users/chris/sandbox/infinit/_build/macosx64/lib,
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1146,6 +1201,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"/Users/chris/sandbox/ios-infinit/surface/ios/plcrashreporter/build/Debug-iphoneos",
+					/Users/chris/sandbox/infinit/_build/macosx64/lib,
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;

@@ -1,0 +1,64 @@
+/*
+ * Loco ios export: iOS Localizable.strings
+ * Project: es_ES.xliff conversion
+ * Release: Working copy
+ * Locale: es_ES, Spanish
+ * Exported at: Tue, 05 May 2015 18:29:32 +0100
+ */
+
+/* bytes */
+"B" = "B";
+
+/* No comment provided by engineer. */
+"My Computer" = "Mi ordenador";
+
+/* No comment provided by engineer. */
+"My Mac" = "Mi Mac";
+
+/* No comment provided by engineer. */
+"My MacBook" = "Mi MacBook";
+
+/* No comment provided by engineer. */
+"My Mobile" = "Mi móvil";
+
+/* No comment provided by engineer. */
+"My iPad" = "Mi iPad";
+
+/* No comment provided by engineer. */
+"My iPhone" = "Mi iPhone";
+
+/* No comment provided by engineer. */
+"My iPod" = "Mi iPod";
+
+/* No comment provided by engineer. */
+"No data to write" = "Sin datos para escribir";
+
+/* No comment provided by engineer. */
+"Not enough free space" = "No hay suficiente espacio libre";
+
+/* No comment provided by engineer. */
+"Now" = "Ahora";
+
+/* No comment provided by engineer. */
+"Path doesnt exist" = "La ruta no existe";
+
+/* No comment provided by engineer. */
+"Unable to write" = "No se puede escribir";
+
+/* No comment provided by engineer. */
+"Unknown" = "Desconocido";
+
+/* about 1 min */
+"about 1 min" = "aproximadamente 1 min";
+
+/* less than 1 min */
+"less than 1 min" = "menos de 1 min";
+
+/* less than 10 s */
+"less than 10 s" = "menos de 10 s";
+
+/* No comment provided by engineer. */
+"min ago" = "un min atrás";
+
+/* more than two days */
+"more than two days" = "más de dos días";

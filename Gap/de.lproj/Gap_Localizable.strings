@@ -2,56 +2,55 @@
 "B" = "B";
 
 /* No comment provided by engineer. */
-"My Computer" = "Mon ordinateur";
+"My Computer" = "Mein Computer";
 
 /* No comment provided by engineer. */
-"My Mac" = "Mon Mac";
+"My Mac" = "Mein Mac";
 
 /* No comment provided by engineer. */
-"My MacBook" = "Mon MacBook";
+"My Macbook" = "Mein MacBook";
 
 /* No comment provided by engineer. */
-"My Mobile" = "Mon mobile";
+"My Mobile" = "Mein Handy";
 
 /* No comment provided by engineer. */
-"My iPad" = "Mon iPad";
+"My iPad" = "Mein iPad";
 
 /* No comment provided by engineer. */
-"My iPhone" = "Mon iPhone";
+"My iPhone" = "Mein iPhone";
 
 /* No comment provided by engineer. */
-"My iPod" = "Mon iPod";
+"My iPod" = "Mein iPod";
 
 /* No comment provided by engineer. */
-"No data to write" = "Aucune données reçues";
+"No data to write" = "Datei scheint leer zu sein";
 
 /* No comment provided by engineer. */
-"Not enough free space" = "Pas assez d'espace libre !";
+"Not enough free space" = "Nicht genügend Speicherplatz";
 
 /* No comment provided by engineer. */
-"Now" = "Maintenant";
+"Now" = "Jetzt";
 
 /* No comment provided by engineer. */
-"Path doesn't exist" = "Le chemin n'existe pas";
+"Path doesnt exist" = "Pfad existiert nicht";
 
 /* No comment provided by engineer. */
-"Unable to write" = "Impossible d'écrire";
+"Unable to write" = "Schreiben ist fehlgeschlagen";
 
 /* No comment provided by engineer. */
-"Unknown" = "Inconnu";
+"Unknown" = "Unbekannt";
 
 /* about 1 min */
-"about 1 min" = "environ 1 minute";
+"about 1 min" = "etwa 1 min";
 
 /* less than 1 min */
-"less than 1 min" = "moins de 1 minute";
+"less than 1 min" = "weniger als 1 min";
 
 /* less than 10 s */
-"less than 10 s" = "moins de 10 sec";
+"less than 10 s" = "weniger als 10 s";
 
 /* No comment provided by engineer. */
-"min ago" = "minutes";
+"min ago" = "min her";
 
 /* more than two days */
-"more than two days" = "il y a plus de 2 jours";
-
+"more than two days" = "mehr als zwei Tage";
