@@ -17,6 +17,7 @@
 		830AD1E41A6A943D00E2B058 /* InfinitDataSize.m in Sources */ = {isa = PBXBuildFile; fileRef = 830AD1E21A6A943D00E2B058 /* InfinitDataSize.m */; };
 		83157EEF1A73D84800F8E87F /* InfinitDirectoryManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83157EED1A73D84800F8E87F /* InfinitDirectoryManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83157EF01A73D84800F8E87F /* InfinitDirectoryManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83157EEE1A73D84800F8E87F /* InfinitDirectoryManager.mm */; };
+		832B00771AF8D359006E5E75 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 832B00791AF8D359006E5E75 /* Localizable.strings */; };
 		83376F191AEFC2C80001A61E /* InfinitKeychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 836405ED1AB88DE9005CC50C /* InfinitKeychain.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83376F1A1AEFC2DD0001A61E /* InfinitKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 836405EE1AB88DE9005CC50C /* InfinitKeychain.m */; };
 		83568D9F1A136DEE00766DA3 /* InfinitStateWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568D9E1A136DEE00766DA3 /* InfinitStateWrapper.mm */; };
@@ -265,6 +266,7 @@
 		830AD1E21A6A943D00E2B058 /* InfinitDataSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitDataSize.m; sourceTree = "<group>"; };
 		83157EED1A73D84800F8E87F /* InfinitDirectoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitDirectoryManager.h; sourceTree = "<group>"; };
 		83157EEE1A73D84800F8E87F /* InfinitDirectoryManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitDirectoryManager.mm; sourceTree = "<group>"; };
+		832B00781AF8D359006E5E75 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		83568D791A136D7700766DA3 /* libGap-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libGap-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		83568D9D1A136DEE00766DA3 /* InfinitStateWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitStateWrapper.h; sourceTree = "<group>"; };
 		83568D9E1A136DEE00766DA3 /* InfinitStateWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitStateWrapper.mm; sourceTree = "<group>"; };
@@ -377,6 +379,7 @@
 		83568D6B1A136D5D00766DA3 = {
 			isa = PBXGroup;
 			children = (
+				832B00791AF8D359006E5E75 /* Localizable.strings */,
 				8372B1731AB32C7A00F1B8B8 /* Infinit Libraries */,
 				83FE9C8E1A16367A00FC1CFD /* Avatars */,
 				836F5C7C1A165AD2007C9C4E /* Connection */,
@@ -731,6 +734,7 @@
 				83568DB21A136E1D00766DA3 /* Headers */,
 				83568D761A136D7700766DA3 /* Frameworks */,
 				83568D771A136D7700766DA3 /* CopyFiles */,
+				832B00661AF8D358006E5E75 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -895,6 +899,14 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		832B00661AF8D358006E5E75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				832B00771AF8D359006E5E75 /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8372B2961AB3343100F1B8B8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -991,6 +1003,17 @@
 			targetProxy = 8372B3291AB3375D00F1B8B8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		832B00791AF8D359006E5E75 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				832B00781AF8D359006E5E75 /* fr */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		83568D701A136D5D00766DA3 /* Debug */ = {
