@@ -133,13 +133,17 @@ static dispatch_once_t _instance_token = 0;
 {
   if (!self.was_logged_in && status)
     _was_logged_in = YES;
-  _still_trying = trying;
-  if (self.connected != status || trying)
+  if (self.connected != status || self.still_trying != trying)
   {
     _connected = status;
+    _still_trying = trying;
     InfinitConnectionStatus* res = [InfinitConnectionStatus connectionStatus:status
                                                                  stillTrying:trying
                                                                    lastError:error];
+    if (!status && !trying)
+    {
+      ELLE_LOG("%s: sending kicked out notification", self.description.UTF8String);
+    }
     dispatch_async(dispatch_get_main_queue(), ^
     {
       [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_CONNECTION_STATUS_CHANGE
