@@ -554,6 +554,15 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   [self _addOperation:[self operationLogout] completionBlock:completion_block];
 }
 
+- (NSString*)metaSessionId
+{
+  std::string res;
+  gap_Status status = gap_session_id(self.stateWrapper.state, res);
+  if (status == gap_ok)
+    return [self _nsString:res];
+  return nil;
+}
+
 #pragma mark - Local Contacts
 
 - (void)uploadContacts:(NSArray*)contacts_

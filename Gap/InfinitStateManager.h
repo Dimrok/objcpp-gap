@@ -223,6 +223,10 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
  */
 - (void)logoutWithCompletionBlock:(InfinitStateCompletionBlock)completion_block;
 
+/** Fetch Meta session ID to automatically log into website.
+ */
+- (NSString*)metaSessionId;
+
 #pragma mark - Local Contacts
 /** Upload contacts.
  @param contacts.
