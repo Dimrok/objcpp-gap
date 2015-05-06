@@ -36,6 +36,7 @@
 		83568DB11A136E1000766DA3 /* InfinitStateResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DAF1A136E1000766DA3 /* InfinitStateResult.m */; };
 		8361B8531AF35E8800D5F890 /* InfinitThreadSafeSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 8361B8511AF35E8800D5F890 /* InfinitThreadSafeSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8361B8541AF35E8800D5F890 /* InfinitThreadSafeSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 8361B8521AF35E8800D5F890 /* InfinitThreadSafeSet.m */; };
+		836463531AFA79C5009D8C00 /* Gap_Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 832C12FC1AF915A00014895D /* Gap_Localizable.strings */; };
 		836D394F1A67F19200892206 /* NSString+email.h in Headers */ = {isa = PBXBuildFile; fileRef = 836D394D1A67F19200892206 /* NSString+email.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		836D39501A67F19200892206 /* NSString+email.m in Sources */ = {isa = PBXBuildFile; fileRef = 836D394E1A67F19200892206 /* NSString+email.m */; };
 		836D39851A690DFF00892206 /* libCrashReporter-iphoneos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 836D39841A690DFF00892206 /* libCrashReporter-iphoneos.a */; };
@@ -284,7 +285,6 @@
 		832C13041AF916280014895D /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
 		832C13051AF917CC0014895D /* InfinitGapLocalizedString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitGapLocalizedString.h; sourceTree = "<group>"; };
 		8336B2281AF9350200472470 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
-		8336B2381AF9380300472470 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
 		8336B2391AF9380F00472470 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
 		8336B23A1AF9381700472470 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
 		8336B23B1AF9381F00472470 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Gap_Localizable.strings"; sourceTree = "<group>"; };
@@ -309,6 +309,9 @@
 		8361B8521AF35E8800D5F890 /* InfinitThreadSafeSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitThreadSafeSet.m; sourceTree = "<group>"; };
 		836405ED1AB88DE9005CC50C /* InfinitKeychain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfinitKeychain.h; sourceTree = "<group>"; };
 		836405EE1AB88DE9005CC50C /* InfinitKeychain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfinitKeychain.m; sourceTree = "<group>"; };
+		836463521AFA79C4009D8C00 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
+		836AC1881AFA12EE00A60060 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/Gap_Localizable.strings"; sourceTree = "<group>"; };
+		836AC1891AFA12F900A60060 /* es-ES */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-ES"; path = "es-ES.lproj/Gap_Localizable.strings"; sourceTree = "<group>"; };
 		836D394D1A67F19200892206 /* NSString+email.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+email.h"; sourceTree = "<group>"; };
 		836D394E1A67F19200892206 /* NSString+email.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+email.m"; sourceTree = "<group>"; };
 		836D39841A690DFF00892206 /* libCrashReporter-iphoneos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libCrashReporter-iphoneos.a"; path = "../../ios/plcrashreporter/build/Debug-iphoneos/libCrashReporter-iphoneos.a"; sourceTree = "<group>"; };
@@ -828,6 +831,9 @@
 				"pt-BR",
 				nl,
 				it,
+				"es-419",
+				"es-ES",
+				sv,
 			);
 			mainGroup = 83568D6B1A136D5D00766DA3;
 			productRefGroup = 83568D7A1A136D7700766DA3 /* Products */;
@@ -945,6 +951,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				836463531AFA79C5009D8C00 /* Gap_Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1057,12 +1064,14 @@
 				832C13041AF916280014895D /* Base */,
 				8301A6F41AF91EA100E9FABF /* fr */,
 				8336B2281AF9350200472470 /* de */,
-				8336B2381AF9380300472470 /* es */,
 				8336B2391AF9380F00472470 /* tr */,
 				8336B23A1AF9381700472470 /* ru */,
 				8336B23B1AF9381F00472470 /* pt-BR */,
 				8336B23C1AF9382500472470 /* nl */,
 				8336B23D1AF9382C00472470 /* it */,
+				836AC1881AFA12EE00A60060 /* es-419 */,
+				836AC1891AFA12F900A60060 /* es-ES */,
+				836463521AFA79C4009D8C00 /* sv */,
 			);
 			name = Gap_Localizable.strings;
 			sourceTree = "<group>";
