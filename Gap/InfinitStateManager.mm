@@ -210,6 +210,11 @@ static NSString* _facebook_app_id = nil;
 #endif
 }
 
+- (NSString*)deviceLanguage
+{
+  return [NSLocale preferredLanguages].firstObject;
+}
+
 - (void)accountStatusForEmail:(NSString*)email
               completionBlock:(InfinitEmailAccountStatusBlock)completion_block
 {
@@ -250,6 +255,9 @@ static NSString* _facebook_app_id = nil;
     boost::optional<std::string> device_name;
     if ([InfinitDeviceInformation deviceName].length)
       device_name = std::string([InfinitDeviceInformation deviceName].UTF8String);
+    boost::optional<std::string> device_language;
+    if ([manager deviceLanguage].length)
+      device_language = std::string([manager deviceLanguage].UTF8String);
     gap_Status res = gap_register(manager.stateWrapper.state,
                                   fullname.UTF8String,
                                   email.UTF8String,
@@ -257,7 +265,8 @@ static NSString* _facebook_app_id = nil;
                                   device_push_token,
                                   country_code,
                                   device_model,
-                                  device_name);
+                                  device_name,
+                                  device_language);
     if (res == gap_ok)
     {
       manager->_logged_in = YES;
@@ -319,21 +328,23 @@ static NSString* _facebook_app_id = nil;
 }
 
 - (void)useGhostCode:(NSString*)code
+             wasLink:(BOOL)link
      performSelector:(SEL)selector
             onObject:(id)object
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
-    return gap_use_ghost_code(manager.stateWrapper.state, code.UTF8String);
+    return gap_use_ghost_code(manager.stateWrapper.state, code.UTF8String, link);
   } performSelector:selector onObject:object];
 }
 
 - (void)useGhostCode:(NSString*)code
+             wasLink:(BOOL)link
      completionBlock:(InfinitStateCompletionBlock)completion_block
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
-    return gap_use_ghost_code(manager.stateWrapper.state, code.UTF8String);
+    return gap_use_ghost_code(manager.stateWrapper.state, code.UTF8String, link);
   } completionBlock:completion_block];
 }
 
@@ -357,13 +368,17 @@ static NSString* _facebook_app_id = nil;
     boost::optional<std::string> device_name;
     if ([InfinitDeviceInformation deviceName].length)
       device_name = std::string([InfinitDeviceInformation deviceName].UTF8String);
+    boost::optional<std::string> device_language;
+    if ([manager deviceLanguage].length)
+      device_language = std::string([manager deviceLanguage].UTF8String);
     gap_Status res = gap_login(manager.stateWrapper.state,
                                email.UTF8String,
                                password.UTF8String,
                                device_push_token,
                                country_code,
                                device_model,
-                               device_name);
+                               device_name,
+                               device_language);
     if (res == gap_ok)
     {
       manager->_logged_in = YES;
@@ -470,13 +485,17 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     boost::optional<std::string> device_name;
     if ([InfinitDeviceInformation deviceName].length)
       device_name = std::string([InfinitDeviceInformation deviceName].UTF8String);
+    boost::optional<std::string> device_language;
+    if ([manager deviceLanguage].length)
+      device_language = std::string([manager deviceLanguage].UTF8String);
     gap_Status res = gap_facebook_connect(manager.stateWrapper.state,
                                           facebook_token.UTF8String,
                                           preferred_email,
                                           device_push_token,
                                           country_code,
                                           device_model,
-                                          device_name);
+                                          device_name,
+                                          device_language);
     if (res == gap_ok)
     {
       manager->_logged_in = YES;
