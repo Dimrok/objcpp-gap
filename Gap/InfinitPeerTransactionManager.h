@@ -62,8 +62,23 @@
   Include or exclude archived transactions.
  @param device_only
   Include or exclude transactions to other devices.
+ @param excl_receivable
+  Exclude those with an unfilled recipient device.
+ @return Array of InfinitPeerTransaction objects.
+*/
+
+- (NSArray*)transactionsIncludingArchived:(BOOL)archived
+                           thisDeviceOnly:(BOOL)device_only
+                        excludeReceivable:(BOOL)excl_receivable;
+
+/** List of reverse time ordered transactions.
+ @param archived
+  Include or exclude archived transactions.
+ @param device_only
+  Include or exclude transactions to other devices.
  @return Array of InfinitPeerTransaction objects.
  */
+
 - (NSArray*)transactionsIncludingArchived:(BOOL)archived
                            thisDeviceOnly:(BOOL)device_only;
 

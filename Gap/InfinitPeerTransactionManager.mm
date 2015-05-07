@@ -188,6 +188,15 @@ static dispatch_once_t _instance_token = 0;
 - (NSArray*)transactionsIncludingArchived:(BOOL)archived
                            thisDeviceOnly:(BOOL)device_only
 {
+  return [self transactionsIncludingArchived:archived
+                              thisDeviceOnly:device_only
+                           excludeReceivable:NO];
+}
+
+- (NSArray*)transactionsIncludingArchived:(BOOL)archived
+                           thisDeviceOnly:(BOOL)device_only
+                        excludeReceivable:(BOOL)excl_receivable;
+{
   if (archived && !device_only)
   {
     return self.transactions;
@@ -200,6 +209,8 @@ static dispatch_once_t _instance_token = 0;
       if (!archived && [self.archived_transaction_ids containsObject:transaction.meta_id])
         continue;
       if (device_only && !transaction.concerns_device)
+        continue;
+      if (excl_receivable && !transaction.recipient_device.length)
         continue;
       [res addObject:transaction];
     }
