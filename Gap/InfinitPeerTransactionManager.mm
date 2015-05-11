@@ -210,7 +210,7 @@ static dispatch_once_t _instance_token = 0;
         continue;
       if (device_only && !transaction.concerns_device)
         continue;
-      if (excl_receivable && !transaction.recipient_device.length)
+      if (excl_receivable && !transaction.recipient_device.length && !transaction.from_device)
         continue;
       [res addObject:transaction];
     }
