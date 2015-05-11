@@ -273,6 +273,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		83016DE91B00D69C004864B9 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
 		8301A6F41AF91EA100E9FABF /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
 		830778E11AD2E7920047F8E6 /* InfinitFileSystemError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitFileSystemError.h; sourceTree = "<group>"; };
 		830778E21AD2E7920047F8E6 /* InfinitFileSystemError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitFileSystemError.m; sourceTree = "<group>"; };
@@ -1072,6 +1073,7 @@
 				836AC1881AFA12EE00A60060 /* es-419 */,
 				836AC1891AFA12F900A60060 /* es-ES */,
 				836463521AFA79C4009D8C00 /* sv */,
+				83016DE91B00D69C004864B9 /* es */,
 			);
 			name = Gap_Localizable.strings;
 			sourceTree = "<group>";
