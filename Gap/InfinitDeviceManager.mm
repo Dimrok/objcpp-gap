@@ -16,6 +16,11 @@
 
 #import "NSString+UUID.h"
 
+#undef check
+#import <elle/log.hh>
+
+ELLE_LOG_COMPONENT("Gap-ObjC++.DeviceManager");
+
 @interface InfinitDeviceManager ()
 
 @property (atomic, readonly) InfinitThreadSafeDictionary* device_map;
@@ -130,6 +135,7 @@ static dispatch_once_t _instance_token = 0;
 
 - (void)updateDevices
 {
+  ELLE_TRACE("%s: updating device model", self.description.UTF8String);
   [self.device_map removeAllObjects];
   for (InfinitDevice* device in [InfinitStateManager sharedInstance].devices)
   {
