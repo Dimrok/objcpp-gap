@@ -60,7 +60,7 @@
 		8372B2F61AB3353B00F1B8B8 /* InfinitReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 836F5C821A165B48007C9C4E /* InfinitReachability.m */; };
 		8372B2F71AB3353B00F1B8B8 /* InfinitCrashReporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 836D39891A690E2A00892206 /* InfinitCrashReporter.mm */; };
 		8372B2F81AB3353B00F1B8B8 /* InfinitDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FB5AAD1AADBB83004D5028 /* InfinitDevice.m */; };
-		8372B2F91AB3353B00F1B8B8 /* InfinitDeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FB5AB11AADBEDF004D5028 /* InfinitDeviceManager.m */; };
+		8372B2F91AB3353B00F1B8B8 /* InfinitDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83FB5AB11AADBEDF004D5028 /* InfinitDeviceManager.mm */; };
 		8372B2FA1AB3353B00F1B8B8 /* InfinitDirectoryManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83157EEE1A73D84800F8E87F /* InfinitDirectoryManager.mm */; };
 		8372B2FB1AB3353B00F1B8B8 /* InfinitFeaturesManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83F35D0C1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm */; };
 		8372B2FC1AB3353B00F1B8B8 /* InfinitStateManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DAD1A136E1000766DA3 /* InfinitStateManager.mm */; };
@@ -147,7 +147,7 @@
 		83FB5AAE1AADBB83004D5028 /* InfinitDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 83FB5AAC1AADBB83004D5028 /* InfinitDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83FB5AAF1AADBB83004D5028 /* InfinitDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FB5AAD1AADBB83004D5028 /* InfinitDevice.m */; };
 		83FB5AB21AADBEDF004D5028 /* InfinitDeviceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83FB5AB01AADBEDF004D5028 /* InfinitDeviceManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		83FB5AB31AADBEDF004D5028 /* InfinitDeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FB5AB11AADBEDF004D5028 /* InfinitDeviceManager.m */; };
+		83FB5AB31AADBEDF004D5028 /* InfinitDeviceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83FB5AB11AADBEDF004D5028 /* InfinitDeviceManager.mm */; };
 		83FE9C921A1636FF00FC1CFD /* InfinitAvatarManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83FE9C901A1636FF00FC1CFD /* InfinitAvatarManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83FE9C931A1636FF00FC1CFD /* InfinitAvatarManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83FE9C911A1636FF00FC1CFD /* InfinitAvatarManager.mm */; };
 /* End PBXBuildFile section */
@@ -362,7 +362,7 @@
 		83FB5AAC1AADBB83004D5028 /* InfinitDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitDevice.h; sourceTree = "<group>"; };
 		83FB5AAD1AADBB83004D5028 /* InfinitDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitDevice.m; sourceTree = "<group>"; };
 		83FB5AB01AADBEDF004D5028 /* InfinitDeviceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitDeviceManager.h; sourceTree = "<group>"; };
-		83FB5AB11AADBEDF004D5028 /* InfinitDeviceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitDeviceManager.m; sourceTree = "<group>"; };
+		83FB5AB11AADBEDF004D5028 /* InfinitDeviceManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitDeviceManager.mm; sourceTree = "<group>"; };
 		83FE9C901A1636FF00FC1CFD /* InfinitAvatarManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitAvatarManager.h; sourceTree = "<group>"; };
 		83FE9C911A1636FF00FC1CFD /* InfinitAvatarManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitAvatarManager.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -662,7 +662,7 @@
 				83FB5AAC1AADBB83004D5028 /* InfinitDevice.h */,
 				83FB5AAD1AADBB83004D5028 /* InfinitDevice.m */,
 				83FB5AB01AADBEDF004D5028 /* InfinitDeviceManager.h */,
-				83FB5AB11AADBEDF004D5028 /* InfinitDeviceManager.m */,
+				83FB5AB11AADBEDF004D5028 /* InfinitDeviceManager.mm */,
 			);
 			name = Devices;
 			sourceTree = "<group>";
@@ -980,7 +980,7 @@
 				83568DB01A136E1000766DA3 /* InfinitStateManager.mm in Sources */,
 				83FE9C931A1636FF00FC1CFD /* InfinitAvatarManager.mm in Sources */,
 				836D39501A67F19200892206 /* NSString+email.m in Sources */,
-				83FB5AB31AADBEDF004D5028 /* InfinitDeviceManager.m in Sources */,
+				83FB5AB31AADBEDF004D5028 /* InfinitDeviceManager.mm in Sources */,
 				836F5C801A165AE5007C9C4E /* InfinitConnectionManager.mm in Sources */,
 				836F5C841A165B48007C9C4E /* InfinitReachability.m in Sources */,
 				836D398B1A690E2A00892206 /* InfinitCrashReporter.mm in Sources */,
@@ -1018,7 +1018,7 @@
 				8372B2F61AB3353B00F1B8B8 /* InfinitReachability.m in Sources */,
 				8372B2F71AB3353B00F1B8B8 /* InfinitCrashReporter.mm in Sources */,
 				8372B2F81AB3353B00F1B8B8 /* InfinitDevice.m in Sources */,
-				8372B2F91AB3353B00F1B8B8 /* InfinitDeviceManager.m in Sources */,
+				8372B2F91AB3353B00F1B8B8 /* InfinitDeviceManager.mm in Sources */,
 				8372B2FA1AB3353B00F1B8B8 /* InfinitDirectoryManager.mm in Sources */,
 				8372B2FB1AB3353B00F1B8B8 /* InfinitFeaturesManager.mm in Sources */,
 				8372B2FC1AB3353B00F1B8B8 /* InfinitStateManager.mm in Sources */,
