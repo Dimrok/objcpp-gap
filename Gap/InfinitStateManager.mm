@@ -858,7 +858,10 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 {
   if (!self.logged_in)
     return;
-  gap_delete_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    return gap_delete_transaction(manager.stateWrapper.state, id_.unsignedIntValue);
+  }];
 }
 
 #pragma mark - Peer Transactions
