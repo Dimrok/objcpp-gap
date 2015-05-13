@@ -35,6 +35,10 @@
  */
 #define INFINIT_LINK_TRANSACTION_CREATED_NOTIFICATION @"INFINIT_LINK_TRANSACTION_CREATED_NOTIFICATION"
 
+/** Notification sent when quota exceedded.
+ */
+#define INFINIT_LINK_QUOTA_EXCEEDED                   @"INFINIT_LINK_QUOTA_EXCEEDED"
+
 @interface InfinitLinkTransactionManager : NSObject
 
 /// Boolean for when transactions are running.

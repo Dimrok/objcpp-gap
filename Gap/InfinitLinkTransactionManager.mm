@@ -190,6 +190,8 @@ static dispatch_once_t _instance_token = 0;
 
 - (void)transactionUpdated:(InfinitLinkTransaction*)transaction
 {
+  if (transaction.status == gap_transaction_payment_required)
+    [self postNotificationOnMainThreadName:INFINIT_LINK_QUOTA_EXCEEDED transaction:nil];
   @synchronized(self.transaction_map)
   {
     InfinitLinkTransaction* existing = [self.transaction_map objectForKey:transaction.id_];
@@ -231,6 +233,7 @@ static dispatch_once_t _instance_token = 0;
     case gap_transaction_canceled:
     case gap_transaction_deleted:
     case gap_transaction_failed:
+    case gap_transaction_payment_required:
       return YES;
 
     default:
@@ -240,17 +243,12 @@ static dispatch_once_t _instance_token = 0;
 
 #pragma mark - Transaction Notifications
 
-- (NSDictionary*)userInfoForTransaction:(InfinitLinkTransaction*)transaction
-{
-  return @{kInfinitTransactionId: transaction.id_};
-}
-
 - (void)postNotificationOnMainThreadName:(NSString*)name
                              transaction:(InfinitLinkTransaction*)transaction
 {
   NSDictionary* user_info = nil;
   if (transaction)
-    user_info = [self userInfoForTransaction:transaction];
+    user_info = @{kInfinitTransactionId: transaction.id_};
   dispatch_async(dispatch_get_main_queue(), ^
   {
     [[NSNotificationCenter defaultCenter] postNotificationName:name
