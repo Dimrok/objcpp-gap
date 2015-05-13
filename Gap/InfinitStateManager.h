@@ -110,21 +110,6 @@ typedef void(^InfinitGhostCodeExistsBlock)(InfinitStateResult* result, NSString*
   Code to activate.
  @param link
   If the code was from a link.
- @param selector
-  Function to call when complete.
- @param object
-  Calling object.
- */
-- (void)useGhostCode:(NSString*)code
-             wasLink:(BOOL)link
-     performSelector:(SEL)selector
-            onObject:(id)object;
-
-/** Use a ghost code.
- @param code
-  Code to activate.
- @param link
-  If the code was from a link.
  @param completion_block
   Block to run on completion.
  */

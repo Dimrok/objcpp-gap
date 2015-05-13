@@ -329,17 +329,6 @@ static NSString* _facebook_app_id = nil;
 
 - (void)useGhostCode:(NSString*)code
              wasLink:(BOOL)link
-     performSelector:(SEL)selector
-            onObject:(id)object
-{
-  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
-  {
-    return gap_use_ghost_code(manager.stateWrapper.state, code.UTF8String, link);
-  } performSelector:selector onObject:object];
-}
-
-- (void)useGhostCode:(NSString*)code
-             wasLink:(BOOL)link
      completionBlock:(InfinitStateCompletionBlock)completion_block
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
