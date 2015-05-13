@@ -1412,6 +1412,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   NSString* link = @"";
   if (transaction.link)
     link = [NSString stringWithUTF8String:transaction.link.get().c_str()];
+  NSNumber* size = [NSNumber numberWithUnsignedLong:transaction.size];
   InfinitLinkTransaction* res =
     [[InfinitLinkTransaction alloc] initWithId:[self _numFromUint:transaction.id]
                                        meta_id:[self _nsString:transaction.meta_id]
@@ -1422,7 +1423,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
                                           link:link
                                    click_count:[self _numFromUint:transaction.click_count]
                                        message:[self _nsString:transaction.message]
-                                          size:@0];
+                                          size:size];
   return res;
 }
 
