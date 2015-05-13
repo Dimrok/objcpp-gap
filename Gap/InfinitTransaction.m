@@ -64,6 +64,7 @@ sender_device_id:(NSString*)sender_device_id
     case gap_transaction_canceled:
     case gap_transaction_rejected:
     case gap_transaction_deleted:
+    case gap_transaction_payment_required:
       return YES;
 
     default:
@@ -192,6 +193,9 @@ sender_device_id:(NSString*)sender_device_id
       return @"deleted";
     case gap_transaction_paused:
       return @"paused";
+    case gap_transaction_payment_required:
+      return @"payment required";
+
     default:
       return @"unknown";
   }

@@ -25,8 +25,8 @@
 @property (nonatomic, readonly) NSTimeInterval mtime;
 @property (nonatomic, readonly) float progress;
 @property (nonatomic, readonly) NSString* sender_device_id;
-@property (nonatomic, readonly) NSNumber* size; // Currently empty for link transactions.
-@property (nonatomic, readwrite) gap_TransactionStatus status; // Written to to fake updates.
+@property (nonatomic, readonly) NSNumber* size;
+@property (nonatomic, readwrite) gap_TransactionStatus status; // Written to in order to fake updates.
 @property (nonatomic, readonly) NSString* status_text;
 @property (nonatomic, readonly) NSTimeInterval time_remaining;
 
