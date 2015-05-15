@@ -114,7 +114,7 @@
 		839716CF1ACC0DA100357702 /* InfinitDeviceInformation.m in Sources */ = {isa = PBXBuildFile; fileRef = 839716BD1ACC0AAA00357702 /* InfinitDeviceInformation.m */; };
 		839716D01ACC0DAD00357702 /* InfinitDeviceInformation.h in Headers */ = {isa = PBXBuildFile; fileRef = 839716BC1ACC0AAA00357702 /* InfinitDeviceInformation.h */; };
 		83A7599C1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A7599A1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		83A7599D1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A7599A1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h */; };
+		83A7599D1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A7599A1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83A7599E1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A7599B1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m */; };
 		83A7599F1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A7599B1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m */; };
 		83B4BBC71AB765E9004B8E76 /* libtransaction.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 83B4BBC61AB765E9004B8E76 /* libtransaction.dylib */; };
@@ -747,10 +747,10 @@
 				8372B31F1AB3354D00F1B8B8 /* InfinitUser.h in Headers */,
 				8372B3201AB3354D00F1B8B8 /* InfinitUserManager.h in Headers */,
 				8372B3211AB3354D00F1B8B8 /* InfinitColor.h in Headers */,
+				83A7599D1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h in Headers */,
 				8372B3221AB3354D00F1B8B8 /* InfinitDataSize.h in Headers */,
 				8372B3231AB3354D00F1B8B8 /* InfinitTime.h in Headers */,
 				8372B3241AB3354D00F1B8B8 /* NSString+email.h in Headers */,
-				83A7599D1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h in Headers */,
 				830778F41AD2EAC10047F8E6 /* InfinitFileSystemError.h in Headers */,
 				8372B3251AB3354E00F1B8B8 /* NSString+PhoneNumber.h in Headers */,
 				8372B30F1AB3354D00F1B8B8 /* InfinitReachability.h in Headers */,
