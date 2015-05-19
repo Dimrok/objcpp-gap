@@ -7,31 +7,55 @@
 //
 
 #ifndef Infinit_InfinitConstants_h
-#define Infinit_InfinitConstants_h
+# define Infinit_InfinitConstants_h
+
+# ifdef TARGET_OS_IPHONE
+/**************************
+ * iOS Specific constants *
+ **************************/
 
 /// Adjust.io token.
-#define kInfinitAdjustToken @"4uuen7zlcxak"
+#  define kInfinitAdjustToken @"4uuen7zlcxak"
 
 /// App Store ID.
-#define kInfinitAppStoreId @"955849852"
+#  define kInfinitAppStoreId @"955849852"
 
 /// Application group name.
-#define kInfinitAppGroupName @"group.io.infinit.InfinitMobile"
+#  define kInfinitAppGroupName @"group.io.infinit.InfinitMobile"
 
 /// Forgot password URL.
-#define kInfinitForgotPasswordURL @"https://infinit.io/forgot_password?utm_source=app&utm_medium=ios&utm_campaign=forgot_password"
+#  define kInfinitForgotPasswordURL @"https://infinit.io/forgot_password?utm_source=app&utm_medium=ios&utm_campaign=forgot_password"
 
 /// Photos gallery name.
-#define kInfinitAlbumName @"Infinit"
+#  define kInfinitAlbumName @"Infinit"
 
 /// Ratings URLs.
-#define kInfinitStoreRatingLinkiOS8 @"https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=APP_ID&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software"
-#define kInfinitStoreRatingLink @"https://itunes.apple.com/app/apple-store/idAPP_ID"
-
-/// URL Scheme.
-#define kInfinitURLScheme @"infinit"
+#  define kInfinitStoreRatingLinkiOS8 @"https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=APP_ID&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software"
+#  define kInfinitStoreRatingLink @"https://itunes.apple.com/app/apple-store/idAPP_ID"
 
 /// Web profile URL.
-#define kInfinitWebProfileURL @"https://infinit.io/account?utm_source=app&utm_medium=ios&utm_campaign=web_profile"
+#  define kInfinitWebProfileURL @"https://infinit.io/account?utm_source=app&utm_medium=ios&utm_campaign=web_profile"
+
+# else
+/**************************
+ * Mac Specific constants *
+ **************************/
+
+/// Forgot password URL.
+#  define kInfinitForgotPasswordURL @"https://infinit.io/forgot_password?utm_source=app&utm_medium=mac&utm_campaign=forgot_password"
+
+/// Web profile URL.
+#  define kInfinitWebProfileURL @"https://infinit.io/account?utm_source=app&utm_medium=mac&utm_campaign=web_profile"
+
+# endif
+/**************************
+ *    Shared constants    *
+ **************************/
+
+/// URL Scheme.
+# define kInfinitURLScheme @"infinit"
+
+/// URL Invite.
+# define kInfinitURLInvite @"invitation"
 
 #endif
