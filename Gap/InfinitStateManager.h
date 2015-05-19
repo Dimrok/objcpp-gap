@@ -110,12 +110,15 @@ typedef void(^InfinitGhostCodeExistsBlock)(InfinitStateResult* result, NSString*
   Code to activate.
  @param link
   If the code was from a link.
- @param completion_block
-  Block to run on completion.
  */
 - (void)useGhostCode:(NSString*)code
-             wasLink:(BOOL)link
-     completionBlock:(InfinitStateCompletionBlock)completion_block;
+             wasLink:(BOOL)link;
+
+/** Add fingerprint.
+ @param fingerprint
+  Fingerprint to add.
+ */
+- (void)addFingerprint:(NSString*)fingerprint;
 
 /** Log a user in.
  @param email

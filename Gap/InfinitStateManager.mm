@@ -14,6 +14,7 @@
 #import "InfinitDevice.h"
 #import "InfinitDeviceInformation.h"
 #import "InfinitDirectoryManager.h"
+#import "InfinitGhostCodeManager.h"
 #import "InfinitLinkTransaction.h"
 #import "InfinitLinkTransactionManager.h"
 #import "InfinitPeerTransaction.h"
@@ -158,6 +159,10 @@ static NSString* _facebook_app_id = nil;
   if (gap_avatar_available_callback(self.stateWrapper.state, on_avatar) != gap_ok)
   {
     ELLE_ERR("%s: unable to attach avatar recieved callback", self.description.UTF8String);
+  }
+  if (gap_ghost_code_used_callback(self.stateWrapper.state, on_ghost_code_used) != gap_ok)
+  {
+    ELLE_ERR("%s: unable to attach ghost code used callback", self.description.UTF8String);
   }
 }
 
@@ -329,12 +334,30 @@ static NSString* _facebook_app_id = nil;
 
 - (void)useGhostCode:(NSString*)code
              wasLink:(BOOL)link
-     completionBlock:(InfinitStateCompletionBlock)completion_block
 {
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
     return gap_use_ghost_code(manager.stateWrapper.state, code.UTF8String, link);
-  } completionBlock:completion_block];
+  }];
+}
+
+- (void)_ghostCodeUsedCallback:(std::string const&)code
+                       success:(bool)success
+                        reason:(std::string const&)reason
+{
+  [[InfinitGhostCodeManager sharedInstance] ghostCodeUsed:[self _nsString:code]
+                                                  success:success 
+                                                   reason:[self _nsString:reason]];
+}
+
+- (void)addFingerprint:(NSString*)fingerprint
+{
+  if (!fingerprint.length)
+    return;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    return gap_add_fingerprint(manager.stateWrapper.state, fingerprint.UTF8String);
+  }];
 }
 
 - (gap_operation_t)operationLogin:(NSString*)email
@@ -1757,6 +1780,23 @@ on_avatar(uint32_t user_id)
   @catch (NSException* e)
   {
     ELLE_ERR("on_avatar exception: %s", e.description.UTF8String);
+    @throw e;
+  }
+}
+
+static
+void
+on_ghost_code_used(std::string const& code, bool succeeded, std::string const& reason)
+{
+  @try
+  {
+    [[InfinitStateManager sharedInstance] _ghostCodeUsedCallback:code
+                                                         success:succeeded 
+                                                          reason:reason];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_ghost_code_used exception: %s", e.description.UTF8String);
     @throw e;
   }
 }
