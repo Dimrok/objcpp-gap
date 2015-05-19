@@ -131,7 +131,20 @@ static dispatch_once_t _instance_token = 0;
   return res;
 }
 
-#pragma mark - Connection Status
+- (void)setThisDeviceName:(NSString*)name
+{
+  if (!name.length || [self.this_device.name isEqualToString:name])
+    return;
+  self.this_device.name = name;
+  [[InfinitStateManager sharedInstance] updateDeviceName:name
+                                                   model:nil
+                                                      os:nil
+                                         completionBlock:^(InfinitStateResult* result)
+  {
+    if (result.success)
+      [[InfinitDeviceManager sharedInstance] updateDevices];
+  }];
+}
 
 - (void)updateDevices
 {
@@ -143,6 +156,8 @@ static dispatch_once_t _instance_token = 0;
       [self.device_map setObject:device forKey:device.id_];
   }
 }
+
+#pragma mark - Connection Status
 
 - (void)connectionStatusChanged:(NSNotification*)notification
 {

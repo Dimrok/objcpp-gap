@@ -27,7 +27,7 @@ typedef NS_ENUM(NSUInteger, InfinitDeviceType)
 @property (nonatomic, readonly) NSString* id_;
 @property (nonatomic, readonly) BOOL is_self;
 @property (nonatomic, readonly) NSString* meta_name;
-@property (nonatomic, readonly) NSString* name;
+@property (nonatomic, readwrite) NSString* name; // Locally change own name.
 @property (nonatomic, readonly) NSString* model;
 @property (nonatomic, readonly) NSString* os;
 @property (nonatomic, readonly) InfinitDeviceType type;

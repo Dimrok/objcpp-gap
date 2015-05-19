@@ -20,6 +20,8 @@
 
 - (InfinitDevice*)deviceWithId:(NSString*)id_;
 
+- (void)setThisDeviceName:(NSString*)name;
+
 - (void)updateDevices;
 
 @end
