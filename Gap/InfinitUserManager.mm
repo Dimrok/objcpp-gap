@@ -322,6 +322,19 @@ static dispatch_once_t _instance_token = 0;
   [self sendUserDeletedNotification:user];
 }
 
+- (void)contactJoined:(NSNumber*)id_
+              contact:(NSString*)contact
+{
+  NSDictionary* user_info = @{kInfinitUserId: id_,
+                              kInfinitUserContact: contact};
+  dispatch_async(dispatch_get_main_queue(), ^
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_CONTACT_JOINED_NOTIFICATION
+                                                        object:nil
+                                                      userInfo:user_info];
+  });
+}
+
 #pragma mark - User Notifications
 
 - (NSDictionary*)userInfoForUser:(InfinitUser*)user

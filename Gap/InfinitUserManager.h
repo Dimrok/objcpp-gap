@@ -25,6 +25,11 @@
  */
 #define INFINIT_USER_DELETED_NOTIFICATION @"INFINIT_USER_DELETED_NOTIFICATION"
 
+/** Notification sent when an address book contact joined.
+ Includes dictionary with the user "id" and "contact" identifier (email currently).
+ */
+#define INFINIT_CONTACT_JOINED_NOTIFICATION @"INFINIT_CONTACT_JOINED_NOTIFICATION"
+
 @interface InfinitUserManager : NSObject
 
 + (instancetype)sharedInstance;
@@ -92,5 +97,7 @@
 - (void)userWithId:(NSNumber*)id_
      statusUpdated:(BOOL)status;
 - (void)userDeletedWithId:(NSNumber*)id_;
+- (void)contactJoined:(NSNumber*)id_
+              contact:(NSString*)contact;
 
 @end
