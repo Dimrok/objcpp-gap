@@ -16,8 +16,10 @@
 # import <AppKit/NSImage.h>
 #endif
 
-/// Constant used as key for Transaction ID in dictionaries.
+/// Constant used as key for User ID in dictionaries.
 #define kInfinitUserId @"id"
+/// Constant used as key for contact in dictionaries.
+#define kInfinitUserContact @"contact"
 
 /** Notification sent when a user's avatar is ready.
  Contains a dictionary with the user "id".
