@@ -164,6 +164,10 @@ static NSString* _facebook_app_id = nil;
   {
     ELLE_ERR("%s: unable to attach ghost code used callback", self.description.UTF8String);
   }
+  if (gap_contact_joined_callback(self.stateWrapper.state, on_contact_joined) != gap_ok)
+  {
+    ELLE_ERR("%s: unable to attach contact joined callback", self.description.UTF8String);
+  }
 }
 
 #pragma mark - Stop
@@ -1760,6 +1764,28 @@ on_deleted_swagger(uint32_t user_id)
   @catch (NSException* e)
   {
     ELLE_ERR("on_deleted_swagger exception: %s", e.description.UTF8String);
+    @throw e;
+  }
+}
+
+- (void)_contactJoined:(uint32_t)user_id
+               contact:(std::string const&)contact
+{
+  [[InfinitUserManager sharedInstance] contactJoined:[self _numFromUint:user_id]
+                                             contact:[self _nsString:contact]];
+}
+
+static
+void
+on_contact_joined(uint32_t user_id, std::string const& contact)
+{
+  @try
+  {
+    [[InfinitStateManager sharedInstance] _contactJoined:user_id contact:contact];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_contact_joined exception: %s", e.description.UTF8String);
     @throw e;
   }
 }
