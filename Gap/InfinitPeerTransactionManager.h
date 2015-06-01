@@ -59,7 +59,7 @@
 
 /** Peer Transaction corresponding to ID.
  @param id_
- InfinitPeerTransaction ID.
+  InfinitPeerTransaction ID.
  @return Peer Transaction with corresponding ID.
  */
 + (InfinitPeerTransaction*)transactionWithId:(NSNumber*)id_;
