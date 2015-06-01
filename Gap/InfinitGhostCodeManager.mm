@@ -52,10 +52,11 @@ static dispatch_once_t _instance_token = 0;
         wasLink:(BOOL)was_link
 completionBlock:(InfinitGhostCodeUsedBlock)completion_block
 {
-  if (self.code_used_block)
+  if (self.code_set)
   {
     ELLE_WARN("%s: overwriting ghost code used block", self.description.UTF8String);
   }
+  _code_set = YES;
   _code_used_block = completion_block;
   [[InfinitStateManager sharedInstance] useGhostCode:code wasLink:was_link];
 }
@@ -66,12 +67,14 @@ completionBlock:(InfinitGhostCodeUsedBlock)completion_block
               success:(BOOL)success
                reason:(NSString*)reason
 {
+  _code_set = NO;
   dispatch_async(dispatch_get_main_queue(), ^
   {
     if (self.code_used_block)
     {
       ELLE_TRACE("%s: ghost code used, run callback", self.description.UTF8String);
-      self.code_used_block(code, success, reason);
+      if (self.code_used_block)
+        self.code_used_block(code, success, reason);
       _code_used_block = nil;
       return;
     }

@@ -12,6 +12,8 @@ typedef void(^InfinitGhostCodeUsedBlock)(NSString* code, BOOL success, NSString*
 
 @interface InfinitGhostCodeManager : NSObject
 
+@property (nonatomic, readonly) BOOL code_set;
+
 + (instancetype)sharedInstance;
 
 /** Set ghost code.
