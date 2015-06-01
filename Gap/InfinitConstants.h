@@ -36,6 +36,9 @@
 /// Web profile URL.
 #  define kInfinitWebProfileURL @"https://infinit.io/account?utm_source=app&utm_medium=ios&utm_campaign=web_profile"
 
+/// Help URL.
+#  define kInfinitHelpURL @"http://help.infinit.io/knowledgebase?utm_source=app&utm_medium=ios"
+
 # else
 /**************************
  * Mac Specific constants *
@@ -57,5 +60,8 @@
 
 /// URL Invite.
 # define kInfinitURLInvite @"invitation"
+
+/// Facebook read permissions.
+# define kInfinitFacebookReadPermissions @[@"public_profile", @"email", @"user_friends"]
 
 #endif
