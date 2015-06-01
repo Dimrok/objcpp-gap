@@ -46,7 +46,9 @@ static dispatch_once_t _instance_token = 0;
 
 + (instancetype)sharedInstance
 {
-  dispatch_once(&_instance_token, ^{
+  dispatch_once(&_instance_token, ^
+  {
+    ELLE_DUMP("%s: instantiate instance", self.description.UTF8String);
     _instance = [[InfinitFeaturesManager alloc] init];
   });
   return _instance;
