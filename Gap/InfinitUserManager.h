@@ -66,13 +66,13 @@
 /** Remove favorite.
  Remove a user as a favorite.
  @param user
- User to remove as a favorite.
+  User to remove as a favorite.
  */
 - (void)removeFavorite:(InfinitUser*)user;
 
 /** User with corresponding ID.
  @param id_
- User ID.
+  User ID.
  @return User with corresponding ID.
  */
 + (InfinitUser*)userWithId:(NSNumber*)id_;
