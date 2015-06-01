@@ -8,10 +8,26 @@
 
 #import "InfinitThreadSafeDictionary.h"
 
+@interface InfinitNil : NSObject
+
++ (instancetype)newNil;
+
+@end
+
+@implementation InfinitNil
+
++ (instancetype)newNil
+{
+  return [[super alloc] init];
+}
+
+@end
+
 @interface InfinitThreadSafeDictionary ()
 
 @property (nonatomic, readonly) NSMutableDictionary* dictionary;
 @property (atomic, readonly) BOOL finalize;
+@property (nonatomic, readonly) BOOL nil_support;
 #if OS_OBJECT_HAVE_OBJC_SUPPORT
 @property (nonatomic, readonly) dispatch_queue_t queue;
 #else
@@ -23,12 +39,13 @@
 
 @implementation InfinitThreadSafeDictionary
 
-- (instancetype)initWithName:(NSString*)name
+- (instancetype)initWithName:(NSString*)name 
+             withNillSupport:(BOOL)nil_support
 {
   NSCAssert(name.length, @"Ensure name has length.");
   if (self = [super init])
   {
-    _finalize = NO;
+    _nil_support = nil_support;
     _queue_name = [NSString stringWithFormat:@"io.Infinit.ThreadSafeDictionary-%@", name];
     _queue = dispatch_queue_create(self.queue_name.UTF8String, DISPATCH_QUEUE_SERIAL);
     _dictionary = [[NSMutableDictionary alloc] init];
@@ -36,9 +53,15 @@
   return self;
 }
 
++ (instancetype)dictionaryWithName:(NSString*)name
+                   withNillSupport:(BOOL)nil_support
+{
+  return [[InfinitThreadSafeDictionary alloc] initWithName:name withNillSupport:nil_support];
+}
+
 + (instancetype)initWithName:(NSString*)name
 {
-  return [[InfinitThreadSafeDictionary alloc] initWithName:name];
+  return [InfinitThreadSafeDictionary dictionaryWithName:name withNillSupport:NO];
 }
 
 - (void)dealloc
@@ -109,22 +132,28 @@
 
 #pragma mark - Setters
 
-- (void)setObject:(id)obj
+- (void)setObject:(id)obj_
            forKey:(id<NSCopying>)key
 {
   if (self.finalize)
     return;
+  id obj = obj_;
+  if (self.nil_support && obj == nil)
+    obj = [InfinitNil newNil];
   dispatch_barrier_async(self.queue, ^
   {
     [self.dictionary setObject:obj forKey:key];
   });
 }
 
-- (void)setObject:(id)obj
+- (void)setObject:(id)obj_
 forKeyedSubscript:(id <NSCopying>)key
 {
   if (self.finalize)
     return;
+  id obj = obj_;
+  if (self.nil_support && obj == nil)
+    obj = [InfinitNil newNil];
   dispatch_barrier_async(self.queue, ^
   {
     self.dictionary[key] = obj;

@@ -11,6 +11,8 @@
 @interface InfinitThreadSafeDictionary : NSObject
 
 + (instancetype)initWithName:(NSString*)name;
++ (instancetype)dictionaryWithName:(NSString*)name
+                   withNillSupport:(BOOL)nil_support;
 
 - (NSArray*)allKeys;
 - (NSArray*)allValues;
