@@ -50,8 +50,15 @@
 
 /** Peer Transaction corresponding to ID.
  @param id_
- InfinitPeerTransaction ID.
- @return Peer Transaction with corresponding ID.
+  InfinitLinkTransaction ID.
+ @return Link Transaction with corresponding ID.
+ */
++ (InfinitLinkTransaction*)transactionWithId:(NSNumber*)id_;
+
+/** Peer Transaction corresponding to ID.
+ @param id_
+  InfinitLinkTransaction ID.
+ @return Link Transaction with corresponding ID.
  */
 - (InfinitLinkTransaction*)transactionWithId:(NSNumber*)id_;
 

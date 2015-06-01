@@ -53,6 +53,7 @@ static dispatch_once_t _instance_token = 0;
 {
   dispatch_once(&_instance_token, ^
   {
+    ELLE_DUMP("%s: instantiate instance", self.description.UTF8String);
     _instance = [[InfinitLinkTransactionManager alloc] init];
   });
   return _instance;
@@ -105,6 +106,11 @@ static dispatch_once_t _instance_token = 0;
       [res addObject: transaction];
   }
   return [res sortedArrayUsingSelector:@selector(compare:)];
+}
+
++ (InfinitLinkTransaction*)transactionWithId:(NSNumber*)id_
+{
+  return [[InfinitLinkTransactionManager sharedInstance] transactionWithId:id_];
 }
 
 - (InfinitLinkTransaction*)transactionWithId:(NSNumber*)id_
