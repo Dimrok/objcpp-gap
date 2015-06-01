@@ -149,6 +149,11 @@ static dispatch_once_t _instance_token = 0;
   return [[self.transaction_map allValues] sortedArrayUsingSelector:@selector(compare:)];
 }
 
++ (InfinitPeerTransaction*)transactionWithId:(NSNumber*)id_
+{
+  return [[InfinitPeerTransactionManager sharedInstance] transactionWithId:id_];
+}
+
 - (InfinitPeerTransaction*)transactionWithId:(NSNumber*)id_
 {
   @synchronized(self.transaction_map)

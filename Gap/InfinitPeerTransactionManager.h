@@ -57,6 +57,13 @@
 
 + (instancetype)sharedInstance;
 
+/** Peer Transaction corresponding to ID.
+ @param id_
+ InfinitPeerTransaction ID.
+ @return Peer Transaction with corresponding ID.
+ */
++ (InfinitPeerTransaction*)transactionWithId:(NSNumber*)id_;
+
 /** List of reverse time ordered transactions.
  @param archived
   Include or exclude archived transactions.
