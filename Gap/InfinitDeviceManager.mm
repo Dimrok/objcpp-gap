@@ -108,14 +108,15 @@ static dispatch_once_t _instance_token = 0;
   if (self.all_devices.count <= 1)
     return @[];
   NSMutableArray* res = [NSMutableArray arrayWithArray:self.all_devices];
-  NSUInteger index = 0;
+  NSUInteger index = NSNotFound;
   for (InfinitDevice* device in res)
   {
     if (device.is_self)
       break;
     index++;
   }
-  [res removeObjectAtIndex:index];
+  if (index < res.count)
+    [res removeObjectAtIndex:index];
   return res;
 }
 
