@@ -450,14 +450,6 @@ static dispatch_once_t _library_token = 0;
 
 - (NSString*)addData:(NSData*)data
         withFilename:(NSString*)filename
-      toManagedFiles:(NSString*)uuid
-               error:(NSError**)error
-{
-  return [self addData:data withFilename:filename toManagedFiles:uuid error:error];
-}
-
-- (NSString*)addData:(NSData*)data
-        withFilename:(NSString*)filename
         creationDate:(NSDate*)creation_date
     modificationDate:(NSDate*)modification_date
       toManagedFiles:(NSString*)uuid

@@ -78,23 +78,6 @@ typedef void (^InfinitTemporaryFileManagerCallback)(BOOL, NSError*);
                    toManagedFiles:(NSString*)uuid
                   completionBlock:(InfinitTemporaryFileManagerCallback)block;
 
-
-/** Add an NSData object to be managed.
- @param data
-  Data with which to build file.
- @param filename
-  Name of file to be created (including extension).
- @param uuid
-  The identifying UUID.
- @param error
-  Error object
- @return Path to created file.
- */
-- (NSString*)addData:(NSData*)data
-        withFilename:(NSString*)filename
-      toManagedFiles:(NSString*)uuid
-               error:(NSError**)error;
-
 /** Add files to be managed.
  @param files
   List of NSString paths that you wish to be managed.
