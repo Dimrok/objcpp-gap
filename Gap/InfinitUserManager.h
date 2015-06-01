@@ -72,6 +72,13 @@
 
 /** User with corresponding ID.
  @param id_
+ User ID.
+ @return User with corresponding ID.
+ */
++ (InfinitUser*)userWithId:(NSNumber*)id_;
+
+/** User with corresponding ID.
+ @param id_
   User ID.
  @return User with corresponding ID.
  */

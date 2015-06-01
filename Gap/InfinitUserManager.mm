@@ -185,6 +185,11 @@ static dispatch_once_t _instance_token = 0;
   [[InfinitStateManager sharedInstance] removeFavorite:user];
 }
 
++ (InfinitUser*)userWithId:(NSNumber*)id_
+{
+  return [[InfinitUserManager sharedInstance] userWithId:id_];
+}
+
 - (InfinitUser*)userWithId:(NSNumber*)id_
 {
   @synchronized(self.user_map)
