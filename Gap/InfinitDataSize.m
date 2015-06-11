@@ -15,7 +15,7 @@
 // Do not confuse MB and MiB. Apple use MB, GB, etc for their file and storage sizes.
 + (NSString*)fileSizeStringFrom:(NSNumber*)file_size
 {
-  NSString* res;
+  NSString* res = @"<nil>";
   double size = file_size.doubleValue;
   NSString* bytes = GapLocalizedString(@"B", @"bytes");
   if (size < pow(10.0, 3.0))
