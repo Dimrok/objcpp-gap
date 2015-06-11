@@ -157,15 +157,12 @@ static dispatch_once_t _instance_token = 0;
                      asScreenshot:(BOOL)screenshot
 {
   NSNumber* res = [[InfinitStateManager sharedInstance] createLinkWithFiles:files
-                                                                withMessage:message];
+                                                                withMessage:message
+                                                               isScreenshot:screenshot];
   if (res.unsignedIntValue != 0)
   {
     InfinitLinkTransaction* transaction =
       [[InfinitStateManager sharedInstance] linkTransactionById:res];
-    if (screenshot)
-      transaction.screenshot = YES;
-    else
-      transaction.screenshot = NO;
     [self transactionUpdated:transaction];
     [self sendTransactionCreatedNotification:transaction];
   }
