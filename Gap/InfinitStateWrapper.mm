@@ -24,13 +24,11 @@ static BOOL _production = NO;
 @implementation InfinitStateWrapper
 
 - (id)initWithState:(gap_State*)state
-   andMaxMirrorSize:(uint64_t)max_mirror_size
 {
   NSCAssert(_wrapper_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
     _state = state;
-    _max_mirror_size = max_mirror_size;
     NSString* free_space =
       [InfinitDataSize fileSizeStringFrom:@([InfinitDirectoryManager sharedInstance].free_space)];
     ELLE_LOG("%s: started state with %s of free space",
@@ -42,7 +40,7 @@ static BOOL _production = NO;
 - (void)dealloc
 {
   _wrapper_instance = nil;
-  if (_state != nullptr)
+  if (self.state != nullptr)
     gap_free(_state);
 }
 
@@ -104,7 +102,7 @@ static BOOL _production = NO;
 
 + (void)startStateWithInitialDownloadDir:(NSString*)download_dir
 {
-  NSCAssert(_wrapper_instance == nil, @"Use sharedInstance");
+  NSCAssert(_wrapper_instance == nil, @"Use sharedInstance.");
   dispatch_once(&_instance_token, ^
   {
     [InfinitStateWrapper setEnvironmentVariables];
@@ -125,8 +123,7 @@ static BOOL _production = NO;
                                                          persistent_config_dir.UTF8String,
                                                          non_persistent_config_dir.UTF8String,
                                                          enable_mirroring,
-                                                         max_mirror_size)
-                                andMaxMirrorSize:max_mirror_size];
+                                                         max_mirror_size)];
   });
 }
 

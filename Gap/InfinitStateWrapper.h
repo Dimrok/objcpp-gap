@@ -13,7 +13,6 @@
 @interface InfinitStateWrapper : NSObject
 
 @property (nonatomic, readonly) gap_State* state;
-@property (nonatomic, readonly) uint64_t max_mirror_size;
 
 + (void)startStateWithInitialDownloadDir:(NSString*)download_dir;
 + (instancetype)sharedInstance;
