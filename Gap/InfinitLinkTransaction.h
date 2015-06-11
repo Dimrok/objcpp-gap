@@ -15,7 +15,7 @@
 @property (nonatomic, readonly) NSNumber* click_count;
 @property (nonatomic, readonly) NSString* link;
 @property (nonatomic, readonly) NSString* name;
-@property (nonatomic, readwrite) BOOL screenshot;
+@property (nonatomic, readonly) BOOL screenshot;
 
 - (id)initWithId:(NSNumber*)id_
          meta_id:(NSString*)meta_id
@@ -26,7 +26,8 @@
             link:(NSString*)link
      click_count:(NSNumber*)click_count
          message:(NSString*)message
-            size:(NSNumber*)size;
+            size:(NSNumber*)size
+      screenshot:(BOOL)screenshot;
 
 - (void)updateWithTransaction:(InfinitLinkTransaction*)transaction;
 

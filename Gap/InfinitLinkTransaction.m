@@ -22,6 +22,7 @@
      click_count:(NSNumber*)click_count
          message:(NSString*)message
             size:(NSNumber*)size
+      screenshot:(BOOL)screenshot
 {
   if (self = [super initWithId:id_
                        meta_id:meta_id
@@ -34,6 +35,7 @@
     _name = name;
     _link = link;
     _click_count = click_count;
+    _screenshot = screenshot;
   }
   return self;
 }
@@ -44,6 +46,7 @@
   _link = transaction.link;
   _name = transaction.name;
   _click_count = transaction.click_count;
+  _screenshot = transaction.screenshot;
 }
 
 #pragma mark - General
