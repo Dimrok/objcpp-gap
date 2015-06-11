@@ -8,6 +8,7 @@
 
 #import "InfinitTemporaryFileManager.h"
 
+#import "InfinitDataSize.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitFileSystemError.h"
 #import "InfinitLinkTransactionManager.h"
@@ -171,7 +172,7 @@ static dispatch_once_t _library_token = 0;
         [remove_keys addObjectsFromArray:[self.transaction_map allKeysForObject:managed_files]];
         [remove_keys addObject:key];
         ELLE_WARN("%s: removing files because of base path change: %s",
-                  self.description.UTF8String, managed_files.uuid);
+                  self.description.UTF8String, managed_files.uuid.UTF8String);
         [self deleteManagedFiles:managed_files.uuid force:YES];
       }
     }
@@ -200,7 +201,7 @@ static dispatch_once_t _library_token = 0;
       if (error)
       {
         ELLE_WARN("%s: unable to remove orphan managed files: %s",
-                  self.description.UTF8String, folder);
+                  self.description.UTF8String, folder.UTF8String);
       }
     }
   }
@@ -466,13 +467,13 @@ static dispatch_once_t _library_token = 0;
       *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoDataToWrite];
     return nil;
   }
-  ELLE_DEBUG("%s: writing %lu to %s",
+  ELLE_DEBUG("%s: writing %lu b to %s",
              self.description.UTF8String, data.length, filename.UTF8String);
-  if (data.length > [InfinitDirectoryManager sharedInstance].free_space)
+  uint64_t free_space = [InfinitDirectoryManager sharedInstance].free_space;
+  if (data.length > free_space)
   {
     ELLE_ERR("%s: insufficient free space: %lu > %lu",
-             self.description.UTF8String, data.length,
-             [InfinitDirectoryManager sharedInstance].free_space);
+             self.description.UTF8String, data.length, free_space);
     if (error != NULL)
       *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoFreeSpace];
     return nil;
@@ -751,7 +752,7 @@ static dispatch_once_t _library_token = 0;
         {
           NSString* new_filename = [component stringByAppendingString:@".JPG"];
           ELLE_DEBUG("%s: renaming file: %s -> %s",
-                     self.description.UTF8String, filename, new_filename);
+                     self.description.UTF8String, filename.UTF8String, new_filename.UTF8String);
           filename = new_filename;
           break;
         }
@@ -759,7 +760,7 @@ static dispatch_once_t _library_token = 0;
     }
     if (!imageData.length)
     {
-      NSString* reason = @"unknown";
+      NSString* reason = @"<empty>";
       if (info[PHImageCancelledKey])
         reason = @"fetch cancelled";
       if (info[PHImageErrorKey])
@@ -779,6 +780,7 @@ static dispatch_once_t _library_token = 0;
                                                                   AVAudioMix* audioMix,
                                                                   NSDictionary* info)
         {
+          InfinitTemporaryFileManager* manager = [InfinitTemporaryFileManager sharedInstance];
           if ([asset isKindOfClass:AVURLAsset.class])
           {
             AVURLAsset* url_asset = (AVURLAsset*)asset;
@@ -788,16 +790,19 @@ static dispatch_once_t _library_token = 0;
 
             NSNumber* file_size_number = [attrs objectForKey:NSFileSize];
             uint64_t free_space = [InfinitDirectoryManager sharedInstance].free_space;
-            if (free_space > [file_size_number unsignedLongValue])
+            if (free_space < file_size_number.unsignedLongValue)
             {
+              NSString* free_space_str = [InfinitDataSize fileSizeStringFrom:@(free_space)];
+              NSString* file_size_str = [InfinitDataSize fileSizeStringFrom:file_size_number];
+              ELLE_WARN("%s: video from path fallback, not enough free space: %s > %s",
+                        manager.description.UTF8String, file_size_str.UTF8String,
+                        free_space_str.UTF8String)
               if (error != NULL)
                 *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoFreeSpace];
             }
             else
             {
-              [[InfinitTemporaryFileManager sharedInstance] addFiles:@[path]
-                                                      toManagedFiles:managed_files.uuid
-                                                                copy:YES];
+              [manager addFiles:@[path] toManagedFiles:managed_files.uuid copy:YES];
             }
           }
           dispatch_semaphore_signal(get_path_sema);
@@ -808,7 +813,7 @@ static dispatch_once_t _library_token = 0;
     else if (info[PHImageErrorKey])
     {
       ELLE_WARN("%s: error fetching PHAsset %s, reason: %s",
-                self.description.UTF8String, filename.UTF8String,
+                self.description.UTF8String, (filename.length ? filename.UTF8String : "<nil>"),
                 [info[PHImageErrorKey] description].UTF8String);
     }
     if (imageData.length)
