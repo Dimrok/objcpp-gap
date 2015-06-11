@@ -8,6 +8,7 @@
 
 #import "InfinitStateManager.h"
 
+#import "InfinitAccountsManager.h"
 #import "InfinitAvatarManager.h"
 #import "InfinitConnectionManager.h"
 #import "InfinitCrashReporter.h"
@@ -27,6 +28,7 @@
 #import <surface/gap/gap.hh>
 
 #import "NSString+email.h"
+#import "NSString+PhoneNumber.h"
 
 #if TARGET_OS_IPHONE
 # import <CoreTelephony/CTCarrier.h>
@@ -54,17 +56,13 @@ static NSString* _facebook_app_id = nil;
 @interface InfinitStateManager ()
 
 @property (nonatomic, readwrite) NSString* current_user;
+@property (nonatomic, readonly) NSTimer* poll_timer;
+@property (atomic, readwrite) BOOL polling; // Use boolean to guard polling as NSTimer valid is iOS 8.0+.
+@property (nonatomic, readonly) NSOperationQueue* queue;
 
 @end
 
 @implementation InfinitStateManager
-{
-@private
-  NSOperationQueue* _queue;
-
-  NSTimer* _poll_timer;
-  BOOL _polling; // Use boolean to guard polling as NSTimer valid is iOS 8.0+.
-}
 
 @synthesize logged_in = _logged_in;
 
@@ -76,8 +74,8 @@ static NSString* _facebook_app_id = nil;
   if (self = [super init])
   {
     _queue = [[NSOperationQueue alloc] init];
-    _queue.name = @"StateManagerQueue";
-    _queue.maxConcurrentOperationCount = 1;
+    self.queue.name = @"StateManagerQueue";
+    self.queue.maxConcurrentOperationCount = 1;
     _current_user = nil;
   }
   return self;
@@ -115,11 +113,6 @@ static NSString* _facebook_app_id = nil;
   [InfinitUserManager sharedInstance];
   [InfinitLinkTransactionManager sharedInstance];
   [InfinitPeerTransactionManager sharedInstance];
-}
-
-- (uint64_t)max_mirror_size
-{
-  return self.stateWrapper.max_mirror_size;
 }
 
 - (void)_attachCallbacks
@@ -168,6 +161,10 @@ static NSString* _facebook_app_id = nil;
   {
     ELLE_ERR("%s: unable to attach contact joined callback", self.description.UTF8String);
   }
+  if (gap_accounts_changed_callback(self.stateWrapper.state, on_accounts_changed) != gap_ok)
+  {
+    ELLE_ERR("%s: unable to attach accounts changed callback", self.description.UTF8String);
+  }
 }
 
 #pragma mark - Stop
@@ -188,11 +185,15 @@ static NSString* _facebook_app_id = nil;
 
 - (void)_stopState
 {
+  if (self.poll_timer)
+  {
+    [self.poll_timer invalidate];
+    _poll_timer = nil;
+  }
+  self.queue.suspended = YES;
+  [self.queue cancelAllOperations];
   _manager_instance = nil;
   _instance_token = 0;
-  [_poll_timer invalidate];
-  _queue.suspended = YES;
-  [_queue cancelAllOperations];
 }
 
 + (void)stopState
@@ -316,6 +317,35 @@ static NSString* _facebook_app_id = nil;
 {
   [self _addOperation:[self operationRegisterFullname:fullname email:email password:password]
       completionBlock:completion_block];
+}
+
+- (void)plainInviteContact:(NSString*)contact
+           completionBlock:(InfinitPlainInviteBlock)completion_block
+{
+  if (!contact.infinit_isEmail && !contact.infinit_isPhoneNumber)
+  {
+    if (completion_block)
+      completion_block([InfinitStateResult resultWithStatus:gap_bad_request], nil, nil, nil);
+  }
+  [self _addOperationCustomResultBlock:^(InfinitStateManager* manager, NSOperation* operation)
+  {
+    surface::gap::PlainInvitation res;
+    gap_Status status = gap_plain_invite_contact(manager.stateWrapper.state,
+                                                 contact.UTF8String,
+                                                 res);
+    if (operation.isCancelled)
+      return;
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
+      if (completion_block)
+      {
+        completion_block([InfinitStateResult resultWithStatus:status],
+                         contact,
+                         [manager _nsString:res.ghost_code],
+                         [manager _nsString:res.ghost_profile_url]);
+      }
+    });
+  }];
 }
 
 - (void)ghostCodeExists:(NSString*)code
@@ -554,6 +584,16 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
       completionBlock:completion_block];
 }
 
+- (void)addFacebookAccount:(NSString*)facebook_token
+{
+  if (!facebook_token.length)
+    return;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    return gap_add_facebook_account(manager.stateWrapper.state, facebook_token.UTF8String);
+  }];
+}
+
 - (void)cancelAllOperationsExcluding:(NSOperation*)exclude
 {
   for (NSOperation* operation in _queue.operations)
@@ -645,40 +685,38 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 
 #pragma mark - Polling
 
-- (BOOL)_polling
-{
-  return _polling;
-}
-
 - (void)_startPolling
 {
-  _polling = YES;
+  if (self.polling)
+    return;
+  self.polling = YES;
   _poll_timer = [NSTimer timerWithTimeInterval:1.0f
                                         target:self
                                       selector:@selector(_poll)
                                       userInfo:nil
                                        repeats:YES];
-  if ([_poll_timer respondsToSelector:@selector(tolerance)])
+  if ([self.poll_timer respondsToSelector:@selector(tolerance)])
   {
-    _poll_timer.tolerance = 1.0f;
+    self.poll_timer.tolerance = 1.0f;
   }
-  [[NSRunLoop mainRunLoop] addTimer:_poll_timer forMode:NSDefaultRunLoopMode];
+  [[NSRunLoop mainRunLoop] addTimer:self.poll_timer forMode:NSDefaultRunLoopMode];
 }
 
 - (void)_stopPolling
 {
-  _polling = NO;
-  [_poll_timer invalidate];
+  self.polling = NO;
+  if (self.poll_timer)
+    [self.poll_timer invalidate];
   _poll_timer = nil;
 }
 
 - (void)_poll
 {
-  if (!_polling)
+  if (!self.polling)
     return;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
-    if (![manager _polling])
+    if (!manager.polling)
       return gap_error;
     return gap_poll(manager.stateWrapper.state);
   }];
@@ -731,8 +769,6 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 
 - (void)addFavorite:(InfinitUser*)user
 {
-  if (!self.logged_in)
-    return;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
      if (!manager.logged_in)
@@ -743,8 +779,6 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 
 - (void)removeFavorite:(InfinitUser*)user
 {
-  if (!self.logged_in)
-    return;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
    {
      if (!manager.logged_in)
@@ -858,6 +892,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 
 - (NSNumber*)createLinkWithFiles:(NSArray*)files
                      withMessage:(NSString*)message_
+                    isScreenshot:(BOOL)screenshot
 {
   if (!self.logged_in)
     return nil;
@@ -866,7 +901,8 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     message = @"";
   uint32_t res = gap_create_link_transaction(self.stateWrapper.state,
                                              [self _filesVectorFromNSArray:files],
-                                             message.UTF8String);
+                                             message.UTF8String,
+                                             screenshot);
   return [self _numFromUint:res];
 }
 
@@ -968,14 +1004,20 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 {
   if (!self.logged_in)
     return;
-  gap_accept_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    return gap_accept_transaction(manager.stateWrapper.state, id_.unsignedIntValue);
+  }];
 }
 
 - (void)rejectTransactionWithId:(NSNumber*)id_
 {
   if (!self.logged_in)
     return;
-  gap_reject_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    return gap_reject_transaction(manager.stateWrapper.state, id_.unsignedIntValue);
+  }];
 }
 
 #pragma mark - Connection Status
@@ -992,7 +1034,10 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   {
     connected = true;
   }
-  gap_internet_connection(self.stateWrapper.state, connected);
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    return gap_internet_connection(manager.stateWrapper.state, connected);
+  }];
 }
 
 #pragma mark - Devices
@@ -1010,6 +1055,38 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
       [res addObject:[self _convertDevice:device]];
   }
   return res;
+}
+
+#pragma mark - Accounts
+
+- (NSArray*)accounts
+{
+  NSMutableArray* res = [NSMutableArray array];
+  std::vector<Account const*> accounts_;
+  gap_Status status = gap_accounts(self.stateWrapper.state, accounts_);
+  if (status != gap_ok)
+  {
+    ELLE_ERR("%s: unable to fetch accounts", self.description.UTF8String);
+  }
+  for (auto account_: accounts_)
+  {
+    InfinitAccount* account = [self _convertAccount:*account_];
+    if (account)
+      [res addObject:account];
+  }
+  return res;
+}
+
+- (void)_accountsChanged:(std::vector<Account const*>)accounts
+{
+  NSMutableArray* res = [NSMutableArray array];
+  for (auto account_: accounts)
+  {
+    InfinitAccount* account = [self _convertAccount:*account_];
+    if (account)
+      [res addObject:account];
+  }
+  [[InfinitAccountsManager sharedInstance] accountsUpdated:res];
 }
 
 #pragma mark - Features
@@ -1390,7 +1467,9 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 
 - (NSString*)_nsString:(std::string const&)string
 {
-  return [NSString stringWithUTF8String:string.c_str()];
+  if (string.length())
+    return [NSString stringWithUTF8String:string.c_str()];
+  return @"";
 }
 
 - (NSString*)_nsStringOptional:(boost::optional<std::string>)optional
@@ -1439,7 +1518,8 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
                                           link:link
                                    click_count:[self _numFromUint:transaction.click_count]
                                        message:[self _nsString:transaction.message]
-                                          size:size];
+                                          size:size
+                                    screenshot:transaction.screenshot];
   return res;
 }
 
@@ -1484,6 +1564,12 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
                                              meta_id:[self _nsString:user.meta_id]
                                          phoneNumber:[self _nsString:user.phone_number]];
   return res;
+}
+
+- (InfinitAccount*)_convertAccount:(Account const&)account
+{
+  return [InfinitAccount accountOfType:[self _nsString:account.type]
+                        withIdentifier:[self _nsString:account.id]];
 }
 
 #pragma mark - Operations
@@ -1823,6 +1909,21 @@ on_ghost_code_used(std::string const& code, bool succeeded, std::string const& r
   @catch (NSException* e)
   {
     ELLE_ERR("on_ghost_code_used exception: %s", e.description.UTF8String);
+    @throw e;
+  }
+}
+
+static
+void
+on_accounts_changed(std::vector<Account const*> accounts)
+{
+  @try
+  {
+    [[InfinitStateManager sharedInstance] _accountsChanged:accounts];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_accounts_changed exception: %s", e.description.UTF8String);
     @throw e;
   }
 }

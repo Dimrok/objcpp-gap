@@ -39,7 +39,6 @@ typedef void(^InfinitStateCompletionBlock)(InfinitStateResult* result);
 @interface InfinitStateManager : NSObject
 
 @property (nonatomic, readonly) BOOL logged_in;
-@property (nonatomic, readonly) uint64_t max_mirror_size;
 @property (nonatomic, readwrite) NSString* push_token;
 
 + (instancetype)sharedInstance;
@@ -94,6 +93,19 @@ typedef void(^InfinitEmailAccountStatusBlock)(InfinitStateResult* result,
                    email:(NSString*)email
                 password:(NSString*)password
          completionBlock:(InfinitStateCompletionBlock)completion_block;
+
+/** Plain invite contact.
+ @param contact
+  Email or phone number to invite.
+ @param completion_block
+  Block to run on completion.
+ */
+typedef void(^InfinitPlainInviteBlock)(InfinitStateResult* result,
+                                       NSString* contact, 
+                                       NSString* code, 
+                                       NSString* url);
+- (void)plainInviteContact:(NSString*)contact
+           completionBlock:(InfinitPlainInviteBlock)completion_block;
 
 /** Check a ghost code exists.
  @param code
@@ -202,6 +214,11 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
            emailAddress:(NSString*)email
         completionBlock:(InfinitStateCompletionBlock)completion_block;
 
+/** Connect Facebook account to existing Infinit account.
+ Will add their Facebook ID to their account information so that they can find friends.
+ */
+- (void)addFacebookAccount:(NSString*)facebook_token;
+
 /** Log the current user out.
  @param selector
   Function to call when complete.
@@ -247,6 +264,9 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
                       os:(NSString*)os
          completionBlock:(InfinitStateCompletionBlock)completion_block;
 
+#pragma mark - Accounts
+- (NSArray*)accounts;
+
 #pragma mark - User
 /// Users should be accessed using the User Manager.
 - (NSArray*)swaggers;
@@ -270,9 +290,9 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
 /// Link Transactions should be accessed using the Link Transaction Manager.
 - (NSArray*)linkTransactions;
 - (InfinitLinkTransaction*)linkTransactionById:(NSNumber*)id_;
-
 - (NSNumber*)createLinkWithFiles:(NSArray*)files
-                     withMessage:(NSString*)message;
+                     withMessage:(NSString*)message_
+                    isScreenshot:(BOOL)screenshot;
 - (void)deleteTransactionWithId:(NSNumber*)id_;
 
 #pragma mark - Peer Transactions
