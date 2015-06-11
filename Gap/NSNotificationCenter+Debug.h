@@ -10,7 +10,7 @@
 
 # import <Foundation/Foundation.h>
 
-@interface NSNotificationCenter (Debug)
+@interface NSNotificationCenter (infinit_Debug)
 
 - (NSArray*)observersForNotificationWithName:(NSString*)name;
 

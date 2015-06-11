@@ -37,13 +37,13 @@ swizzle_class_selector(Class class, SEL original_sel, SEL swizzled_sel)
   }
 }
 
+static dispatch_once_t _load_token = 0;
 static InfinitThreadSafeDictionary* _observer_map;
 
-@implementation NSNotificationCenter (Debug)
+@implementation NSNotificationCenter (infinit_Debug)
 
 + (void)load
 {
-  dispatch_once_t _load_token = 0;
   dispatch_once(&_load_token, ^
   {
     SEL original_add_observer_sel = @selector(addObserver:selector:name:object:);
@@ -85,12 +85,12 @@ static InfinitThreadSafeDictionary* _observer_map;
                             userInfo:(NSDictionary*)aUserInfo
 {
   [self infinit_postNotificationName:aName object:anObject userInfo:aUserInfo];
-  if ([aName containsString:@"INFINIT"])
-  {
-    NSLog(@"xxx posting: %@", aName);
-    for (id observer in _observer_map[aName])
-      NSLog(@"xxx\t\tto %@", observer);
-  }
+//  if ([aName containsString:@"INFINIT"])
+//  {
+//    NSLog(@"xxx posting: %@", aName);
+//    for (id observer in _observer_map[aName])
+//      NSLog(@"xxx\t\tto %@", observer);
+//  }
 }
 
 @end
