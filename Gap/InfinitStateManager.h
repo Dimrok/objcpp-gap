@@ -395,6 +395,11 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
              withMethod:(NSString*)method
       andAdditionalData:(NSDictionary*)additional;
 
+- (void)sendMetricInviteSent:(BOOL)success
+                        code:(NSString*)code
+                      method:(gap_InviteMessageMethod)method
+                  failReason:(NSString*)fail_reason_;
+
 - (void)sendMetricGhostSMSSent:(BOOL)success
                           code:(NSString*)code
                     failReason:(NSString*)fail_reason;

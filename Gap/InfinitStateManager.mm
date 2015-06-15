@@ -322,6 +322,8 @@ static NSString* _facebook_app_id = nil;
 - (void)plainInviteContact:(NSString*)contact
            completionBlock:(InfinitPlainInviteBlock)completion_block
 {
+  if (!contact.length)
+    return;
   if (!contact.infinit_isEmail && !contact.infinit_isPhoneNumber)
   {
     if (completion_block)
@@ -1391,6 +1393,24 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   }];
 }
 
+- (void)sendMetricInviteSent:(BOOL)success
+                        code:(NSString*)code
+                      method:(gap_InviteMessageMethod)method
+                  failReason:(NSString*)fail_reason_
+{
+  if (!code.length)
+    return;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    std::string fail_reason = fail_reason_.length ? std::string(fail_reason_.UTF8String) : "";
+    return gap_invitation_message_sent_metric(manager.stateWrapper.state,
+                                              success,
+                                              code.UTF8String,
+                                              method,
+                                              fail_reason);
+  }];
+}
+
 - (void)sendMetricGhostSMSSent:(BOOL)success
                           code:(NSString*)code
                     failReason:(NSString*)fail_reason_
@@ -1400,10 +1420,11 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
     std::string fail_reason = fail_reason_.length ? std::string(fail_reason_.UTF8String) : "";
-    return gap_send_sms_ghost_code_metric(manager.stateWrapper.state,
-                                          success,
-                                          code.UTF8String,
-                                          fail_reason);
+    return gap_invitation_message_sent_metric(manager.stateWrapper.state,
+                                              success,
+                                              code.UTF8String,
+                                              gap_invite_message_native,
+                                              fail_reason);
   }];
 }
 
