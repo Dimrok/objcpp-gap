@@ -23,6 +23,33 @@ static dispatch_once_t _instance_token = 0;
   NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
   {
+    NSString* download_candidate = nil;
+    NSDictionary* attrs = nil;
+#if TARGET_OS_IPHONE
+    NSString* doc_dir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                            NSUserDomainMask,
+                                                            YES).firstObject;
+    download_candidate = [doc_dir stringByAppendingPathComponent:@"Downloads"];
+    attrs = @{NSURLIsExcludedFromBackupKey: @NO};
+#else
+    download_candidate =
+      NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory, NSUserDomainMask, YES).firstObject;
+#endif
+    if (![[NSFileManager defaultManager] fileExistsAtPath:download_candidate])
+    {
+      NSError* error = nil;
+      [[NSFileManager defaultManager] createDirectoryAtPath:download_candidate
+                                withIntermediateDirectories:NO
+                                                 attributes:attrs
+                                                      error:&error];
+      if (error)
+      {
+        ELLE_ERR("%s: unable to create download folder: %s",
+                 self.description.UTF8String, error.description.UTF8String);
+        self.download_directory = nil;
+      }
+    }
+    self.download_directory = download_candidate;
   }
   return self;
 }
@@ -88,37 +115,6 @@ static dispatch_once_t _instance_token = 0;
     }
   }
   return avatar_dir;
-}
-
-- (NSString*)download_directory
-{
-  NSString* res = nil;
-  NSDictionary* attrs = nil;
-#if TARGET_OS_IPHONE
-  NSString* doc_dir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                                          NSUserDomainMask,
-                                                          YES).firstObject;
-  res = [doc_dir stringByAppendingPathComponent:@"Downloads"];
-  attrs = @{NSURLIsExcludedFromBackupKey: @NO};
-#else
-  res =
-    NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory, NSUserDomainMask, YES).firstObject;
-#endif
-  if (![[NSFileManager defaultManager] fileExistsAtPath:res])
-  {
-    NSError* error = nil;
-    [[NSFileManager defaultManager] createDirectoryAtPath:res
-                              withIntermediateDirectories:NO
-                                               attributes:attrs
-                                                    error:&error];
-    if (error)
-    {
-      ELLE_ERR("%s: unable to create download folder: %s",
-               self.description.UTF8String, error.description.UTF8String);
-      return nil;
-    }
-  }
-  return res;
 }
 
 - (NSString*)log_directory

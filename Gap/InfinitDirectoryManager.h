@@ -13,7 +13,7 @@
 @interface InfinitDirectoryManager : NSObject
 
 @property (nonatomic, readonly) NSString* avatar_cache_directory;
-@property (nonatomic, readonly) NSString* download_directory;
+@property (nonatomic, readwrite, copy) NSString* download_directory;
 @property (nonatomic, readonly) NSString* log_directory;
 @property (nonatomic, readonly) NSString* persistent_directory;
 @property (nonatomic, readonly) NSString* non_persistent_directory;
