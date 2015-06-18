@@ -1228,11 +1228,7 @@
 					../../../_build/ios/oracles/src,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/chris/sandbox/ios-infinit/surface/ios/plcrashreporter/build/Debug-iphoneos",
-					/Users/chris/sandbox/infinit/_build/macosx64/lib,
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -1278,11 +1274,7 @@
 					../../../_build/ios/oracles/src,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/chris/sandbox/ios-infinit/surface/ios/plcrashreporter/build/Debug-iphoneos",
-					/Users/chris/sandbox/infinit/_build/macosx64/lib,
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
@@ -1348,7 +1340,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					../../../_build/macosx64/lib,
-					/Users/chris/sandbox/infinit/_build/macosx64/lib,
 				);
 				LINKER_DISPLAYS_MANGLED_NAMES = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
@@ -1414,7 +1405,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					../../../_build/macosx64/lib,
-					/Users/chris/sandbox/infinit/_build/macosx64/lib,
 				);
 				LINKER_DISPLAYS_MANGLED_NAMES = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
