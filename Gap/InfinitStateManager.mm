@@ -56,6 +56,7 @@ static NSString* _facebook_app_id = nil;
 @interface InfinitStateManager ()
 
 @property (nonatomic, readwrite) NSString* current_user;
+@property (nonatomic, readwrite) dispatch_once_t meta_session_id_token;
 @property (nonatomic, readonly) NSTimer* poll_timer;
 @property (atomic, readwrite) BOOL polling; // Use boolean to guard polling as NSTimer valid is iOS 8.0+.
 @property (nonatomic, readonly) NSOperationQueue* queue;
@@ -64,6 +65,7 @@ static NSString* _facebook_app_id = nil;
 
 @implementation InfinitStateManager
 
+@synthesize encoded_meta_session_id = _encoded_meta_session_id;
 @synthesize logged_in = _logged_in;
 
 #pragma mark - Start
@@ -615,6 +617,8 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     [manager _clearSelfAndModel:YES];
     [manager _stopPolling];
     manager->_logged_in = NO;
+    manager->_encoded_meta_session_id = nil;
+    manager.meta_session_id_token = 0;
     gap_Status res = gap_logout(manager.stateWrapper.state);
     return res;
   };
@@ -631,13 +635,23 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   [self _addOperation:[self operationLogout] completionBlock:completion_block];
 }
 
-- (NSString*)metaSessionId
+- (NSString*)encoded_meta_session_id
 {
-  std::string res;
-  gap_Status status = gap_session_id(self.stateWrapper.state, res);
-  if (status == gap_ok)
-    return [self _nsString:res];
-  return nil;
+  dispatch_once(&_meta_session_id_token, ^
+  {
+    std::string res;
+    gap_Status status = gap_session_id(self.stateWrapper.state, res);
+    if (status == gap_ok)
+    {
+      _encoded_meta_session_id =
+        [[self _nsString:res] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    }
+    else
+    {
+      self.meta_session_id_token = 0;
+    }
+  });
+  return _encoded_meta_session_id;
 }
 
 #pragma mark - Local Contacts
@@ -1738,7 +1752,10 @@ on_connection_callback(bool status, bool still_retrying, std::string const& last
       error = [NSString stringWithUTF8String:last_error.c_str()];
     if (!status && !still_retrying)
     {
-      [InfinitStateManager sharedInstance]->_logged_in = NO;
+      InfinitStateManager* manager = [InfinitStateManager sharedInstance];
+      manager->_logged_in = NO;
+      manager->_meta_session_id_token = 0;
+      manager->_encoded_meta_session_id = nil;
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(500 * NSEC_PER_MSEC)),
                      dispatch_get_main_queue(), ^
       {

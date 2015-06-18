@@ -38,6 +38,7 @@ typedef void(^InfinitStateCompletionBlock)(InfinitStateResult* result);
 
 @interface InfinitStateManager : NSObject
 
+@property (nonatomic, readonly) NSString* encoded_meta_session_id;
 @property (nonatomic, readonly) BOOL logged_in;
 @property (nonatomic, readwrite) NSString* push_token;
 
@@ -233,10 +234,6 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
   Block to call on completion.
  */
 - (void)logoutWithCompletionBlock:(InfinitStateCompletionBlock)completion_block;
-
-/** Fetch Meta session ID to automatically log into website.
- */
-- (NSString*)metaSessionId;
 
 #pragma mark - Local Contacts
 /** Upload contacts.
