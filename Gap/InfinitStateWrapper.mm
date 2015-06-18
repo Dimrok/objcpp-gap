@@ -31,7 +31,7 @@ static BOOL _production = NO;
     _state = state;
     NSString* free_space =
       [InfinitDataSize fileSizeStringFrom:@([InfinitDirectoryManager sharedInstance].free_space)];
-    ELLE_LOG("%s: started state with %s of free space",
+    ELLE_LOG("%s: started state with %s of free space in download directory",
              self.description.UTF8String, free_space.UTF8String);
   }
   return self;
@@ -39,9 +39,10 @@ static BOOL _production = NO;
 
 - (void)dealloc
 {
-  _wrapper_instance = nil;
   if (self.state != nullptr)
     gap_free(_state);
+  _wrapper_instance = nil;
+  _instance_token = 0;
 }
 
 #pragma mark - Set Environment Variables
@@ -116,6 +117,7 @@ static BOOL _production = NO;
 #else
     BOOL enable_mirroring = YES;
     uint64_t max_mirror_size = 500 * 1024 * 1024; // 500 MiB.
+    [InfinitDirectoryManager sharedInstance].download_directory = download_dir;
 #endif
     _wrapper_instance =
       [[InfinitStateWrapper alloc] initWithState:gap_new(_production,
