@@ -55,7 +55,14 @@ static InfinitThreadSafeDictionary* _observer_map;
     swizzle_class_selector(self.class, original_post_sel, swizzled_post_sel);
     _observer_map =
       [InfinitThreadSafeDictionary dictionaryWithName:@"io.Infinit.NSNotificationCenter-Observers"
-                                      withNillSupport:YES];
+                                       withNilSupport:YES];
+    SEL original_remove_observer_name_sel = @selector(removeObserver:name:object:);
+    SEL swizzled_remove_observer_name_sel = @selector(infinit_removeObserver:name:object:);
+    swizzle_class_selector(self.class,
+                           original_remove_observer_name_sel, swizzled_remove_observer_name_sel);
+    SEL original_remove_observer_sel = @selector(removeObserver:);
+    SEL swizzled_remove_observer_sel = @selector(infinit_removeObserver:);
+    swizzle_class_selector(self.class, original_remove_observer_sel, swizzled_remove_observer_sel);
   });
 }
 
@@ -91,6 +98,37 @@ static InfinitThreadSafeDictionary* _observer_map;
 //    for (id observer in _observer_map[aName])
 //      NSLog(@"xxx\t\tto %@", observer);
 //  }
+}
+
+- (void)infinit_removeObserver:(id)observer
+                          name:(NSString*)aName 
+                        object:(id)anObject
+{
+  [self infinit_removeObserver:observer name:aName object:anObject];
+  if (aName == nil)
+    return;
+  NSMutableArray* observers = _observer_map[aName];
+  [observers removeObject:observer];
+  if (observers.count == 0)
+    [_observer_map removeObjectForKey:aName];
+}
+
+- (void)infinit_removeObserver:(id)observer
+{
+  [self infinit_removeObserver:observer];
+  NSMutableArray* empty = [NSMutableArray array];
+  for (NSString* name in _observer_map.allKeys)
+  {
+    NSMutableArray* observers = _observer_map[name];
+    if ([observers containsObject:observer])
+    {
+      [observers removeObject:observer];
+      if (observers.count == 0)
+        [empty addObject:name];
+    }
+  }
+  for (NSString* name in empty)
+    [_observer_map removeObjectForKey:name];
 }
 
 @end
