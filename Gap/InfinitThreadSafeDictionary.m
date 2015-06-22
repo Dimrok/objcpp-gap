@@ -8,21 +8,6 @@
 
 #import "InfinitThreadSafeDictionary.h"
 
-@interface InfinitNil : NSObject
-
-+ (instancetype)newNil;
-
-@end
-
-@implementation InfinitNil
-
-+ (instancetype)newNil
-{
-  return [[super alloc] init];
-}
-
-@end
-
 @interface InfinitThreadSafeDictionary ()
 
 @property (nonatomic, readonly) NSMutableDictionary* dictionary;
@@ -40,7 +25,7 @@
 @implementation InfinitThreadSafeDictionary
 
 - (instancetype)initWithName:(NSString*)name 
-             withNillSupport:(BOOL)nil_support
+              withNilSupport:(BOOL)nil_support
 {
   NSCAssert(name.length, @"Ensure name has length.");
   if (self = [super init])
@@ -48,20 +33,20 @@
     _nil_support = nil_support;
     _queue_name = [NSString stringWithFormat:@"io.Infinit.ThreadSafeDictionary-%@", name];
     _queue = dispatch_queue_create(self.queue_name.UTF8String, DISPATCH_QUEUE_SERIAL);
-    _dictionary = [[NSMutableDictionary alloc] init];
+    _dictionary = [NSMutableDictionary dictionary];
   }
   return self;
 }
 
 + (instancetype)dictionaryWithName:(NSString*)name
-                   withNillSupport:(BOOL)nil_support
+                    withNilSupport:(BOOL)nil_support
 {
-  return [[InfinitThreadSafeDictionary alloc] initWithName:name withNillSupport:nil_support];
+  return [[self alloc] initWithName:name withNilSupport:nil_support];
 }
 
 + (instancetype)initWithName:(NSString*)name
 {
-  return [InfinitThreadSafeDictionary dictionaryWithName:name withNillSupport:NO];
+  return [self dictionaryWithName:name withNilSupport:NO];
 }
 
 - (void)dealloc
@@ -77,7 +62,7 @@
   __block NSArray* res = nil;
   if (self.finalize)
     return res;
-  dispatch_barrier_sync(self.queue, ^
+  dispatch_sync(self.queue, ^
   {
     res = self.dictionary.allKeys;
   });
@@ -89,7 +74,7 @@
   __block NSArray* res = nil;
   if (self.finalize)
     return res;
-  dispatch_barrier_sync(self.queue, ^
+  dispatch_sync(self.queue, ^
   {
     res = self.dictionary.allValues;
   });
@@ -101,7 +86,7 @@
   __block id res = nil;
   if (self.finalize)
     return res;
-  dispatch_barrier_sync(self.queue, ^
+  dispatch_sync(self.queue, ^
   {
     res = [self.dictionary objectForKey:key];
   });
@@ -113,7 +98,7 @@
   __block id res = nil;
   if (self.finalize)
     return res;
-  dispatch_barrier_sync(self.queue, ^
+  dispatch_sync(self.queue, ^
   {
     res = self.dictionary[key];
   });
@@ -139,8 +124,8 @@
     return;
   id obj = obj_;
   if (self.nil_support && obj == nil)
-    obj = [InfinitNil newNil];
-  dispatch_barrier_async(self.queue, ^
+    obj = [NSNull null];
+  dispatch_async(self.queue, ^
   {
     [self.dictionary setObject:obj forKey:key];
   });
@@ -153,8 +138,8 @@ forKeyedSubscript:(id <NSCopying>)key
     return;
   id obj = obj_;
   if (self.nil_support && obj == nil)
-    obj = [InfinitNil newNil];
-  dispatch_barrier_async(self.queue, ^
+    obj = [NSNull null];
+  dispatch_async(self.queue, ^
   {
     self.dictionary[key] = obj;
   });
@@ -164,7 +149,7 @@ forKeyedSubscript:(id <NSCopying>)key
 {
   if (self.finalize)
     return;
-  dispatch_barrier_async(self.queue, ^
+  dispatch_async(self.queue, ^
   {
     [self.dictionary removeObjectForKey:key];
   });
@@ -174,7 +159,7 @@ forKeyedSubscript:(id <NSCopying>)key
 {
   if (self.finalize)
     return;
-  dispatch_barrier_sync(self.queue, ^
+  dispatch_async(self.queue, ^
   {
     [self.dictionary removeAllObjects];
   });
