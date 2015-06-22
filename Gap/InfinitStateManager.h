@@ -160,6 +160,14 @@ performSelector:(SEL)selector
      password:(NSString*)password
 completionBlock:(InfinitStateCompletionBlock)completion_block;
 
+/** Fetch web login token.
+ @param completion_block
+  Block to run on completion.
+ */
+typedef void(^InfinitWebLoginTokenBlock)(InfinitStateResult* result,
+                                         NSString* token);
+- (void)webLoginTokenWithCompletionBlock:(InfinitWebLoginTokenBlock)completion_block;
+
 /** User registered with Facebook id.
  @param facebook_id
   Facebook id of user.

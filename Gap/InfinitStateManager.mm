@@ -469,6 +469,18 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
       completionBlock:completion_block];
 }
 
+- (void)webLoginTokenWithCompletionBlock:(InfinitWebLoginTokenBlock)completion_block
+{
+  [self _addOperationCustomResultBlock:^void(InfinitStateManager* manager, NSOperation* operation)
+  {
+    std::string token;
+    gap_Status status = gap_web_login_token(manager.stateWrapper.state, token);
+    if (operation.isCancelled || !completion_block)
+      return;
+    completion_block([InfinitStateResult resultWithStatus:status], [manager _nsString:token]);
+  }];
+}
+
 - (void)userRegisteredWithFacebookId:(NSString*)facebook_id
                      performSelector:(SEL)selector
                             onObject:(id)object
@@ -968,7 +980,9 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   if (!self.logged_in)
     return nil;
   uint32_t res = 0;
-  std::vector<std::string> files_ = [self _filesVectorFromNSArray:files];
+  NSArray* sorted_files =
+    [files sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+  std::vector<std::string> files_ = [self _filesVectorFromNSArray:sorted_files];
   if ([recipient isKindOfClass:InfinitUser.class])
   {
     InfinitUser* user = recipient;
@@ -1008,9 +1022,11 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     return nil;
   uint32_t res = 0;
   std::string device_id_(device_id.UTF8String);
+  NSArray* sorted_files =
+    [files sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
   res = gap_send_files(self.stateWrapper.state,
                        recipient.id_.unsignedIntValue,
-                       [self _filesVectorFromNSArray:files],
+                       [self _filesVectorFromNSArray:sorted_files],
                        message.UTF8String,
                        device_id_);
   return [self _numFromUint:res];
