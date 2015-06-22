@@ -8,11 +8,21 @@
 
 #import <Foundation/Foundation.h>
 
+#import "InfinitFileSystemError.h"
+#import "InfinitManagedFiles.h"
+
 /** Notification sent when Temporary File Manager has initialized its model.
  */
 #define INFINIT_TEMPORARY_FILE_MANAGER_READY @"INFINIT_TEMPORARY_FILE_MANAGER_READY"
 
-typedef void (^InfinitTemporaryFileManagerCallback)(BOOL, NSError*);
+/** Notification sent when managed files are deleted.
+ userInfo includes a dictionary with the managed files UUID:
+ { "managed_files_uuid": <UUID> }
+ */
+#define INFINIT_MANAGED_FILES_DELETED @"INFINIT_MANAGED_FILES_DELETED"
+#define kInfinitManagedFilesId @"managed_files_uuid"
+
+typedef void (^InfinitTemporaryFileManagerCallback)(BOOL success, NSError* error);
 
 @interface InfinitTemporaryFileManager : NSObject
 
@@ -20,92 +30,97 @@ typedef void (^InfinitTemporaryFileManagerCallback)(BOOL, NSError*);
 
 + (instancetype)sharedInstance;
 
+/** Fetch managed files with ID.
+ @param uuid
+  Managed files UUID.
+ */
++ (InfinitManagedFiles*)filesWithUUID:(NSString*)uuid;
 
 /** Start the Temporary File Manager. This should be done when the transaction manager is ready.
  */
 - (void)start;
 
 /** Create a set of managed files.
- @returns UUID used to identify the managed files.
+ @returns Managed files object.
  */
-- (NSString*)createManagedFiles;
+- (InfinitManagedFiles*)createManagedFiles;
 
-/** Get paths for the managed files.
- @param uuid
-  The identifying UUID.
- @return Array of NSStrings with the managed path for each file.
- */
-- (NSArray*)pathsForManagedFiles:(NSString*)uuid;
-
-/** File count of managed files.
- @param uuid
-  The identifying UUID.
- @return File count.
- */
-- (NSUInteger)fileCountForManagedFiles:(NSString*)uuid;
-
-/** Total size of managed files.
- @param uuid
-  The identifying UUID.
- @return Total size of managed files.
- */
-- (NSNumber*)totalSizeOfManagedFiles:(NSString*)uuid;
-
-/** Add a list of Asset Library URLs to be managed.
- The expected URLs are of form: 
-  assets-library://asset/asset.JPG?id=1D8E0CAE-0A8E-4420-BC85-5E79814106A2&ext=JPG"
+/** Add a list of ALAssets to be managed.
  Files will be created for the associated assets.
  @param list
-  List of Assets Library URLs as NSURLs.
- @param uuid
-  The identifying UUID.
+  List of ALAssets.
+ @param managed_files
+  The managed files.
  @param block
   Block to be run when done.
  */
-- (void)addALAssetsLibraryURLList:(NSArray*)list
-                   toManagedFiles:(NSString*)uuid
-                  completionBlock:(InfinitTemporaryFileManagerCallback)block;
+- (void)addALAssetsLibraryList:(NSArray*)list
+                toManagedFiles:(InfinitManagedFiles*)managed_files
+               completionBlock:(InfinitTemporaryFileManagerCallback)block;
 
 /** Add a list of PHAssets to be managed.
+ Files will be created for the associated assets.
  @param list
   List of PHAssets.
- @param uuid
-  The identifying UUID.
+ @param managed_files
+  The managed files.
  @param block
   Block to be run when done.
  */
-- (void)addPHAssetsLibraryURLList:(NSArray*)list
-                   toManagedFiles:(NSString*)uuid
-                  completionBlock:(InfinitTemporaryFileManagerCallback)block;
+- (void)addPHAssetsLibraryList:(NSArray*)list
+                toManagedFiles:(InfinitManagedFiles*)managed_files
+               completionBlock:(InfinitTemporaryFileManagerCallback)block;
 
-/** Add files to be managed.
+/** Add files to be managed without copying or moving the files.
  @param files
   List of NSString paths that you wish to be managed.
- @param uuid
-  The identifying UUID.
- @param copy
-  Copy these files to a temporary location, otherwise they will be moved. 
-  This is useful in the case of images from the gallery.
+ @param managed_files
+  The managed files.
  */
 - (void)addFiles:(NSArray*)files
-  toManagedFiles:(NSString*)uuid
-            copy:(BOOL)copy;
+  toManagedFiles:(InfinitManagedFiles*)managed_files;
 
-/** Set the transaction IDs for the managed files.
- The files will then automatically be deleted when they're no longer needed.
+/** Add files to be managed moving the files.
+ @param files
+  List of NSString paths that you wish to be managed.
+ @param managed_files
+  The managed files.
+ */
+- (void)addFilesByMove:(NSArray*)files
+        toManagedFiles:(InfinitManagedFiles*)managed_files;
+
+/** Add files to be managed copying the files.
+ @param files
+  List of NSString paths that you wish to be managed.
+ @param managed_files
+  The managed files.
+ */
+- (void)addFilesByCopy:(NSArray*)files
+        toManagedFiles:(InfinitManagedFiles*)managed_files;
+
+/** Add transaction IDs for the managed files.
+ The files will then automatically be deleted when they're no longer needed and are marked as 
+ sending.
  @param transaction_ids
   Array of transaction IDs (as NSNumbers) to track.
- @param uuid
-  The identifying UUID.
+ @param managed_files
+  The managed files.
  */
-- (void)setTransactionIds:(NSArray*)transaction_ids
-          forManagedFiles:(NSString*)uuid;
+- (void)addTransactionIds:(NSArray*)transaction_ids
+          forManagedFiles:(InfinitManagedFiles*)managed_files;
+
+/** Mark managed files as sending.
+ Marking managed files as sending allows them to be garbage collected when transactions no longer
+ need them. Marking the files as sending will also check if the files are needed and if not, will
+ clean them up.
+ */
+- (void)markManagedFilesAsSending:(InfinitManagedFiles*)managed_files;
 
 /** Delete the managed files corresponding to the UUID. 
  This would be required if they managed files are never given a transaction ID to track.
- @param uuid
-  The identifying UUID.
+ @param managed_files
+  The managed files.
  */
-- (void)deleteManagedFiles:(NSString*)uuid;
+- (void)deleteManagedFiles:(InfinitManagedFiles*)managed_files;
 
 @end
