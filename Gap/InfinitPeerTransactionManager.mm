@@ -599,7 +599,8 @@ static dispatch_once_t _instance_token = 0;
 
 - (NSDictionary*)userInfoForTransaction:(InfinitPeerTransaction*)transaction
 {
-  return @{kInfinitTransactionId: transaction.id_};
+  return @{kInfinitTransactionId: transaction.id_,
+           kInfinitTransactionStatus: @(transaction.status)};
 }
 
 - (void)postNotificationOnMainThreadName:(NSString*)name
