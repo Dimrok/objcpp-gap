@@ -10,8 +10,10 @@
 
 #import <surface/gap/enums.hh>
 
-/// Constant used as key for Transaction ID in dictionaries.
+/// Constant used as key for transaction ID in dictionaries.
 #define kInfinitTransactionId @"id"
+/// Constant used as key for transaction status in dictionaries. Status is stored as NSNumber.
+#define kInfinitTransactionStatus @"status"
 
 @interface InfinitTransaction : NSObject
 
