@@ -251,7 +251,8 @@ static dispatch_once_t _instance_token = 0;
 {
   NSDictionary* user_info = nil;
   if (transaction)
-    user_info = @{kInfinitTransactionId: transaction.id_};
+    user_info = @{kInfinitTransactionId: transaction.id_,
+                  kInfinitTransactionStatus: @(transaction.status)};
   dispatch_async(dispatch_get_main_queue(), ^
   {
     [[NSNotificationCenter defaultCenter] postNotificationName:name
