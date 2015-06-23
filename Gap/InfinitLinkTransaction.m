@@ -60,13 +60,13 @@
 
 - (NSString*)description
 {
-  return [NSString stringWithFormat:@"<%@ (%@): "
-          "status: %@\n"
-          "sender device: %@\n"
-          "link: %@\n"
-          "name: %@\n"
-          "click count: %@\n"
-          "message: %@\n"
+  return [NSString stringWithFormat:@"<LinkTransaction %@ (%@): "
+          "status: %@ "
+          "sender device: %@ "
+          "link: %@ "
+          "name: %@ "
+          "click count: %@ "
+          "message: %@ "
           "%@ screenshot>",
           self.meta_id, self.id_, self.status_text, self.sender_device_id, self.link, self.name, self.click_count, self.message, self.screenshot ? @"is" : @"not"];
 }

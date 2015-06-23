@@ -151,13 +151,13 @@ recipient_device:(NSString*)recipient_device_id
 
 - (NSString*)description
 {
-  return [NSString stringWithFormat:@"<%@ (%@): "
-          "status: %@\n"
-          "sender: %@\n"
-          "sender device: %@\n"
-          "recipient: %@\n"
-          "recipient device: %@\n"
-          "message: %@\n"
+  return [NSString stringWithFormat:@"<PeerTransaction %@ (%@): "
+          "status: %@ "
+          "sender: %@ "
+          "sender device: %@ "
+          "recipient: %@ "
+          "recipient device: %@ "
+          "message: %@ "
           "%@archived>",
           self.meta_id, self.id_, self.status_text, self.sender.id_, self.sender_device_id, self.recipient.id_, self.recipient_device, self.message, self.archived ? @"" : @"un"];
 }
