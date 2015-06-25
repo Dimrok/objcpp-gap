@@ -108,6 +108,19 @@ typedef void(^InfinitPlainInviteBlock)(InfinitStateResult* result,
 - (void)plainInviteContact:(NSString*)contact
            completionBlock:(InfinitPlainInviteBlock)completion_block;
 
+/** Send invitation using Meta.
+ This is used when the user refuses or fails to send an SMS to the recipient.
+ @param destination
+  Mobile number to send to.
+ @param message
+  Message for SMS.
+ @param ghost_code
+  Code associated with message.
+ */
+- (void)sendInvitation:(NSString*)destination
+               message:(NSString*)message
+             ghostCode:(NSString*)ghost_code;
+
 /** Check a ghost code exists.
  @param code
   Code to check.

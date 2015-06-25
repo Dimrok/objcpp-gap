@@ -359,6 +359,21 @@ static NSString* _facebook_app_id = nil;
   }];
 }
 
+- (void)sendInvitation:(NSString*)destination
+               message:(NSString*)message
+             ghostCode:(NSString*)ghost_code
+{
+  if (!destination.length || !message.length || !ghost_code.length)
+    return;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    return gap_send_invite(manager.stateWrapper.state,
+                           destination.UTF8String,
+                           message.UTF8String,
+                           ghost_code.UTF8String);
+  }];
+}
+
 - (void)ghostCodeExists:(NSString*)code
         completionBlock:(InfinitGhostCodeExistsBlock)completion_block
 {
