@@ -15,6 +15,7 @@
 #import "InfinitDevice.h"
 #import "InfinitDeviceInformation.h"
 #import "InfinitDirectoryManager.h"
+#import "InfinitExternalAccountsManager.h"
 #import "InfinitGhostCodeManager.h"
 #import "InfinitLinkTransaction.h"
 #import "InfinitLinkTransactionManager.h"
@@ -163,7 +164,8 @@ static NSString* _facebook_app_id = nil;
   {
     ELLE_ERR("%s: unable to attach contact joined callback", self.description.UTF8String);
   }
-  if (gap_accounts_changed_callback(self.stateWrapper.state, on_accounts_changed) != gap_ok)
+  if (gap_external_accounts_changed_callback(
+        self.stateWrapper.state, on_external_accounts_changed) != gap_ok)
   {
     ELLE_ERR("%s: unable to attach accounts changed callback", self.description.UTF8String);
   }
@@ -1089,36 +1091,18 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   return res;
 }
 
-#pragma mark - Accounts
+#pragma mark - External Accounts
 
-- (NSArray*)accounts
-{
-  NSMutableArray* res = [NSMutableArray array];
-  std::vector<Account const*> accounts_;
-  gap_Status status = gap_accounts(self.stateWrapper.state, accounts_);
-  if (status != gap_ok)
-  {
-    ELLE_ERR("%s: unable to fetch accounts", self.description.UTF8String);
-  }
-  for (auto account_: accounts_)
-  {
-    InfinitAccount* account = [self _convertAccount:*account_];
-    if (account)
-      [res addObject:account];
-  }
-  return res;
-}
-
-- (void)_accountsChanged:(std::vector<Account const*>)accounts
+- (void)_externalAccountsChanged:(std::vector<ExternalAccount const*>)accounts
 {
   NSMutableArray* res = [NSMutableArray array];
   for (auto account_: accounts)
   {
-    InfinitAccount* account = [self _convertAccount:*account_];
+    InfinitExternalAccount* account = [self _convertExternalAccount:*account_];
     if (account)
       [res addObject:account];
   }
-  [[InfinitAccountsManager sharedInstance] accountsUpdated:res];
+  [[InfinitExternalAccountsManager sharedInstance] accountsUpdated:res];
 }
 
 #pragma mark - Features
@@ -1617,10 +1601,10 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   return res;
 }
 
-- (InfinitAccount*)_convertAccount:(Account const&)account
+- (InfinitExternalAccount*)_convertExternalAccount:(ExternalAccount const&)account
 {
-  return [InfinitAccount accountOfType:[self _nsString:account.type]
-                        withIdentifier:[self _nsString:account.id]];
+  return [InfinitExternalAccount accountOfType:[self _nsString:account.type]
+                                withIdentifier:[self _nsString:account.id]];
 }
 
 #pragma mark - Operations
@@ -1973,11 +1957,11 @@ on_accounts_changed(std::vector<Account const*> accounts)
 {
   @try
   {
-    [[InfinitStateManager sharedInstance] _accountsChanged:accounts];
+    [[InfinitStateManager sharedInstance] _externalAccountsChanged:accounts];
   }
   @catch (NSException* e)
   {
-    ELLE_ERR("on_accounts_changed exception: %s", e.description.UTF8String);
+    ELLE_ERR("on_external_accounts_changed exception: %s", e.description.UTF8String);
     @throw e;
   }
 }

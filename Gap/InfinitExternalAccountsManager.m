@@ -1,25 +1,25 @@
 //
-//  InfinitAccountsManager.m
+//  InfinitExternalAccountsManager.m
 //  Gap
 //
 //  Created by Christopher Crone on 10/06/15.
 //
 //
 
-#import "InfinitAccountsManager.h"
+#import "InfinitExternalAccountsManager.h"
 
 #import "InfinitStateManager.h"
 
-@interface InfinitAccountsManager ()
+@interface InfinitExternalAccountsManager ()
 
 @property (atomic, readwrite) NSArray* accounts;
 
 @end
 
-static InfinitAccountsManager* _instance = nil;
+static InfinitExternalAccountsManager* _instance = nil;
 static dispatch_once_t _instance_token = 0;
 
-@implementation InfinitAccountsManager
+@implementation InfinitExternalAccountsManager
 
 #pragma mark - Init
 
@@ -38,10 +38,6 @@ static dispatch_once_t _instance_token = 0;
   {
     _instance = [[self alloc] init];
   });
-  if (!_instance.accounts.count && [InfinitStateManager sharedInstance].logged_in)
-  {
-    _instance.accounts = [[InfinitStateManager sharedInstance] accounts];
-  }
   return _instance;
 }
 
@@ -54,9 +50,9 @@ static dispatch_once_t _instance_token = 0;
 
 - (BOOL)have_facebook
 {
-  for (InfinitAccount* account in self.accounts)
+  for (InfinitExternalAccount* account in self.accounts)
   {
-    if (account.type == InfinitAccountTypeFacebook)
+    if (account.type == InfinitExternalAccountTypeFacebook)
       return YES;
   }
   return NO;

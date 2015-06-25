@@ -1,5 +1,5 @@
 //
-//  InfinitAccountsManager.h
+//  InfinitExternalAccountsManager.h
 //  Gap
 //
 //  Created by Christopher Crone on 10/06/15.
@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "InfinitAccount.h"
+#import "InfinitExternalAccount.h"
 
-@interface InfinitAccountsManager : NSObject
+@interface InfinitExternalAccountsManager : NSObject
 
 @property (nonatomic, readonly) NSArray* account_list;
 @property (nonatomic, readonly) BOOL have_facebook;

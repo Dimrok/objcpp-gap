@@ -1,29 +1,29 @@
 //
-//  InfinitAccount.m
+//  InfinitExternalAccount.m
 //  Gap
 //
 //  Created by Christopher Crone on 10/06/15.
 //
 //
 
-#import "InfinitAccount.h"
+#import "InfinitExternalAccount.h"
 
-@interface InfinitAccount ()
+@interface InfinitExternalAccount ()
 
 @property (nonatomic, readonly) NSString* type_string;
 
 @end
 
-@implementation InfinitAccount
+@implementation InfinitExternalAccount
 
 #pragma mark - Init
 
-- (instancetype)initWithType:(InfinitAccountType)type
+- (instancetype)initWithType:(InfinitExternalAccountType)type
                andIdentifier:(NSString*)identifier
 {
   if (self = [super init])
   {
-    if (type == InfinitAccountTypeUnknown)
+    if (type == InfinitExternalAccountTypeUnknown)
       return nil;
     _type = type;
     _identifier = identifier;
@@ -39,26 +39,26 @@
 
 #pragma mark - Helpers
 
-+ (InfinitAccountType)typeFromString:(NSString*)type
++ (InfinitExternalAccountType)typeFromString:(NSString*)type
 {
   if ([type isEqualToString:@"email"])
-    return InfinitAccountTypeEmail;
+    return InfinitExternalAccountTypeEmail;
   if ([type isEqualToString:@"facebook"])
-    return InfinitAccountTypeFacebook;
+    return InfinitExternalAccountTypeFacebook;
   if ([type isEqualToString:@"phone"])
-    return InfinitAccountTypePhone;
-  return InfinitAccountTypeUnknown;
+    return InfinitExternalAccountTypePhone;
+  return InfinitExternalAccountTypeUnknown;
 }
 
 - (NSString*)type_string
 {
   switch (self.type)
   {
-    case InfinitAccountTypeEmail:
+    case InfinitExternalAccountTypeEmail:
       return @"email";
-    case InfinitAccountTypeFacebook:
+    case InfinitExternalAccountTypeFacebook:
       return @"facebook";
-    case InfinitAccountTypePhone:
+    case InfinitExternalAccountTypePhone:
       return @"phone";
 
     default:
@@ -70,7 +70,7 @@
 
 - (NSString*)description
 {
-  return [NSString stringWithFormat:@"<Account %p: %@ – %@>", self, self.type_string, self.identifier];
+  return [NSString stringWithFormat:@"<ExternalAccount %p: %@ – %@>", self, self.type_string, self.identifier];
 }
 
 @end
