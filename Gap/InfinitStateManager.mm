@@ -8,7 +8,7 @@
 
 #import "InfinitStateManager.h"
 
-#import "InfinitAccountsManager.h"
+#import "InfinitAccountManager.h"
 #import "InfinitAvatarManager.h"
 #import "InfinitConnectionManager.h"
 #import "InfinitCrashReporter.h"
@@ -167,7 +167,12 @@ static NSString* _facebook_app_id = nil;
   if (gap_external_accounts_changed_callback(
         self.stateWrapper.state, on_external_accounts_changed) != gap_ok)
   {
-    ELLE_ERR("%s: unable to attach accounts changed callback", self.description.UTF8String);
+    ELLE_ERR("%s: unable to attach external accounts changed callback",
+             self.description.UTF8String);
+  }
+  if (gap_account_changed_callback(self.stateWrapper.state, on_account_changed_callback) != gap_ok)
+  {
+    ELLE_ERR("%s: unable to attach account changed callback", self.description.UTF8String);
   }
 }
 
@@ -1953,7 +1958,38 @@ on_ghost_code_used(std::string const& code, bool succeeded, std::string const& r
 
 static
 void
-on_accounts_changed(std::vector<Account const*> accounts)
+on_account_changed_callback(Account const& account)
+{
+  @try
+  {
+    using infinit::oracles::meta::AccountPlanType;
+    InfinitAccountPlanType plan = InfinitAccountPlanTypeBasic;
+    switch (account.plan)
+    {
+      case AccountPlanType::AccountPlanType_Basic:
+        plan = InfinitAccountPlanTypeBasic;
+        break;
+      case AccountPlanType::AccountPlanType_Premium:
+        plan = InfinitAccountPlanTypePremium;
+        break;
+
+      default:
+        break;
+    }
+    [[InfinitAccountManager sharedInstance] accountUpdated:plan
+                                             linkSpaceUsed:account.link_size_used
+                                            linkSpaceQuota:account.link_size_quota];
+  }
+  @catch (NSException* e)
+  {
+    ELLE_ERR("on_account_changed exception: %s", e.description.UTF8String);
+    @throw e;
+  }
+}
+
+static
+void
+on_external_accounts_changed(std::vector<ExternalAccount const*> accounts)
 {
   @try
   {

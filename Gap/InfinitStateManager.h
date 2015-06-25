@@ -269,9 +269,6 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
                       os:(NSString*)os
          completionBlock:(InfinitStateCompletionBlock)completion_block;
 
-#pragma mark - Accounts
-- (NSArray*)accounts;
-
 #pragma mark - User
 /// Users should be accessed using the User Manager.
 - (NSArray*)swaggers;
