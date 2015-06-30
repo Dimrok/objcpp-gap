@@ -17,7 +17,7 @@
 /// If the files are currently copying.
 @property (nonatomic, readwrite) BOOL copying;
 /// Callback to run when finished copying.
-@property (nonatomic, assign) void (^done_copying_block)();
+@property (nonatomic, copy) void (^done_copying_block)();
 /// File count.
 @property (nonatomic, readonly) NSUInteger file_count;
 /// Paths to files.
