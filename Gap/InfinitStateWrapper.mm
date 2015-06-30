@@ -131,7 +131,7 @@ static BOOL _production = NO;
 
 + (instancetype)sharedInstance
 {
-  NSCAssert(_wrapper_instance != nil, @"start instance with startStateWithInitialDownloadDir");
+  NSCAssert(_wrapper_instance != nil, @"Start instance with startStateWithInitialDownloadDir:");
   return _wrapper_instance;
 }
 
