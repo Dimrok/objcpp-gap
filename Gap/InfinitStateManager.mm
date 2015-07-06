@@ -501,9 +501,11 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     gap_Status status = gap_web_login_token(manager.stateWrapper.state, token);
     if (operation.isCancelled || !completion_block)
       return;
+    NSString* encoded_email =
+      [[manager selfEmail] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     completion_block([InfinitStateResult resultWithStatus:status],
                      [manager _nsString:token],
-                     [manager selfEmail]);
+                     encoded_email);
   }];
 }
 
