@@ -499,7 +499,9 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     gap_Status status = gap_web_login_token(manager.stateWrapper.state, token);
     if (operation.isCancelled || !completion_block)
       return;
-    completion_block([InfinitStateResult resultWithStatus:status], [manager _nsString:token]);
+    completion_block([InfinitStateResult resultWithStatus:status],
+                     [manager _nsString:token],
+                     [manager selfEmail]);
   }];
 }
 
