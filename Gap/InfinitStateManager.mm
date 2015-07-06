@@ -502,7 +502,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     if (operation.isCancelled || !completion_block)
       return;
     NSString* encoded_email =
-      [[manager selfEmail] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+      [[manager selfEmail] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
     completion_block([InfinitStateResult resultWithStatus:status],
                      [manager _nsString:token],
                      encoded_email);
