@@ -22,7 +22,7 @@ static dispatch_once_t _instance_token = 0;
 
 @interface InfinitLinkTransactionManager ()
 
-@property (atomic, readonly) BOOL filled_model;
+@property (atomic, readwrite) BOOL filled_model;
 @property (atomic, readonly) InfinitThreadSafeDictionary* transaction_map;
 
 @end
@@ -82,7 +82,7 @@ static dispatch_once_t _instance_token = 0;
       [self.transaction_map setObject:transaction forKey:transaction.id_];
     }
   }
-  _filled_model = YES;
+  self.filled_model = YES;
 }
 
 #pragma mark - Access Transactions
