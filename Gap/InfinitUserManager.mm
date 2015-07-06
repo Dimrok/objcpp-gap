@@ -24,7 +24,7 @@ static dispatch_once_t _instance_token = 0;
 
 @interface InfinitUserManager ()
 
-@property (atomic, readonly) BOOL filled_model;
+@property (atomic, readwrite) BOOL filled_model;
 @property (atomic, readonly) InfinitThreadSafeDictionary* user_map;
 
 @end
@@ -89,6 +89,7 @@ static dispatch_once_t _instance_token = 0;
       self.user_map[swagger.id_] = swagger;
     }
     [self _fetchFavorites];
+    self.filled_model = YES;
   }
 }
 
