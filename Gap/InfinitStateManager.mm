@@ -113,6 +113,8 @@ static NSString* _facebook_app_id = nil;
 
 + (void)_startModelManagers
 {
+  [InfinitAccountManager sharedInstance];
+  [InfinitExternalAccountsManager sharedInstance];
   [InfinitUserManager sharedInstance];
   [InfinitLinkTransactionManager sharedInstance];
   [InfinitPeerTransactionManager sharedInstance];
@@ -1769,24 +1771,27 @@ on_connection_callback(bool status, bool still_retrying, std::string const& last
 {
   @try
   {
-    NSString* error = @"";
-    if (!last_error.empty())
-      error = [NSString stringWithUTF8String:last_error.c_str()];
-    if (!status && !still_retrying)
+    @autoreleasepool
     {
-      InfinitStateManager* manager = [InfinitStateManager sharedInstance];
-      manager->_logged_in = NO;
-      manager->_meta_session_id_token = 0;
-      manager->_encoded_meta_session_id = nil;
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(500 * NSEC_PER_MSEC)),
-                     dispatch_get_main_queue(), ^
+      NSString* error = @"";
+      if (!last_error.empty())
+        error = [NSString stringWithUTF8String:last_error.c_str()];
+      if (!status && !still_retrying)
       {
-        [[InfinitStateManager sharedInstance] _clearSelfAndModel:YES];
-      });
+        InfinitStateManager* manager = [InfinitStateManager sharedInstance];
+        manager->_logged_in = NO;
+        manager->_meta_session_id_token = 0;
+        manager->_encoded_meta_session_id = nil;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(500 * NSEC_PER_MSEC)),
+                       dispatch_get_main_queue(), ^
+        {
+          [[InfinitStateManager sharedInstance] _clearSelfAndModel:YES];
+        });
+      }
+      [[InfinitConnectionManager sharedInstance] setConnectedStatus:status
+                                                        stillTrying:still_retrying
+                                                          lastError:error];
     }
-    [[InfinitConnectionManager sharedInstance] setConnectedStatus:status
-                                                      stillTrying:still_retrying
-                                                        lastError:error];
   }
   @catch (NSException* e)
   {
@@ -1807,7 +1812,10 @@ on_peer_transaction(surface::gap::PeerTransaction const& transaction)
 {
   @try
   {
-    [[InfinitStateManager sharedInstance] _peerTransactionUpdated:transaction];
+    @autoreleasepool
+    {
+      [[InfinitStateManager sharedInstance] _peerTransactionUpdated:transaction];
+    }
   }
   @catch (NSException* e)
   {
@@ -1828,7 +1836,10 @@ on_link_transaction(surface::gap::LinkTransaction const& transaction)
 {
   @try
   {
-    [[InfinitStateManager sharedInstance] _linkTransactionUpdated:transaction];
+    @autoreleasepool
+    {
+      [[InfinitStateManager sharedInstance] _linkTransactionUpdated:transaction];
+    }
   }
   @catch (NSException* e)
   {
@@ -1849,7 +1860,10 @@ on_user_update(surface::gap::User const& user)
 {
   @try
   {
-    [[InfinitStateManager sharedInstance] _updateUser:user];
+    @autoreleasepool
+    {
+      [[InfinitStateManager sharedInstance] _updateUser:user];
+    }
   }
   @catch (NSException* e)
   {
@@ -1870,7 +1884,10 @@ on_user_status(uint32_t user_id, bool status)
 {
   @try
   {
-    [[InfinitStateManager sharedInstance] _userWithId:user_id statusUpdated:status];
+    @autoreleasepool
+    {
+      [[InfinitStateManager sharedInstance] _userWithId:user_id statusUpdated:status];
+    }
   }
   @catch (NSException* e)
   {
@@ -1890,7 +1907,10 @@ on_deleted_favorite(uint32_t user_id)
 {
   @try
   {
-    [[InfinitStateManager sharedInstance] _userDeleted:user_id];
+    @autoreleasepool
+    {
+      [[InfinitStateManager sharedInstance] _userDeleted:user_id];
+    }
   }
   @catch (NSException* e)
   {
@@ -1905,7 +1925,10 @@ on_deleted_swagger(uint32_t user_id)
 {
   @try
   {
-    [[InfinitStateManager sharedInstance] _userDeleted:user_id];
+    @autoreleasepool
+    {
+      [[InfinitStateManager sharedInstance] _userDeleted:user_id];
+    }
   }
   @catch (NSException* e)
   {
@@ -1927,7 +1950,10 @@ on_contact_joined(uint32_t user_id, std::string const& contact)
 {
   @try
   {
-    [[InfinitStateManager sharedInstance] _contactJoined:user_id contact:contact];
+    @autoreleasepool
+    {
+      [[InfinitStateManager sharedInstance] _contactJoined:user_id contact:contact];
+    }
   }
   @catch (NSException* e)
   {
@@ -1947,7 +1973,10 @@ on_avatar(uint32_t user_id)
 {
   @try
   {
-    [[InfinitStateManager sharedInstance] _gotAvatarForUserWithId:user_id];
+    @autoreleasepool
+    {
+      [[InfinitStateManager sharedInstance] _gotAvatarForUserWithId:user_id];
+    }
   }
   @catch (NSException* e)
   {
@@ -1962,9 +1991,12 @@ on_ghost_code_used(std::string const& code, bool succeeded, std::string const& r
 {
   @try
   {
-    [[InfinitStateManager sharedInstance] _ghostCodeUsedCallback:code
-                                                         success:succeeded 
-                                                          reason:reason];
+    @autoreleasepool
+    {
+      [[InfinitStateManager sharedInstance] _ghostCodeUsedCallback:code
+                                                           success:succeeded 
+                                                            reason:reason];
+    }
   }
   @catch (NSException* e)
   {
@@ -1979,23 +2011,26 @@ on_account_changed_callback(Account const& account)
 {
   @try
   {
-    using infinit::oracles::meta::AccountPlanType;
-    InfinitAccountPlanType plan = InfinitAccountPlanTypeBasic;
-    switch (account.plan)
+    @autoreleasepool
     {
-      case AccountPlanType::AccountPlanType_Basic:
-        plan = InfinitAccountPlanTypeBasic;
-        break;
-      case AccountPlanType::AccountPlanType_Premium:
-        plan = InfinitAccountPlanTypePremium;
-        break;
+      using infinit::oracles::meta::AccountPlanType;
+      InfinitAccountPlanType plan = InfinitAccountPlanTypeBasic;
+      switch (account.plan)
+      {
+        case AccountPlanType::AccountPlanType_Basic:
+          plan = InfinitAccountPlanTypeBasic;
+          break;
+        case AccountPlanType::AccountPlanType_Premium:
+          plan = InfinitAccountPlanTypePremium;
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
+      [[InfinitAccountManager sharedInstance] accountUpdated:plan
+                                               linkSpaceUsed:account.link_size_used
+                                              linkSpaceQuota:account.link_size_quota];
     }
-    [[InfinitAccountManager sharedInstance] accountUpdated:plan
-                                             linkSpaceUsed:account.link_size_used
-                                            linkSpaceQuota:account.link_size_quota];
   }
   @catch (NSException* e)
   {
@@ -2010,7 +2045,10 @@ on_external_accounts_changed(std::vector<ExternalAccount const*> accounts)
 {
   @try
   {
-    [[InfinitStateManager sharedInstance] _externalAccountsChanged:accounts];
+    @autoreleasepool
+    {
+      [[InfinitStateManager sharedInstance] _externalAccountsChanged:accounts];
+    }
   }
   @catch (NSException* e)
   {
