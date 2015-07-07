@@ -503,9 +503,9 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
       return;
     NSString* encoded_email =
       [[manager selfEmail] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
-    completion_block([InfinitStateResult resultWithStatus:status],
-                     [manager _nsString:token],
-                     encoded_email);
+    NSString* encoded_token =
+      [[manager _nsString:token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    completion_block([InfinitStateResult resultWithStatus:status], encoded_token, encoded_email);
   }];
 }
 
