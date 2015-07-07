@@ -86,6 +86,7 @@
     _root_dir = [decoder decodeObjectForKey:@"root_dir"];
     _total_size = [[decoder decodeObjectForKey:@"total_size"] unsignedIntegerValue];
     _asset_map = [decoder decodeObjectForKey:@"asset_map"];
+    _remove_assets = [decoder decodeObjectForKey:@"remove_assets"];
   }
   return self;
 }
@@ -97,6 +98,7 @@
   [encoder encodeObject:self.root_dir forKey:@"root_dir"];
   [encoder encodeObject:@(self.total_size) forKey:@"total_size"];
   [encoder encodeObject:self.asset_map forKey:@"asset_map"];
+  [encoder encodeObject:self.remove_assets forKey:@"remove_assets"];
 }
 
 #pragma mark - NSObject
