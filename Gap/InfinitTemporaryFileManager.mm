@@ -720,113 +720,165 @@ static dispatch_once_t _library_token = 0;
   if ([managed_files.asset_map objectForKey:asset.localIdentifier])
     return YES;
   __block BOOL res = YES;
-  PHImageRequestOptions* options = [[PHImageRequestOptions alloc] init];
-  options.networkAccessAllowed = YES;
-  options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-  options.version = PHImageRequestOptionsVersionCurrent;
-  options.synchronous = YES;
-  [[PHImageManager defaultManager] requestImageDataForAsset:asset
-                                                    options:options
-                                              resultHandler:^(NSData* imageData,
-                                                              NSString* dataUTI,
-                                                              UIImageOrientation orientation,
-                                                              NSDictionary* info)
+  __block NSString* path = nil;
+  if (asset.mediaType == PHAssetMediaTypeVideo)
   {
-    __block NSString* path = nil;
-    NSURL* url = info[@"PHImageFileURLKey"];
-    NSString* filename = url.lastPathComponent;
-    if ([filename isEqualToString:@"FullSizeRender.jpg"])
+    PHVideoRequestOptions* options = [[PHVideoRequestOptions alloc] init];
+    options.networkAccessAllowed = YES;
+    options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+    options.version = PHVideoRequestOptionsVersionCurrent;
+    dispatch_semaphore_t get_path_sema = dispatch_semaphore_create(0);
+    [[PHImageManager defaultManager] requestAVAssetForVideo:asset
+                                                    options:options
+                                              resultHandler:^(AVAsset* av_asset,
+                                                              AVAudioMix* audioMix,
+                                                              NSDictionary* info)
     {
-      NSArray* components = url.pathComponents;
-      for (NSString* component in components)
+      InfinitTemporaryFileManager* manager = [InfinitTemporaryFileManager sharedInstance];
+      if ([av_asset isKindOfClass:AVURLAsset.class])
       {
-        if ([component containsString:@"IMG"])
+        AVURLAsset* url_asset = (AVURLAsset*)av_asset;
+        NSString* video_path = url_asset.URL.path;
+        NSDictionary* attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:video_path
+                                                                               error:nil];
+        NSNumber* file_size_number = [attrs objectForKey:NSFileSize];
+        uint64_t free_space = [InfinitDirectoryManager sharedInstance].free_space;
+        if (free_space < file_size_number.unsignedLongValue)
         {
-          NSString* new_filename = [component stringByAppendingString:@".JPG"];
-          ELLE_DEBUG("%s: renaming file: %s -> %s",
-                     self.description.UTF8String, filename.UTF8String, new_filename.UTF8String);
-          filename = new_filename;
-          break;
+          NSString* free_space_str = [InfinitDataSize fileSizeStringFrom:@(free_space)];
+          NSString* file_size_str = [InfinitDataSize fileSizeStringFrom:file_size_number];
+          ELLE_WARN("%s: video from path fallback, not enough free space: %s > %s",
+                    manager.description.UTF8String, file_size_str.UTF8String,
+                    free_space_str.UTF8String)
+          if (error != NULL)
+            *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoFreeSpace];
+        }
+        else
+        {
+          NSArray* paths = [manager _addFiles:@[video_path]
+                               toManagedFiles:managed_files 
+                                         copy:YES 
+                                         move:NO];
+          if (paths.count && [paths[0] length])
+          {
+            path = paths[0];
+          }
+          else
+          {
+            ELLE_WARN("%s: unable to fetch PHAsset AVURLAsset, invalid path",
+                      manager.description.UTF8String);
+          }
         }
       }
-    }
-    if (!imageData.length)
-    {
-      NSString* reason = @"<empty>";
-      if (info[PHImageCancelledKey])
-        reason = @"fetch cancelled";
-      if (info[PHImageErrorKey])
-        reason = [info[PHImageErrorKey] description];
-      ELLE_WARN("%s: got empty file from PHImageManager for %s, reason: %s",
-                self.description.UTF8String, filename.UTF8String, reason.UTF8String);
-      if (asset.mediaType == PHAssetMediaTypeVideo)
+      else if ([av_asset isKindOfClass:AVComposition.class])
       {
-        PHVideoRequestOptions* video_options = [[PHVideoRequestOptions alloc] init];
-        video_options.networkAccessAllowed = YES;
-        video_options.version = PHVideoRequestOptionsVersionCurrent;
-        video_options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
-        dispatch_semaphore_t get_path_sema = dispatch_semaphore_create(0);
-        [[PHImageManager defaultManager] requestAVAssetForVideo:asset
-                                                        options:video_options
-                                                  resultHandler:^(AVAsset* asset,
-                                                                  AVAudioMix* audioMix,
-                                                                  NSDictionary* info)
+        AVComposition* composition = (AVComposition*)av_asset;
+        AVCompositionTrack* track = [composition tracksWithMediaType:AVMediaTypeVideo].firstObject;
+        AVCompositionTrackSegment* segment = track.segments.firstObject;
+        if (segment.sourceURL.path.length)
         {
-          InfinitTemporaryFileManager* manager = [InfinitTemporaryFileManager sharedInstance];
-          if ([asset isKindOfClass:AVURLAsset.class])
+          NSArray* paths = [manager _addFiles:@[segment.sourceURL.path]
+                               toManagedFiles:managed_files
+                                         copy:YES
+                                         move:NO];
+          if (paths.count && [paths[0] length])
           {
-            AVURLAsset* url_asset = (AVURLAsset*)asset;
-            path = url_asset.URL.path;
-            NSDictionary* attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:path
-                                                                                   error:nil];
-
-            NSNumber* file_size_number = [attrs objectForKey:NSFileSize];
-            uint64_t free_space = [InfinitDirectoryManager sharedInstance].free_space;
-            if (file_size_number.unsignedLongValue < free_space)
-            {
-              NSString* free_space_str = [InfinitDataSize fileSizeStringFrom:@(free_space)];
-              NSString* file_size_str = [InfinitDataSize fileSizeStringFrom:file_size_number];
-              ELLE_WARN("%s: video from path fallback, not enough free space: %s > %s",
-                        manager.description.UTF8String, file_size_str.UTF8String,
-                        free_space_str.UTF8String)
-              if (error != NULL)
-                *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoFreeSpace];
-            }
-            else
-            {
-              [manager addFilesByCopy:@[path] toManagedFiles:managed_files];
-            }
+            path = paths[0];
           }
-          dispatch_semaphore_signal(get_path_sema);
-        }];
-        dispatch_semaphore_wait(get_path_sema, DISPATCH_TIME_FOREVER);
+          else
+          {
+            ELLE_WARN("%s: unable to fetch PHAsset AVComposition, invalid path",
+                      manager.description.UTF8String);
+          }
+        }
+        else
+        {
+          ELLE_WARN("%s: unable to fetch PHAsset AVComposition, invalid path",
+                    manager.description.UTF8String);
+        }
       }
-    }
-    else if (info[PHImageErrorKey])
+      else if (info[PHImageErrorKey])
+      {
+        ELLE_WARN("%s: error fetching PHAsset video, reason: %s",
+                  manager.description.UTF8String, [info[PHImageErrorKey] description].UTF8String);
+      }
+      else
+      {
+        ELLE_WARN("%s: unable to fetch PHAsset video (%s), unknown reason",
+                  manager.description.UTF8String, NSStringFromClass(av_asset.class));
+      }
+      dispatch_semaphore_signal(get_path_sema);
+    }];
+    dispatch_semaphore_wait(get_path_sema, DISPATCH_TIME_FOREVER);
+  }
+  else
+  {
+    PHImageRequestOptions* options = [[PHImageRequestOptions alloc] init];
+    options.networkAccessAllowed = YES;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.version = PHImageRequestOptionsVersionCurrent;
+    options.synchronous = YES;
+    [[PHImageManager defaultManager] requestImageDataForAsset:asset
+                                                      options:options
+                                                resultHandler:^(NSData* imageData,
+                                                                NSString* dataUTI,
+                                                                UIImageOrientation orientation,
+                                                                NSDictionary* info)
     {
-      ELLE_WARN("%s: error fetching PHAsset %s, reason: %s",
-                self.description.UTF8String, (filename.length ? filename.UTF8String : "<nil>"),
-                [info[PHImageErrorKey] description].UTF8String);
-    }
-    if (imageData.length)
-    {
-      path = [[InfinitTemporaryFileManager sharedInstance] addData:imageData
-                                                      withFilename:filename
-                                                      creationDate:asset.creationDate
-                                                  modificationDate:asset.modificationDate
-                                                    toManagedFiles:managed_files
-                                                             error:error];
-    }
-    if (*error || !path.length)
-    {
-      ELLE_ERR("%s: unable to write data to managed files (%s): %s",
-               self.description.UTF8String, managed_files.uuid.UTF8String,
-               (*error).description.UTF8String);
-      res = NO;
-    }
-    if (path.length)
-      [managed_files.asset_map setObject:path forKey:asset.localIdentifier];
-  }];
+      NSURL* url = info[@"PHImageFileURLKey"];
+      NSString* filename = url.lastPathComponent;
+      if ([filename isEqualToString:@"FullSizeRender.jpg"])
+      {
+        NSArray* components = url.pathComponents;
+        for (NSString* component in components)
+        {
+          if ([component containsString:@"IMG"])
+          {
+            NSString* new_filename = [component stringByAppendingString:@".JPG"];
+            ELLE_DEBUG("%s: renaming file: %s -> %s",
+                       self.description.UTF8String, filename.UTF8String, new_filename.UTF8String);
+            filename = new_filename;
+            break;
+          }
+        }
+      }
+      if (!imageData.length)
+      {
+        NSString* reason = @"<empty>";
+        if (info[PHImageCancelledKey])
+          reason = @"fetch cancelled";
+        if (info[PHImageErrorKey])
+          reason = [info[PHImageErrorKey] description];
+        ELLE_WARN("%s: got empty file from PHImageManager for %s, reason: %s",
+                  self.description.UTF8String, filename.UTF8String, reason.UTF8String);
+      }
+      else if (info[PHImageErrorKey])
+      {
+        ELLE_WARN("%s: error fetching PHAsset %s, reason: %s",
+                  self.description.UTF8String, (filename.length ? filename.UTF8String : "<nil>"),
+                  [info[PHImageErrorKey] description].UTF8String);
+      }
+      if (imageData.length)
+      {
+        path = [[InfinitTemporaryFileManager sharedInstance] addData:imageData
+                                                        withFilename:filename
+                                                        creationDate:asset.creationDate
+                                                    modificationDate:asset.modificationDate
+                                                      toManagedFiles:managed_files
+                                                               error:error];
+      }
+    }];
+  }
+  if (*error || !path.length)
+  {
+    NSString* error_message =
+      (*error).description.length ? (*error).description : @"<unknown error>";
+    ELLE_ERR("%s: unable to write data to managed files (%s): %s",
+             self.description.UTF8String, managed_files.uuid.UTF8String, error_message.UTF8String);
+    res = NO;
+  }
+  if (path.length)
+    [managed_files.asset_map setObject:path forKey:asset.localIdentifier];
   return res;
 }
 
