@@ -459,38 +459,48 @@ static dispatch_once_t _library_token = 0;
   [self _addFiles:files toManagedFiles:managed_files copy:YES move:NO];
 }
 
-- (void)_addFiles:(NSArray*)files
-   toManagedFiles:(InfinitManagedFiles*)managed_files
-             copy:(BOOL)copy
-             move:(BOOL)move
+- (NSArray*)_addFiles:(NSArray*)files
+       toManagedFiles:(InfinitManagedFiles*)managed_files
+                 copy:(BOOL)copy
+                 move:(BOOL)move
 {
   NSCAssert(!(copy && move), @"Select either copy or move.");
   ELLE_TRACE("%s: adding files to managed files (%s): %s", self.description.UTF8String,
              managed_files.uuid.UTF8String, files.description.UTF8String);
+  NSArray* res = nil;
   if (![self.files_map objectForKey:managed_files.uuid])
   {
     ELLE_ERR("%s: unable to add files to %s, not in map",
              self.description.UTF8String, managed_files.uuid.UTF8String);
-    return;
+    return res;
   }
-  managed_files.copying = copy;
+  // We only want to handle the copy flag here if it's not being handled upstream by, for example,
+  // a group asset copy.
+  BOOL handle_copy_flag = NO;
+  if (!managed_files.copying)
+  {
+    handle_copy_flag = YES;
+    managed_files.copying = copy;
+  }
   managed_files.copied = (copy || move);
   if (copy)
   {
-    [managed_files.managed_paths addObjectsFromArray:[self _copyFiles:files
-                                                               toPath:managed_files.root_dir]];
+    res = [self _copyFiles:files toPath:managed_files.root_dir];
+    [managed_files.managed_paths addObjectsFromArray:res];
   }
   else if (move)
   {
-    [managed_files.managed_paths addObjectsFromArray:[self _moveFiles:files
-                                                               toPath:managed_files.root_dir]];
+    res = [self _moveFiles:files toPath:managed_files.root_dir];
+    [managed_files.managed_paths addObjectsFromArray:res];
   }
   else
   {
     [managed_files.managed_paths addObjectsFromArray:files];
   }
   managed_files.total_size = [self _folderSize:managed_files.root_dir];
-  managed_files.copying = NO;
+  if (handle_copy_flag)
+    managed_files.copying = NO;
+  return res;
 }
 
 - (void)addTransactionIds:(NSArray*)transaction_ids
