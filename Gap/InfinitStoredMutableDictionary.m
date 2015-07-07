@@ -14,6 +14,7 @@
 @property (atomic, readonly) NSMutableDictionary* dictionary;
 @property (nonatomic, readonly) NSString* path;
 
+@property (nonatomic, readonly) dispatch_queue_t dict_queue;
 @property (nonatomic, readonly) dispatch_queue_t disk_queue;
 
 @end
@@ -29,14 +30,16 @@
     _path = file;
     if ([[NSFileManager defaultManager] fileExistsAtPath:file])
       _dictionary = [NSKeyedUnarchiver unarchiveObjectWithFile:self.path];
-
     if (self.dictionary == nil)
       _dictionary = [NSMutableDictionary dictionary];
-
     _finalizing = NO;
-    NSString* queue_name =
-      [NSString stringWithFormat:@"io.Infinit.StoredMutableDictionary-%@", self.path.lastPathComponent];
-    _disk_queue = dispatch_queue_create(queue_name.UTF8String, DISPATCH_QUEUE_SERIAL);
+    NSString* general_name = @"io.Infinit.StoredMutableDictionary";
+    NSString* dict_queue_name =
+      [NSString stringWithFormat:@"%@(dictionary)-%@", general_name, self.path.lastPathComponent];
+    _dict_queue = dispatch_queue_create(dict_queue_name.UTF8String, DISPATCH_QUEUE_SERIAL);
+    NSString* disk_queue_name =
+      [NSString stringWithFormat:@"%@(disk)-%@", general_name, self.path.lastPathComponent];
+    _disk_queue = dispatch_queue_create(disk_queue_name.UTF8String, DISPATCH_QUEUE_SERIAL);
   }
   return self;
 }
@@ -56,22 +59,42 @@
 
 - (NSArray*)allKeys
 {
-  return self.dictionary.allKeys;
+  __block NSArray* res = nil;
+  dispatch_sync(self.dict_queue, ^
+  {
+    res = self.dictionary.allKeys;
+  });
+  return res;
 }
 
 - (NSArray*)allKeysForObject:(id<NSCoding>)object
 {
-  return [self.dictionary allKeysForObject:object];
+  __block NSArray* res = nil;
+  dispatch_sync(self.dict_queue, ^
+  {
+    res = [self.dictionary allKeysForObject:object];
+  });
+  return res;
 }
 
 - (NSArray*)allValues
 {
-  return self.dictionary.allValues;
+  __block NSArray* res = nil;
+  dispatch_sync(self.dict_queue, ^
+  {
+    res = self.dictionary.allValues;
+  });
+  return res;
 }
 
 - (id)objectForKey:(id<NSCoding>)aKey
 {
-  return [self.dictionary objectForKey:aKey];
+  __block id res = nil;
+  dispatch_sync(self.dict_queue, ^
+  {
+    res = [self.dictionary objectForKey:aKey];
+  });
+  return res;
 }
 
 #pragma mark - Write
@@ -81,9 +104,9 @@
 {
   if (self.finalizing)
     return;
-  [self.dictionary setObject:anObject forKey:aKey];
-  dispatch_async(self.disk_queue, ^
+  dispatch_async(self.dict_queue, ^
   {
+    [self.dictionary setObject:anObject forKey:aKey];
     [self storeDictionary];
   });
 }
@@ -92,9 +115,9 @@
 {
   if (self.finalizing)
     return;
-  [self.dictionary removeObjectForKey:aKey];
-  dispatch_async(self.disk_queue, ^
+  dispatch_async(self.dict_queue, ^
   {
+    [self.dictionary removeObjectForKey:aKey];
     [self storeDictionary];
   });
 }
@@ -103,14 +126,22 @@
 
 - (NSString*)description
 {
-  return self.dictionary.description;
+  __block NSString* res = nil;
+  dispatch_sync(self.dict_queue, ^
+  {
+    res = self.dictionary.description;
+  });
+  return res;
 }
 
 #pragma mark - Helpers
 
 - (void)storeDictionary
 {
-  [NSKeyedArchiver archiveRootObject:self.dictionary toFile:self.path];
+  dispatch_async(self.disk_queue, ^
+  {
+    [NSKeyedArchiver archiveRootObject:self.dictionary toFile:self.path];
+  });
 }
 
 @end
