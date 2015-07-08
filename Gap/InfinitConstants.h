@@ -30,7 +30,6 @@
 #  define kInfinitAlbumName @"Infinit"
 
 /// Ratings URLs.
-#  define kInfinitStoreRatingLinkiOS8 @"https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=APP_ID&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software"
 #  define kInfinitStoreRatingLink @"https://itunes.apple.com/app/apple-store/idAPP_ID"
 
 /// Web profile URL.
