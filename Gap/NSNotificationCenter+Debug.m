@@ -92,16 +92,18 @@ static InfinitThreadSafeDictionary* _observer_map;
                             userInfo:(NSDictionary*)aUserInfo
 {
   [self infinit_postNotificationName:aName object:anObject userInfo:aUserInfo];
-//  if ([aName containsString:@"INFINIT"])
-//  {
-//    NSLog(@"xxx posting: %@", aName);
-//    for (id observer in _observer_map[aName])
-//      NSLog(@"xxx\t\tto %@", observer);
-//  }
+  if ([aName containsString:@"INFINIT"])
+  {
+    for (id observer in _observer_map[aName])
+    {
+      if (observer == nil)
+        NSLog(@"WARNING: nil observer when posting %@, will cause production crash", aName);
+    }
+  }
 }
 
 - (void)infinit_removeObserver:(id)observer
-                          name:(NSString*)aName 
+                          name:(NSString*)aName
                         object:(id)anObject
 {
   [self infinit_removeObserver:observer name:aName object:anObject];
