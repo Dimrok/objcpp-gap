@@ -9,6 +9,14 @@
 #import "InfinitLinkTransaction.h"
 
 #import "InfinitStateManager.h"
+#import "InfinitAccountManager.h"
+
+@interface InfinitLinkTransaction ()
+
+@property (nonatomic, readonly) NSString* hash_str;
+@property (nonatomic, readonly) NSString* meta_link;
+
+@end
 
 @implementation InfinitLinkTransaction
 
@@ -18,6 +26,7 @@
    sender_device:(NSString*)sender_device
             name:(NSString*)name
            mtime:(NSTimeInterval)mtime
+            hash:(NSString*)hash
             link:(NSString*)link
      click_count:(NSNumber*)click_count
          message:(NSString*)message
@@ -33,7 +42,8 @@
               sender_device_id:sender_device])
   {
     _name = name;
-    _link = link;
+    _hash_str = hash;
+    _meta_link = link;
     _click_count = click_count;
     _screenshot = screenshot;
   }
@@ -43,13 +53,22 @@
 - (void)updateWithTransaction:(InfinitLinkTransaction*)transaction
 {
   [super updateWithTransaction:transaction];
-  _link = transaction.link;
+  _hash_str = transaction->_hash_str;
+  _meta_link = transaction.link;
   _name = transaction.name;
   _click_count = transaction.click_count;
   _screenshot = transaction.screenshot;
 }
 
 #pragma mark - General
+
+- (NSString*)link
+{
+  NSString* custom_domain = [InfinitAccountManager sharedInstance].custom_domain;
+  if (custom_domain.length)
+    return [NSString stringWithFormat:@"http://%@/_/%@", custom_domain, self.hash_str];
+  return self.meta_link;
+}
 
 - (BOOL)concerns_device
 {

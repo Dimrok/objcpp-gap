@@ -23,6 +23,7 @@
    sender_device:(NSString*)sender_device
             name:(NSString*)name
            mtime:(NSTimeInterval)mtime
+            hash:(NSString*)hash
             link:(NSString*)link
      click_count:(NSNumber*)click_count
          message:(NSString*)message
