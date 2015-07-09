@@ -16,6 +16,7 @@ typedef NS_ENUM(NSUInteger, InfinitAccountPlanType)
 
 @interface InfinitAccountManager : NSObject
 
+@property (nonatomic, readonly) NSString* custom_domain;
 @property (nonatomic, readonly) InfinitAccountPlanType plan;
 @property (nonatomic, readonly) uint64_t link_space_used;
 @property (nonatomic, readonly) uint64_t link_space_quota;
@@ -24,6 +25,7 @@ typedef NS_ENUM(NSUInteger, InfinitAccountPlanType)
 
 #pragma mark - State Manager Callback
 - (void)accountUpdated:(InfinitAccountPlanType)plan
+          customDomain:(NSString*)custom_domain
          linkSpaceUsed:(uint64_t)used
         linkSpaceQuota:(uint64_t)quota;
 
