@@ -1568,6 +1568,9 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   NSString* link = @"";
   if (transaction.link)
     link = [NSString stringWithUTF8String:transaction.link.get().c_str()];
+  NSString* hash = @"";
+  if (transaction.hash)
+    hash = [NSString stringWithUTF8String:transaction.hash.get().c_str()];
   NSNumber* size = [NSNumber numberWithUnsignedLong:transaction.size];
   InfinitLinkTransaction* res =
     [[InfinitLinkTransaction alloc] initWithId:[self _numFromUint:transaction.id]
@@ -1576,6 +1579,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
                                  sender_device:[self _nsString:transaction.sender_device_id]
                                           name:[self _nsString:transaction.name]
                                          mtime:transaction.mtime
+                                          hash:hash
                                           link:link
                                    click_count:[self _numFromUint:transaction.click_count]
                                        message:[self _nsString:transaction.message]
@@ -2029,7 +2033,10 @@ on_account_changed_callback(Account const& account)
         default:
           break;
       }
+      NSString* custom_domain =
+        [[InfinitStateManager sharedInstance] _nsString:account.custom_domain];
       [[InfinitAccountManager sharedInstance] accountUpdated:plan
+                                                customDomain:custom_domain
                                                linkSpaceUsed:account.link_size_used
                                               linkSpaceQuota:account.link_size_quota];
     }
