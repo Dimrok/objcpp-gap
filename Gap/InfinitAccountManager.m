@@ -37,13 +37,18 @@ static dispatch_once_t _instance_token = 0;
 
 - (void)accountUpdated:(InfinitAccountPlanType)plan
           customDomain:(NSString*)custom_domain
+            linkFormat:(NSString*)link_format
          linkSpaceUsed:(uint64_t)used
         linkSpaceQuota:(uint64_t)quota
 {
-  _plan = plan;
   _custom_domain = custom_domain;
+  if (link_format.length && [link_format componentsSeparatedByString:@"%@"].count == 3)
+    _link_format = link_format;
+  else
+    _link_format = nil;
   _link_space_used = used;
   _link_space_quota = quota;
+  _plan = plan;
 }
 
 @end
