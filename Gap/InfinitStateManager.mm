@@ -2033,10 +2033,14 @@ on_account_changed_callback(Account const& account)
         default:
           break;
       }
-      NSString* custom_domain =
-        [[InfinitStateManager sharedInstance] _nsString:account.custom_domain];
+      InfinitStateManager* manager = [InfinitStateManager sharedInstance];
+      NSString* custom_domain = [manager _nsString:account.custom_domain];
+      NSString* link_format =
+        [[manager _nsString:account.link_format] stringByReplacingOccurrencesOfString:@"%s"
+                                                                           withString:@"%@"];
       [[InfinitAccountManager sharedInstance] accountUpdated:plan
                                                 customDomain:custom_domain
+                                                  linkFormat:link_format
                                                linkSpaceUsed:account.link_size_used
                                               linkSpaceQuota:account.link_size_quota];
     }
