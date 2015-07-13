@@ -11,6 +11,11 @@
 #import "InfinitStateManager.h"
 #import "InfinitAccountManager.h"
 
+#undef check
+#import <elle/log.hh>
+
+ELLE_LOG_COMPONENT("Gap-ObjC++.LinkTransaction");
+
 @interface InfinitLinkTransaction ()
 
 @property (nonatomic, readonly) NSString* hash_str;
@@ -64,9 +69,19 @@
 
 - (NSString*)link
 {
-  NSString* custom_domain = [InfinitAccountManager sharedInstance].custom_domain;
-  if (custom_domain.length)
-    return [NSString stringWithFormat:@"http://%@/_/%@", custom_domain, self.hash_str];
+  InfinitAccountManager* manager = [InfinitAccountManager sharedInstance];
+  if (manager.link_format.length && manager.custom_domain.length)
+  {
+    @try
+    {
+      return [NSString stringWithFormat:manager.link_format, manager.custom_domain, self.hash_str];
+    }
+    @catch (NSException* exception)
+    {
+      NSString* meta_id = self.meta_id.length ? self.meta_id : @"<nil>";
+      ELLE_WARN("LinkTransaction(%s): unable to generate formatted link", meta_id.UTF8String);
+    }
+  }
   return self.meta_link;
 }
 
