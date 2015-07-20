@@ -551,13 +551,13 @@ static dispatch_once_t _instance_token = 0;
 
 #pragma mark - Transaction Updated
 
-- (void)handlePhoneTransaction:(InfinitPeerTransaction*)transaction
+- (void)handleGhostTransaction:(InfinitPeerTransaction*)transaction
 {
   if (transaction.from_device &&
       transaction.status == gap_transaction_transferring &&
-      transaction.recipient.ghost_code.length > 0)
+      transaction.recipient.ghost)
   {
-    [self sendPhoneTransactionNotification:transaction];
+    [self sendGhostTransactionNotification:transaction];
   }
 }
 
@@ -570,7 +570,7 @@ static dispatch_once_t _instance_token = 0;
     {
       [self.transaction_map setObject:transaction forKey:transaction.id_];
       [self sendNewTransactionNotification:transaction];
-      [self handlePhoneTransaction:transaction];
+      [self handleGhostTransaction:transaction];
     }
     else
     {
@@ -639,9 +639,9 @@ static dispatch_once_t _instance_token = 0;
                              transaction:transaction];
 }
 
-- (void)sendPhoneTransactionNotification:(InfinitPeerTransaction*)transaction
+- (void)sendGhostTransactionNotification:(InfinitPeerTransaction*)transaction
 {
-  [self postNotificationOnMainThreadName:INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION
+  [self postNotificationOnMainThreadName:INFINIT_PEER_GHOST_TRANSACTION_NOTIFICATION
                              transaction:transaction];
 }
 

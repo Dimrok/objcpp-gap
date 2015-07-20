@@ -27,7 +27,7 @@
  Meta.
  Contains a dictionary with the transaction "id".
  */
-#define INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION       @"INFINIT_PEER_PHONE_TRANSACTION_NOTIFICATION"
+#define INFINIT_PEER_GHOST_TRANSACTION_NOTIFICATION       @"INFINIT_PEER_GHOST_TRANSACTION_NOTIFICATION"
 
 /** Notification sent when a transaction is initially accepted by the other party.
  Contains a dictionary with the transaction "id".
