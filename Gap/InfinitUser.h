@@ -38,6 +38,7 @@
 @property (nonatomic, readwrite) NSString* fullname;
 @property (nonatomic, readonly) BOOL ghost;
 @property (nonatomic, readonly) NSString* ghost_code;
+@property (nonatomic, readwrite) NSString* ghost_identifier;
 @property (nonatomic, readonly) NSString* ghost_invitation_url;
 @property (nonatomic, readonly) NSString* handle;
 @property (nonatomic, readonly) NSNumber* id_;

@@ -110,6 +110,7 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
 {
   if (!self.ghost)
     return;
+  _ghost_identifier = [self.fullname copy];
   _fullname = [fullname copy];
   [[InfinitAvatarManager sharedInstance] setAvatar:avatar forUser:self];
 }
