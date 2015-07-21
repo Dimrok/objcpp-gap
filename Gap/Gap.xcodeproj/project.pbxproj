@@ -175,12 +175,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		830D1A111AF93BAA007E3B9C /* PBXContainerItemProxy */ = {
+		8309FF001B5D5ED000E2AC83 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83ECE6E11A69618C000081A6 /* CrashReporter.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 05CD31620EE93905000FDE88;
-			remoteInfo = "CrashReporter-iOS-Simulator";
+			remoteGlobalIDString = 05CD31510EE936A9000FDE88;
+			remoteInfo = "CrashReporter-iOS-Device";
 		};
 		8372B3291AB3375D00F1B8B8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -861,7 +861,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				830D1A121AF93BAA007E3B9C /* PBXTargetDependency */,
+				8309FF011B5D5ED000E2AC83 /* PBXTargetDependency */,
 			);
 			name = "Gap-iOS";
 			productName = "Gap-iOS";
@@ -1146,10 +1146,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		830D1A121AF93BAA007E3B9C /* PBXTargetDependency */ = {
+		8309FF011B5D5ED000E2AC83 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "CrashReporter-iOS-Simulator";
-			targetProxy = 830D1A111AF93BAA007E3B9C /* PBXContainerItemProxy */;
+			name = "CrashReporter-iOS-Device";
+			targetProxy = 8309FF001B5D5ED000E2AC83 /* PBXContainerItemProxy */;
 		};
 		8372B32A1AB3375D00F1B8B8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
