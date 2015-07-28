@@ -92,7 +92,7 @@ static InfinitThreadSafeDictionary* _observer_map;
                             userInfo:(NSDictionary*)aUserInfo
 {
   [self infinit_postNotificationName:aName object:anObject userInfo:aUserInfo];
-  if ([aName containsString:@"INFINIT"])
+  if ([aName rangeOfString:@"INFINIT"].location != NSNotFound)
   {
     for (id observer in _observer_map[aName])
     {
