@@ -87,7 +87,7 @@ void ReachabilityCallback(SCNetworkReachabilityRef target,
 {
   InfinitReachability* res = NULL;
   SCNetworkReachabilityRef reachability =
-    SCNetworkReachabilityCreateWithName(NULL, [host_name UTF8String]);
+    SCNetworkReachabilityCreateWithName(NULL, host_name.UTF8String);
   if (reachability != NULL)
   {
     res = [[self alloc] init];
