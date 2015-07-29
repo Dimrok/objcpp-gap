@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8300097A1B67D0E200E5AC60 /* InfinitSwizzler.h in Headers */ = {isa = PBXBuildFile; fileRef = 830009781B67D0E200E5AC60 /* InfinitSwizzler.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8300097B1B67D0E200E5AC60 /* InfinitSwizzler.h in Headers */ = {isa = PBXBuildFile; fileRef = 830009781B67D0E200E5AC60 /* InfinitSwizzler.h */; };
+		8300097C1B67D0E200E5AC60 /* InfinitSwizzler.m in Sources */ = {isa = PBXBuildFile; fileRef = 830009791B67D0E200E5AC60 /* InfinitSwizzler.m */; };
+		8300097D1B67D0E200E5AC60 /* InfinitSwizzler.m in Sources */ = {isa = PBXBuildFile; fileRef = 830009791B67D0E200E5AC60 /* InfinitSwizzler.m */; };
 		830778E31AD2E7920047F8E6 /* InfinitFileSystemError.h in Headers */ = {isa = PBXBuildFile; fileRef = 830778E11AD2E7920047F8E6 /* InfinitFileSystemError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		830778E41AD2E7920047F8E6 /* InfinitFileSystemError.m in Sources */ = {isa = PBXBuildFile; fileRef = 830778E21AD2E7920047F8E6 /* InfinitFileSystemError.m */; };
 		830778F41AD2EAC10047F8E6 /* InfinitFileSystemError.h in Headers */ = {isa = PBXBuildFile; fileRef = 830778E11AD2E7920047F8E6 /* InfinitFileSystemError.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -295,6 +299,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		830009781B67D0E200E5AC60 /* InfinitSwizzler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitSwizzler.h; sourceTree = "<group>"; };
+		830009791B67D0E200E5AC60 /* InfinitSwizzler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitSwizzler.m; sourceTree = "<group>"; };
 		83016DE91B00D69C004864B9 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
 		8301A6F41AF91EA100E9FABF /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
 		830778E11AD2E7920047F8E6 /* InfinitFileSystemError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitFileSystemError.h; sourceTree = "<group>"; };
@@ -547,6 +553,8 @@
 				836405EE1AB88DE9005CC50C /* InfinitKeychain.m */,
 				83EE4CBC1AC58A40006292C8 /* InfinitStoredMutableDictionary.h */,
 				83EE4CBD1AC58A40006292C8 /* InfinitStoredMutableDictionary.m */,
+				830009781B67D0E200E5AC60 /* InfinitSwizzler.h */,
+				830009791B67D0E200E5AC60 /* InfinitSwizzler.m */,
 				830D7CE61B37FF6F003CE369 /* InfinitThreadSafeArray.h */,
 				830D7CE71B37FF6F003CE369 /* InfinitThreadSafeArray.m */,
 				83A7599A1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h */,
@@ -785,6 +793,7 @@
 				83C9AE7E1B286AE300DD28CE /* InfinitExternalAccount.h in Headers */,
 				83C9AE761B28691F00DD28CE /* InfinitExternalAccountsManager.h in Headers */,
 				8361B8531AF35E8800D5F890 /* InfinitThreadSafeSet.h in Headers */,
+				8300097A1B67D0E200E5AC60 /* InfinitSwizzler.h in Headers */,
 				830D7CE81B37FF6F003CE369 /* InfinitThreadSafeArray.h in Headers */,
 				830778E31AD2E7920047F8E6 /* InfinitFileSystemError.h in Headers */,
 				839610701A2479B50044B874 /* InfinitManagedFiles.h in Headers */,
@@ -819,6 +828,7 @@
 				8372B3161AB3354D00F1B8B8 /* InfinitStateManager.h in Headers */,
 				8372B3171AB3354D00F1B8B8 /* InfinitStateResult.h in Headers */,
 				830D7CE91B37FF6F003CE369 /* InfinitThreadSafeArray.h in Headers */,
+				8300097B1B67D0E200E5AC60 /* InfinitSwizzler.h in Headers */,
 				8372B31A1AB3354D00F1B8B8 /* InfinitLinkTransaction.h in Headers */,
 				8372B31B1AB3354D00F1B8B8 /* InfinitLinkTransactionManager.h in Headers */,
 				8372B31C1AB3354D00F1B8B8 /* InfinitPeerTransaction.h in Headers */,
@@ -1058,6 +1068,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				83376F1A1AEFC2DD0001A61E /* InfinitKeychain.m in Sources */,
+				8300097C1B67D0E200E5AC60 /* InfinitSwizzler.m in Sources */,
 				83F72CAE1A1513FA0088106E /* InfinitLinkTransactionManager.mm in Sources */,
 				839610711A2479B50044B874 /* InfinitManagedFiles.m in Sources */,
 				83EE4CBF1AC58A40006292C8 /* InfinitStoredMutableDictionary.m in Sources */,
@@ -1112,6 +1123,7 @@
 				8372B2F41AB3353B00F1B8B8 /* InfinitConnectionStatus.m in Sources */,
 				83FDF4181B0B5AE800AEE188 /* InfinitGhostCodeManager.mm in Sources */,
 				8372B2F51AB3353B00F1B8B8 /* InfinitConnectionManager.mm in Sources */,
+				8300097D1B67D0E200E5AC60 /* InfinitSwizzler.m in Sources */,
 				8372B2F61AB3353B00F1B8B8 /* InfinitReachability.m in Sources */,
 				8372B2F71AB3353B00F1B8B8 /* InfinitCrashReporter.mm in Sources */,
 				8372B2F81AB3353B00F1B8B8 /* InfinitDevice.m in Sources */,
