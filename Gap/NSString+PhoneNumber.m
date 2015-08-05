@@ -9,18 +9,14 @@
 #import "NSString+PhoneNumber.h"
 
 static NSDataDetector* _infinit_number_detector = nil;
+static dispatch_once_t _infinit_number_detector_token = 0;
 
 @implementation NSString (infinit_PhoneNumber)
 
 - (BOOL)infinit_isPhoneNumber
 {
-  if (_infinit_number_detector == nil)
-  {
-    _infinit_number_detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber
-                                                               error:nil];
-  }
   NSRange range = NSMakeRange(0, self.length);
-  NSArray* matches = [_infinit_number_detector matchesInString:self options:0 range:range];
+  NSArray* matches = [[NSString infinit_NumberDetector] matchesInString:self options:0 range:range];
   if (matches.count != 1)
     return NO;
   NSTextCheckingResult* res = matches[0];
@@ -29,5 +25,17 @@ static NSDataDetector* _infinit_number_detector = nil;
   return NO;
 }
 
+
+#pragma mark - Helpers
+
++ (NSDataDetector*)infinit_NumberDetector
+{
+  dispatch_once(&_infinit_number_detector_token, ^
+  {
+    _infinit_number_detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber
+                                                               error:nil];
+  });
+  return _infinit_number_detector;
+}
 
 @end
