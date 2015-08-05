@@ -11,134 +11,65 @@
 #import "InfinitGapLocalizedString.h"
 
 static NSCalendar* _calendar = nil;
+static dispatch_once_t _calendar_token = 0;
 
 static NSDateFormatter* _today_formatter = nil;
 static NSDateFormatter* _week_formatter_short = nil;
 static NSDateFormatter* _week_formatter_long = nil;
 static NSDateFormatter* _other_formatter_short = nil;
 static NSDateFormatter* _other_formatter_long = nil;
+static dispatch_once_t _formatter_token = 0;
+
+static dispatch_queue_t _relative_queue = nil;
 
 @implementation InfinitTime
 
 + (NSString*)relativeDateOf:(NSTimeInterval)timestamp
                longerFormat:(BOOL)longer
 {
-  NSDate* transaction_date = [NSDate dateWithTimeIntervalSince1970:timestamp];
-  NSTimeInterval now = [[NSDate date] timeIntervalSince1970];
-  NSDateFormatter* formatter = nil;
-  NSString* res;
-  if (timestamp < now && timestamp > (now - 3 * 60.0)) // 3 min ago
+  [self _createFormatters];
+  __block NSString* res;
+  dispatch_sync(_relative_queue, ^
   {
-    res = GapLocalizedString(@"Now", nil);
-  }
-  else if (timestamp < now && timestamp > (now - 60 * 60.0)) // an hour ago
-  {
-    NSTimeInterval time_ago = floor((now - timestamp) / 60.0);
-    res = [NSString stringWithFormat:@"%.0f %@", time_ago, GapLocalizedString(@"min ago", nil)];
-  }
-  else if ([InfinitTime isToday:transaction_date])
-  {
-    if (_today_formatter == nil)
+    NSDate* transaction_date = [NSDate dateWithTimeIntervalSince1970:timestamp];
+    NSTimeInterval now = [[NSDate date] timeIntervalSince1970];
+    NSDateFormatter* formatter = nil;
+    if (timestamp < now && timestamp > (now - 3 * 60.0)) // 3 min ago
     {
-      _today_formatter = [[NSDateFormatter alloc] init];
-      _today_formatter.locale = [NSLocale currentLocale];
-      _today_formatter.timeStyle = NSDateFormatterShortStyle;
+      res = GapLocalizedString(@"Now", nil);
     }
-    res = [_today_formatter stringFromDate:transaction_date];
-  }
-  else if ([InfinitTime isInLastWeek:transaction_date])
-  {
-    if (longer)
+    else if (timestamp < now && timestamp > (now - 60 * 60.0)) // an hour ago
     {
-      if (_week_formatter_long == nil)
-      {
-        _week_formatter_long = [[NSDateFormatter alloc] init];
-        _week_formatter_long.locale = [NSLocale currentLocale];
-        _week_formatter_long.dateFormat = @"EEEE";
-      }
-      formatter = _week_formatter_long;
+      NSTimeInterval time_ago = floor((now - timestamp) / 60.0);
+      res = [NSString stringWithFormat:@"%.0f %@", time_ago, GapLocalizedString(@"min ago", nil)];
+    }
+    else if ([InfinitTime _isToday:transaction_date])
+    {
+      res = [_today_formatter stringFromDate:transaction_date];
+    }
+    else if ([InfinitTime _isInLastWeek:transaction_date])
+    {
+      if (longer)
+        formatter = _week_formatter_long;
+      else
+        formatter = _week_formatter_short;
+      res = [[formatter stringFromDate:transaction_date] capitalizedString];
     }
     else
     {
-      if (_week_formatter_short == nil)
-      {
-        _week_formatter_short = [[NSDateFormatter alloc] init];
-        _week_formatter_short.locale = [NSLocale currentLocale];
-        _week_formatter_short.dateFormat = @"EEE";
-      }
-      formatter = _week_formatter_short;
+      if (longer)
+        formatter = _other_formatter_long;
+      else
+        formatter = _other_formatter_short;
+      res = [[formatter stringFromDate:transaction_date] capitalizedString];;
     }
-    res = [[formatter stringFromDate:transaction_date] capitalizedString];
-  }
-  else
-  {
-    if (longer)
-    {
-      if (_other_formatter_long == nil)
-      {
-        _other_formatter_long = [[NSDateFormatter alloc] init];
-        _other_formatter_long.locale = [NSLocale currentLocale];
-        _other_formatter_long.dateFormat = @"d MMMM";
-      }
-      formatter = _other_formatter_long;
-    }
-    else
-    {
-      if (_other_formatter_short == nil)
-      {
-        _other_formatter_short = [[NSDateFormatter alloc] init];
-        _other_formatter_short.locale = [NSLocale currentLocale];
-        _other_formatter_short.dateFormat = @"d MMM";
-      }
-      formatter = _other_formatter_short;
-    }
-    res = [[formatter stringFromDate:transaction_date] capitalizedString];;
-  }
+  });
   return res;
-}
-
-+ (BOOL)isToday:(NSDate*)date
-{
-  NSDate* today = [NSDate date];
-  NSInteger components = (NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear);
-  if (_calendar == nil)
-    _calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-  NSDateComponents* today_components = [_calendar components:components
-                                                      fromDate:today];
-  NSDateComponents* date_components = [_calendar components:components
-                                                    fromDate:date];
-  if ([date_components isEqual:today_components])
-    return YES;
-  else
-    return NO;
-}
-
-+ (BOOL)isInLastWeek:(NSDate*)date
-{
-  NSDate* now = [NSDate date];
-  if (_calendar == nil)
-    _calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-  NSInteger components = (NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear);
-  NSDateComponents* today_components = [_calendar components:components
-                                                      fromDate:now];
-  NSDate* today = [_calendar dateFromComponents:today_components];
-  NSDateComponents* minus_six_days = [[NSDateComponents alloc] init];
-  minus_six_days.day = -6;
-  NSDate* six_days_ago = [_calendar dateByAddingComponents:minus_six_days
-                                                    toDate:today
-                                                   options:0];
-  if ([[date earlierDate:now] isEqualToDate:date] &&
-      [[date laterDate:six_days_ago] isEqualToDate:date])
-  {
-    return YES;
-  }
-  return NO;
 }
 
 + (NSString*)timeRemainingFrom:(NSTimeInterval)seconds_left
 {
   NSString* res;
-
   if (seconds_left < 10)
     res = GapLocalizedString(@"less than 10 s", @"less than 10 s");
   else if (seconds_left < 60)
@@ -160,7 +91,6 @@ static NSDateFormatter* _other_formatter_long = nil;
   {
     res = GapLocalizedString(@"more than two days", @"more than two days");
   }
-
   return res;
 }
 
@@ -174,6 +104,79 @@ static NSDateFormatter* _other_formatter_long = nil;
     return [NSString stringWithFormat:@"%ld:%02ld:%02ld", (long)hours, (long)minutes, (long)seconds];
   else
     return [NSString stringWithFormat:@"%ld:%02ld", (long)minutes, (long)seconds];
+}
+
+#pragma mark - Helpers
+
++ (void)_createFormatters
+{
+  dispatch_once(&_formatter_token, ^
+  {
+    _relative_queue = dispatch_queue_create("io.Infinit.RelativeTime", DISPATCH_QUEUE_SERIAL);
+
+    _today_formatter = [[NSDateFormatter alloc] init];
+    _today_formatter.locale = [NSLocale currentLocale];
+    _today_formatter.timeStyle = NSDateFormatterShortStyle;
+
+    _week_formatter_long = [[NSDateFormatter alloc] init];
+    _week_formatter_long.locale = [NSLocale currentLocale];
+    _week_formatter_long.dateFormat = @"EEEE";
+
+    _week_formatter_short = [[NSDateFormatter alloc] init];
+    _week_formatter_short.locale = [NSLocale currentLocale];
+    _week_formatter_short.dateFormat = @"EEE";
+
+    _other_formatter_long = [[NSDateFormatter alloc] init];
+    _other_formatter_long.locale = [NSLocale currentLocale];
+    _other_formatter_long.dateFormat = @"d MMMM";
+
+    _other_formatter_short = [[NSDateFormatter alloc] init];
+    _other_formatter_short.locale = [NSLocale currentLocale];
+    _other_formatter_short.dateFormat = @"d MMM";
+  });
+}
+
++ (NSCalendar*)calendar
+{
+  dispatch_once(&_calendar_token, ^
+  {
+    _calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+  });
+  return _calendar;
+}
+
++ (BOOL)_isToday:(NSDate*)date
+{
+  NSDate* today = [NSDate date];
+  NSInteger components = (NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear);
+  NSDateComponents* today_components = [[self calendar] components:components
+                                                          fromDate:today];
+  NSDateComponents* date_components = [[self calendar] components:components
+                                                         fromDate:date];
+  if ([date_components isEqual:today_components])
+    return YES;
+  else
+    return NO;
+}
+
++ (BOOL)_isInLastWeek:(NSDate*)date
+{
+  NSDate* now = [NSDate date];
+  NSInteger components = (NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear);
+  NSDateComponents* today_components = [[self calendar] components:components
+                                                          fromDate:now];
+  NSDate* today = [[self calendar] dateFromComponents:today_components];
+  NSDateComponents* minus_six_days = [[NSDateComponents alloc] init];
+  minus_six_days.day = -6;
+  NSDate* six_days_ago = [[self calendar] dateByAddingComponents:minus_six_days
+                                                          toDate:today
+                                                         options:0];
+  if ([[date earlierDate:now] isEqualToDate:date] &&
+      [[date laterDate:six_days_ago] isEqualToDate:date])
+  {
+    return YES;
+  }
+  return NO;
 }
 
 @end
