@@ -19,14 +19,16 @@
 
 ELLE_LOG_COMPONENT("Gap-ObjC++.CrashReporter");
 
+@interface InfinitCrashReporter ()
+
+@property (nonatomic, readonly) PLCrashReporter* reporter;
+
+@end
+
 static InfinitCrashReporter* _instance = nil;
 static dispatch_once_t _instance_token = 0;
 
 @implementation InfinitCrashReporter
-{
-@private
-  PLCrashReporter* _reporter;
-}
 
 #pragma mark - Init
 
@@ -44,7 +46,7 @@ static dispatch_once_t _instance_token = 0;
 #endif
     _reporter = [[PLCrashReporter alloc] initWithConfiguration:config];
     NSError* error = nil;
-    [_reporter enableCrashReporterAndReturnError:&error];
+    [self.reporter enableCrashReporterAndReturnError:&error];
     if (error != nil)
     {
       ELLE_ERR("%s: unable to configure crash reporter: %s",
@@ -67,10 +69,10 @@ static dispatch_once_t _instance_token = 0;
 
 - (void)sendExistingCrashReport
 {
-  if (![_reporter hasPendingCrashReport])
+  if (![self.reporter hasPendingCrashReport])
     return;
   NSError* error = nil;
-  NSData* crash_data = [_reporter loadPendingCrashReportDataAndReturnError:&error];
+  NSData* crash_data = [self.reporter loadPendingCrashReportDataAndReturnError:&error];
   if (error != nil)
   {
     ELLE_ERR("%s: unable to fetch crash report data: %s",
@@ -116,7 +118,7 @@ static dispatch_once_t _instance_token = 0;
     ELLE_ERR("%s: unable to send last crash: %d", self.description.UTF8String, result.status);
   }
   NSError* error = nil;
-  [_reporter purgePendingCrashReportAndReturnError:&error];
+  [self.reporter purgePendingCrashReportAndReturnError:&error];
   if (error != nil)
   {
     ELLE_ERR("%s: unable to purge last crash report: %s",
