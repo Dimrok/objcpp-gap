@@ -85,13 +85,14 @@ void ReachabilityCallback(SCNetworkReachabilityRef target,
 
 + (instancetype)reachabilityWithHostName:(NSString*)host_name
 {
-  InfinitReachability* res = NULL;
+  InfinitReachability* res = nil;
   SCNetworkReachabilityRef reachability =
     SCNetworkReachabilityCreateWithName(NULL, host_name.UTF8String);
   if (reachability != NULL)
   {
     res = [[self alloc] init];
-    if (res != NULL)
+    res->_reachability_ref = NULL;
+    if (res != nil)
     {
       res->_reachability_ref = reachability;
       res->_always_return_local_wifi_status = NO;
@@ -103,16 +104,15 @@ void ReachabilityCallback(SCNetworkReachabilityRef target,
 
 + (instancetype)reachabilityWithAddress:(const struct sockaddr_in*)host_addr
 {
+  InfinitReachability* res = nil;
   SCNetworkReachabilityRef reachability =
     SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault,
                                            (const struct sockaddr*)host_addr);
-
-  InfinitReachability* res = NULL;
-
   if (reachability != NULL)
   {
     res = [[self alloc] init];
-    if (res != NULL)
+    res->_reachability_ref = NULL;
+    if (res != nil)
     {
       res->_reachability_ref = reachability;
       res->_always_return_local_wifi_status = NO;
@@ -190,9 +190,7 @@ void ReachabilityCallback(SCNetworkReachabilityRef target,
 {
   [self stopNotifier];
   if (_reachability_ref != NULL)
-  {
     CFRelease(_reachability_ref);
-  }
 }
 
 
