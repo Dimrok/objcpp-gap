@@ -60,7 +60,7 @@ static NSString* _facebook_app_id = nil;
 @property (nonatomic, readwrite) dispatch_once_t meta_session_id_token;
 @property (nonatomic, readonly) NSTimer* poll_timer;
 @property (atomic, readwrite) BOOL polling; // Use boolean to guard polling as NSTimer valid is iOS 8.0+.
-@property (nonatomic, readonly) NSOperationQueue* queue;
+@property (atomic, readonly) NSOperationQueue* queue;
 
 @end
 
@@ -1727,7 +1727,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
         completion_block(operation_result);
     });
   }];
-  [_queue addOperation:block_operation];
+  [self.queue addOperation:block_operation];
 }
 
 - (void)_addOperationCustomResultBlock:(gap_void_operation_t)operation
@@ -1750,7 +1750,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
       return;
     }
   }];
-  [_queue addOperation:block_operation];
+  [self.queue addOperation:block_operation];
 }
 
 #pragma mark - Helpers
