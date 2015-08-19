@@ -32,9 +32,9 @@ typedef NS_ENUM(NSUInteger, InfinitDeviceType)
 @property (nonatomic, readonly) NSString* os;
 @property (nonatomic, readonly) InfinitDeviceType type;
 
-- (instancetype)initWithId:(NSString*)id_
-                      name:(NSString*)name
-                        os:(NSString*)os
-                     model:(NSString*)model;
++ (instancetype)deviceWithId:(NSString*)id_
+                        name:(NSString*)name
+                          os:(NSString*)os
+                       model:(NSString*)model;
 
 @end

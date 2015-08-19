@@ -17,10 +17,10 @@
 
 #pragma mark - Init
 
-- (instancetype)initWithId:(NSString*)id_
-                      name:(NSString*)name
-                        os:(NSString*)os
-                     model:(NSString*)model
+- (instancetype)_initWithId:(NSString*)id_
+                       name:(NSString*)name
+                         os:(NSString*)os
+                      model:(NSString*)model
 {
   if (self = [super init])
   {
@@ -35,6 +35,14 @@
       _name = name;
   }
   return self;
+}
+
++ (instancetype)deviceWithId:(NSString*)id_
+                        name:(NSString*)name
+                          os:(NSString*)os
+                       model:(NSString*)model
+{
+  return [[self alloc] _initWithId:id_ name:name os:os model:model];
 }
 
 - (InfinitDeviceType)_typeFromOSString:(NSString*)os
