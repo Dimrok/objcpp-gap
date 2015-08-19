@@ -8,9 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "InfinitAccountUsageQuota.h"
+
 typedef NS_ENUM(NSUInteger, InfinitAccountPlanType)
 {
   InfinitAccountPlanTypeBasic = 0,
+  InfinitAccountPlanTypePlus,
   InfinitAccountPlanTypePremium,
 };
 
@@ -18,9 +21,10 @@ typedef NS_ENUM(NSUInteger, InfinitAccountPlanType)
 
 @property (nonatomic, readonly) NSString* custom_domain;
 @property (nonatomic, readonly) NSString* link_format;
-@property (nonatomic, readonly) uint64_t link_space_used;
-@property (nonatomic, readonly) uint64_t link_space_quota;
+@property (nonatomic, readonly) InfinitAccountUsageQuota* link_quota;
 @property (nonatomic, readonly) InfinitAccountPlanType plan;
+@property (nonatomic, readonly) InfinitAccountUsageQuota* send_to_self_quota;
+@property (nonatomic, readonly) uint64_t transfer_size_limit;
 
 + (instancetype)sharedInstance;
 
@@ -28,7 +32,8 @@ typedef NS_ENUM(NSUInteger, InfinitAccountPlanType)
 - (void)accountUpdated:(InfinitAccountPlanType)plan
           customDomain:(NSString*)custom_domain
             linkFormat:(NSString*)link_format
-         linkSpaceUsed:(uint64_t)used
-        linkSpaceQuota:(uint64_t)quota;
+             linkQuota:(InfinitAccountUsageQuota*)link_quota
+       sendToSelfQuota:(InfinitAccountUsageQuota*)send_to_self_quota
+         transferLimit:(uint64_t)transfer_limit;
 
 @end
