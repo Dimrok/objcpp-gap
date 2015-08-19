@@ -191,12 +191,24 @@ static dispatch_once_t _instance_token = 0;
 
 #pragma mark - Transaction Updated
 
+- (void)_checkStatusInfo:(InfinitLinkTransaction*)transaction
+{
+  switch (transaction.status_info)
+  {
+    case gap_link_storage_limit_reached:
+      [self postNotificationOnMainThreadName:INFINIT_LINK_QUOTA_EXCEEDED transaction:transaction];
+      break;
+
+    default:
+      break;
+  }
+}
+
 - (void)transactionUpdated:(InfinitLinkTransaction*)transaction
 {
-  if (transaction.status == gap_transaction_payment_required)
-    [self postNotificationOnMainThreadName:INFINIT_LINK_QUOTA_EXCEEDED transaction:nil];
   @synchronized(self.transaction_map)
   {
+    [self _checkStatusInfo:transaction];
     InfinitLinkTransaction* existing = [self.transaction_map objectForKey:transaction.id_];
     if (existing == nil)
     {
