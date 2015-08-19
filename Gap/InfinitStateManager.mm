@@ -1117,6 +1117,44 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   return res;
 }
 
+#pragma mark - Account
+
+- (void)_accountChanged:(Account const&)account
+{
+  using infinit::oracles::meta::AccountPlanType;
+  InfinitAccountPlanType plan = InfinitAccountPlanTypeBasic;
+  switch (account.plan)
+  {
+    case AccountPlanType::AccountPlanType_Basic:
+      plan = InfinitAccountPlanTypeBasic;
+      break;
+    case AccountPlanType::AccountPlanType_Plus:
+      plan = InfinitAccountPlanTypePlus;
+      break;
+    case AccountPlanType::AccountPlanType_Premium:
+      plan = InfinitAccountPlanTypePremium;
+      break;
+
+    default:
+      break;
+  }
+  NSString* custom_domain = [self _nsString:account.custom_domain];
+  NSString* link_format =
+    [[self _nsString:account.link_format] stringByReplacingOccurrencesOfString:@"%s"
+                                                                     withString:@"%@"];
+  auto const& quotas = account.quotas.value();
+  InfinitAccountUsageQuota* link_quota = [self _convertAccountUsageQuota:quotas.links];
+  InfinitAccountUsageQuota* send_to_self_quota =
+    [self _convertAccountUsageQuota:quotas.send_to_self];
+  uint64_t transfer_limit = quotas.p2p.limit ? quotas.p2p.limit.get() : 0;
+  [[InfinitAccountManager sharedInstance] accountUpdated:plan
+                                            customDomain:custom_domain
+                                              linkFormat:link_format 
+                                               linkQuota:link_quota
+                                         sendToSelfQuota:send_to_self_quota
+                                           transferLimit:transfer_limit];
+}
+
 #pragma mark - External Accounts
 
 - (void)_externalAccountsChanged:(std::vector<ExternalAccount const*>)accounts
@@ -1495,13 +1533,20 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 
 #pragma mark - Conversions
 
+- (InfinitAccountUsageQuota*)_convertAccountUsageQuota:(Account::Quotas::QuotaUsage const&)quota
+{
+  if (quota.quota)
+    return [InfinitAccountUsageQuota accountUsage:quota.used quota:quota.quota.get()];
+  else
+    return [InfinitAccountUsageQuota accountUsage:quota.used];
+}
+
 - (InfinitDevice*)_convertDevice:(surface::gap::Device const*)device
 {
-  InfinitDevice* res = [[InfinitDevice alloc] initWithId:[self _nsString:device->id.repr()]
-                                                    name:[self _nsString:device->name]
-                                                      os:[self _nsStringOptional:device->os]
-                                                   model:[self _nsStringOptional:device->model]];
-  return res;
+  return [InfinitDevice deviceWithId:[self _nsString:device->id.repr()]
+                                name:[self _nsString:device->name]
+                                  os:[self _nsStringOptional:device->os]
+                               model:[self _nsStringOptional:device->model]];
 }
 
 - (std::vector<std::string>)_strVectorFromNSArray:(NSArray*)array
@@ -1584,7 +1629,9 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
                                    click_count:[self _numFromUint:transaction.click_count]
                                        message:[self _nsString:transaction.message]
                                           size:size
-                                    screenshot:transaction.screenshot];
+                                    screenshot:transaction.screenshot
+                                   status_info:(transaction.status_info ?
+                                                  transaction.status_info.get() : gap_ok)];
   return res;
 }
 
@@ -1609,7 +1656,9 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
                                        message:[self _nsString:transaction.message]
                                           size:size
                                      directory:transaction.is_directory
-                                      canceler:[self _nsString:transaction.canceler.user_id]];
+                                      canceler:[self _nsString:transaction.canceler.user_id]
+                                   status_info:(transaction.status_info ?
+                                                  transaction.status_info.get() : gap_ok)];
   return res;
 }
 
@@ -2019,30 +2068,7 @@ on_account_changed_callback(Account const& account)
   {
     @autoreleasepool
     {
-      using infinit::oracles::meta::AccountPlanType;
-      InfinitAccountPlanType plan = InfinitAccountPlanTypeBasic;
-      switch (account.plan)
-      {
-        case AccountPlanType::AccountPlanType_Basic:
-          plan = InfinitAccountPlanTypeBasic;
-          break;
-        case AccountPlanType::AccountPlanType_Premium:
-          plan = InfinitAccountPlanTypePremium;
-          break;
-
-        default:
-          break;
-      }
-      InfinitStateManager* manager = [InfinitStateManager sharedInstance];
-      NSString* custom_domain = [manager _nsString:account.custom_domain];
-      NSString* link_format =
-        [[manager _nsString:account.link_format] stringByReplacingOccurrencesOfString:@"%s"
-                                                                           withString:@"%@"];
-      [[InfinitAccountManager sharedInstance] accountUpdated:plan
-                                                customDomain:custom_domain
-                                                  linkFormat:link_format
-                                               linkSpaceUsed:account.link_size_used
-                                              linkSpaceQuota:account.link_size_quota];
+      [[InfinitStateManager sharedInstance] _accountChanged:account];
     }
   }
   @catch (NSException* e)
