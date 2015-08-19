@@ -9,7 +9,7 @@
 #ifndef Infinit_InfinitConstants_h
 # define Infinit_InfinitConstants_h
 
-# ifdef TARGET_OS_IPHONE
+# if TARGET_OS_IPHONE
 /**************************
  * iOS Specific constants *
  **************************/
@@ -48,6 +48,18 @@
 
 /// Web profile URL.
 #  define kInfinitWebProfileURL @"https://infinit.io/account?utm_source=app&utm_medium=mac&utm_campaign=web_profile"
+
+/// Account for quota URL.
+#  define kInfinitWebProfileQuotaURL @"https://infinit.io/account?utm_source=app&utm_medium=mac&utm_campaign=quota"
+
+/// Upgrade plan URL.
+#  define kInfinitUpgradePlanURL @"https://infinit.io/account?utm_source=app&utm_medium=mac&utm_campaign=upgrade_plan"
+
+/// Referal URL.
+#  define kInfinitReferalMoreStorageURL @"https://infinit.io/account/referral?utm_source=app&utm_medium=mac&utm_campaign=get_more_storage"
+
+/// Invite URL.
+#  define kInfinitReferalInviteURL @"https://infinit.io/account/referral?utm_source=app&utm_medium=mac&utm_campaign=invite"
 
 # endif
 /**************************
