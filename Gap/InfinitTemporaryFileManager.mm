@@ -8,7 +8,6 @@
 
 #import "InfinitTemporaryFileManager.h"
 
-#import "InfinitDataSize.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitLinkTransactionManager.h"
 #import "InfinitManagedFiles.h"
@@ -745,11 +744,9 @@ static dispatch_once_t _library_token = 0;
         uint64_t free_space = [InfinitDirectoryManager sharedInstance].free_space;
         if (free_space < file_size_number.unsignedLongValue)
         {
-          NSString* free_space_str = [InfinitDataSize fileSizeStringFrom:@(free_space)];
-          NSString* file_size_str = [InfinitDataSize fileSizeStringFrom:file_size_number];
           ELLE_WARN("%s: video from path fallback, not enough free space: %s > %s",
-                    manager.description.UTF8String, file_size_str.UTF8String,
-                    free_space_str.UTF8String)
+                    manager.description.UTF8String, file_size_number.infinit_fileSize.UTF8String,
+                    @(free_space).infinit_fileSize.UTF8String)
           if (error != NULL)
             *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoFreeSpace];
         }
