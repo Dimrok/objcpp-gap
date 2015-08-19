@@ -8,9 +8,10 @@
 
 #import "InfinitStateWrapper.h"
 
-#import "InfinitDataSize.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitLogManager.h"
+
+#import "NSNumber+DataSize.h"
 
 #undef check
 #import <elle/log.hh>
@@ -29,8 +30,7 @@ static BOOL _production = NO;
   if (self = [super init])
   {
     _state = state;
-    NSString* free_space =
-      [InfinitDataSize fileSizeStringFrom:@([InfinitDirectoryManager sharedInstance].free_space)];
+    NSString* free_space = @([InfinitDirectoryManager sharedInstance].free_space).infinit_fileSize;
     ELLE_LOG("%s: started state with %s of free space in download directory",
              self.description.UTF8String, free_space.UTF8String);
   }
