@@ -58,6 +58,19 @@ static dispatch_once_t _instance_token = 0;
   return NO;
 }
 
+- (BOOL)userEmail:(NSString*)email
+{
+  for (InfinitExternalAccount* account in self.account_list)
+  {
+    if (account.type == InfinitExternalAccountTypeEmail &&
+        [account.identifier isEqualToString:email])
+    {
+      return YES;
+    }
+  }
+  return NO;
+}
+
 #pragma mark - State Manager Callback
 - (void)accountsUpdated:(NSArray*)accounts
 {

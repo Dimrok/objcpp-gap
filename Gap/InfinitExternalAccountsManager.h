@@ -17,6 +17,8 @@
 
 + (instancetype)sharedInstance;
 
+- (BOOL)userEmail:(NSString*)email;
+
 #pragma mark - State Manager Callback
 - (void)accountsUpdated:(NSArray*)accounts;
 
