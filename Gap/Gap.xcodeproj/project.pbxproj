@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8300097A1B67D0E200E5AC60 /* InfinitSwizzler.h in Headers */ = {isa = PBXBuildFile; fileRef = 830009781B67D0E200E5AC60 /* InfinitSwizzler.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8300097B1B67D0E200E5AC60 /* InfinitSwizzler.h in Headers */ = {isa = PBXBuildFile; fileRef = 830009781B67D0E200E5AC60 /* InfinitSwizzler.h */; };
+		8300097B1B67D0E200E5AC60 /* InfinitSwizzler.h in Headers */ = {isa = PBXBuildFile; fileRef = 830009781B67D0E200E5AC60 /* InfinitSwizzler.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8300097C1B67D0E200E5AC60 /* InfinitSwizzler.m in Sources */ = {isa = PBXBuildFile; fileRef = 830009791B67D0E200E5AC60 /* InfinitSwizzler.m */; };
 		8300097D1B67D0E200E5AC60 /* InfinitSwizzler.m in Sources */ = {isa = PBXBuildFile; fileRef = 830009791B67D0E200E5AC60 /* InfinitSwizzler.m */; };
 		830778E31AD2E7920047F8E6 /* InfinitFileSystemError.h in Headers */ = {isa = PBXBuildFile; fileRef = 830778E11AD2E7920047F8E6 /* InfinitFileSystemError.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -17,16 +17,18 @@
 		830778F51AD2EACD0047F8E6 /* InfinitFileSystemError.m in Sources */ = {isa = PBXBuildFile; fileRef = 830778E21AD2E7920047F8E6 /* InfinitFileSystemError.m */; };
 		830AD1DF1A6A8D2400E2B058 /* InfinitTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 830AD1DD1A6A8D2400E2B058 /* InfinitTime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		830AD1E01A6A8D2400E2B058 /* InfinitTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 830AD1DE1A6A8D2400E2B058 /* InfinitTime.m */; };
-		830AD1E31A6A943D00E2B058 /* InfinitDataSize.h in Headers */ = {isa = PBXBuildFile; fileRef = 830AD1E11A6A943D00E2B058 /* InfinitDataSize.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		830AD1E41A6A943D00E2B058 /* InfinitDataSize.m in Sources */ = {isa = PBXBuildFile; fileRef = 830AD1E21A6A943D00E2B058 /* InfinitDataSize.m */; };
+		830B57921B832B26009DF3BA /* InfinitAccountUsageQuota.h in Headers */ = {isa = PBXBuildFile; fileRef = 830B57901B832B26009DF3BA /* InfinitAccountUsageQuota.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		830B57931B832B26009DF3BA /* InfinitAccountUsageQuota.h in Headers */ = {isa = PBXBuildFile; fileRef = 830B57901B832B26009DF3BA /* InfinitAccountUsageQuota.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		830B57941B832B26009DF3BA /* InfinitAccountUsageQuota.m in Sources */ = {isa = PBXBuildFile; fileRef = 830B57911B832B26009DF3BA /* InfinitAccountUsageQuota.m */; };
+		830B57951B832B26009DF3BA /* InfinitAccountUsageQuota.m in Sources */ = {isa = PBXBuildFile; fileRef = 830B57911B832B26009DF3BA /* InfinitAccountUsageQuota.m */; };
 		830D7CE81B37FF6F003CE369 /* InfinitThreadSafeArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 830D7CE61B37FF6F003CE369 /* InfinitThreadSafeArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		830D7CE91B37FF6F003CE369 /* InfinitThreadSafeArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 830D7CE61B37FF6F003CE369 /* InfinitThreadSafeArray.h */; };
 		830D7CEA1B37FF6F003CE369 /* InfinitThreadSafeArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 830D7CE71B37FF6F003CE369 /* InfinitThreadSafeArray.m */; };
 		830D7CEB1B37FF6F003CE369 /* InfinitThreadSafeArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 830D7CE71B37FF6F003CE369 /* InfinitThreadSafeArray.m */; };
-		830D7D1F1B3BE3A8003CE369 /* InfinitAccountManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 830D7D1D1B3BE3A8003CE369 /* InfinitAccountManager.h */; };
+		830D7D1F1B3BE3A8003CE369 /* InfinitAccountManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 830D7D1D1B3BE3A8003CE369 /* InfinitAccountManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		830D7D201B3BE3A8003CE369 /* InfinitAccountManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 830D7D1D1B3BE3A8003CE369 /* InfinitAccountManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		830D7D211B3BE3A8003CE369 /* InfinitAccountManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 830D7D1E1B3BE3A8003CE369 /* InfinitAccountManager.m */; };
-		830D7D221B3BE3A8003CE369 /* InfinitAccountManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 830D7D1E1B3BE3A8003CE369 /* InfinitAccountManager.m */; };
+		830D7D211B3BE3A8003CE369 /* InfinitAccountManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 830D7D1E1B3BE3A8003CE369 /* InfinitAccountManager.mm */; };
+		830D7D221B3BE3A8003CE369 /* InfinitAccountManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 830D7D1E1B3BE3A8003CE369 /* InfinitAccountManager.mm */; };
 		830F48131B1C82F6009B1C53 /* NSNotificationCenter+Debug.h in Headers */ = {isa = PBXBuildFile; fileRef = 830F48011B1C6DD8009B1C53 /* NSNotificationCenter+Debug.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		830F48141B1C8308009B1C53 /* NSNotificationCenter+Debug.m in Sources */ = {isa = PBXBuildFile; fileRef = 830F48021B1C6DD8009B1C53 /* NSNotificationCenter+Debug.m */; };
 		83157EEF1A73D84800F8E87F /* InfinitDirectoryManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83157EED1A73D84800F8E87F /* InfinitDirectoryManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -42,6 +44,10 @@
 		83568DAB1A136DFF00766DA3 /* InfinitPeerTransactionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA91A136DFF00766DA3 /* InfinitPeerTransactionManager.mm */; };
 		83568DB01A136E1000766DA3 /* InfinitStateManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DAD1A136E1000766DA3 /* InfinitStateManager.mm */; };
 		83568DB11A136E1000766DA3 /* InfinitStateResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DAF1A136E1000766DA3 /* InfinitStateResult.m */; };
+		835D5B0B1B847CBB00532BBD /* NSNumber+DataSize.h in Headers */ = {isa = PBXBuildFile; fileRef = 835D5B091B847CBB00532BBD /* NSNumber+DataSize.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		835D5B0C1B847CBB00532BBD /* NSNumber+DataSize.h in Headers */ = {isa = PBXBuildFile; fileRef = 835D5B091B847CBB00532BBD /* NSNumber+DataSize.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		835D5B0D1B847CBB00532BBD /* NSNumber+DataSize.m in Sources */ = {isa = PBXBuildFile; fileRef = 835D5B0A1B847CBB00532BBD /* NSNumber+DataSize.m */; };
+		835D5B0E1B847CBB00532BBD /* NSNumber+DataSize.m in Sources */ = {isa = PBXBuildFile; fileRef = 835D5B0A1B847CBB00532BBD /* NSNumber+DataSize.m */; };
 		8361B8531AF35E8800D5F890 /* InfinitThreadSafeSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 8361B8511AF35E8800D5F890 /* InfinitThreadSafeSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8361B8541AF35E8800D5F890 /* InfinitThreadSafeSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 8361B8521AF35E8800D5F890 /* InfinitThreadSafeSet.m */; };
 		836463531AFA79C5009D8C00 /* Gap_Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 832C12FC1AF915A00014895D /* Gap_Localizable.strings */; };
@@ -83,7 +89,6 @@
 		8372B3051AB3353B00F1B8B8 /* InfinitUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA11A136DF600766DA3 /* InfinitUser.m */; };
 		8372B3061AB3353B00F1B8B8 /* InfinitUserManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83568DA31A136DF600766DA3 /* InfinitUserManager.mm */; };
 		8372B3071AB3353B00F1B8B8 /* InfinitColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8372B1631AB3240D00F1B8B8 /* InfinitColor.m */; };
-		8372B3081AB3353B00F1B8B8 /* InfinitDataSize.m in Sources */ = {isa = PBXBuildFile; fileRef = 830AD1E21A6A943D00E2B058 /* InfinitDataSize.m */; };
 		8372B3091AB3353B00F1B8B8 /* InfinitTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 830AD1DE1A6A8D2400E2B058 /* InfinitTime.m */; };
 		8372B30A1AB3353B00F1B8B8 /* NSString+email.m in Sources */ = {isa = PBXBuildFile; fileRef = 836D394E1A67F19200892206 /* NSString+email.m */; };
 		8372B30B1AB3353B00F1B8B8 /* NSString+PhoneNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F9628C1AAB10A9003F2DE7 /* NSString+PhoneNumber.m */; };
@@ -108,13 +113,12 @@
 		8372B31F1AB3354D00F1B8B8 /* InfinitUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA01A136DF600766DA3 /* InfinitUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8372B3201AB3354D00F1B8B8 /* InfinitUserManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83568DA21A136DF600766DA3 /* InfinitUserManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8372B3211AB3354D00F1B8B8 /* InfinitColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 8372B1621AB3240D00F1B8B8 /* InfinitColor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8372B3221AB3354D00F1B8B8 /* InfinitDataSize.h in Headers */ = {isa = PBXBuildFile; fileRef = 830AD1E11A6A943D00E2B058 /* InfinitDataSize.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8372B3231AB3354D00F1B8B8 /* InfinitTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 830AD1DD1A6A8D2400E2B058 /* InfinitTime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8372B3241AB3354D00F1B8B8 /* NSString+email.h in Headers */ = {isa = PBXBuildFile; fileRef = 836D394D1A67F19200892206 /* NSString+email.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8372B3251AB3354E00F1B8B8 /* NSString+PhoneNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F9628B1AAB10A9003F2DE7 /* NSString+PhoneNumber.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8372B32B1AB337CE00F1B8B8 /* libCrashReporter-MacOSX-Static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83ECE6F51A69618D000081A6 /* libCrashReporter-MacOSX-Static.a */; };
 		8380BDC21B0B38580001F876 /* InfinitConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 8380BDBF1B0B38580001F876 /* InfinitConstants.h */; };
-		8380BDC31B0B38580001F876 /* InfinitConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 8380BDBF1B0B38580001F876 /* InfinitConstants.h */; };
+		8380BDC31B0B38580001F876 /* InfinitConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 8380BDBF1B0B38580001F876 /* InfinitConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8380BDC41B0B38580001F876 /* InfinitURLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 8380BDC01B0B38580001F876 /* InfinitURLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8380BDC51B0B38580001F876 /* InfinitURLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 8380BDC01B0B38580001F876 /* InfinitURLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8380BDC61B0B38580001F876 /* InfinitURLParser.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8380BDC11B0B38580001F876 /* InfinitURLParser.mm */; };
@@ -307,12 +311,12 @@
 		830778E21AD2E7920047F8E6 /* InfinitFileSystemError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitFileSystemError.m; sourceTree = "<group>"; };
 		830AD1DD1A6A8D2400E2B058 /* InfinitTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitTime.h; sourceTree = "<group>"; };
 		830AD1DE1A6A8D2400E2B058 /* InfinitTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitTime.m; sourceTree = "<group>"; };
-		830AD1E11A6A943D00E2B058 /* InfinitDataSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitDataSize.h; sourceTree = "<group>"; };
-		830AD1E21A6A943D00E2B058 /* InfinitDataSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitDataSize.m; sourceTree = "<group>"; };
+		830B57901B832B26009DF3BA /* InfinitAccountUsageQuota.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitAccountUsageQuota.h; sourceTree = "<group>"; };
+		830B57911B832B26009DF3BA /* InfinitAccountUsageQuota.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitAccountUsageQuota.m; sourceTree = "<group>"; };
 		830D7CE61B37FF6F003CE369 /* InfinitThreadSafeArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitThreadSafeArray.h; sourceTree = "<group>"; };
 		830D7CE71B37FF6F003CE369 /* InfinitThreadSafeArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitThreadSafeArray.m; sourceTree = "<group>"; };
 		830D7D1D1B3BE3A8003CE369 /* InfinitAccountManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitAccountManager.h; sourceTree = "<group>"; };
-		830D7D1E1B3BE3A8003CE369 /* InfinitAccountManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitAccountManager.m; sourceTree = "<group>"; };
+		830D7D1E1B3BE3A8003CE369 /* InfinitAccountManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitAccountManager.mm; sourceTree = "<group>"; };
 		830F48011B1C6DD8009B1C53 /* NSNotificationCenter+Debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+Debug.h"; sourceTree = "<group>"; };
 		830F48021B1C6DD8009B1C53 /* NSNotificationCenter+Debug.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+Debug.m"; sourceTree = "<group>"; };
 		83157EED1A73D84800F8E87F /* InfinitDirectoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitDirectoryManager.h; sourceTree = "<group>"; };
@@ -340,6 +344,8 @@
 		83568DAD1A136E1000766DA3 /* InfinitStateManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfinitStateManager.mm; sourceTree = "<group>"; };
 		83568DAE1A136E1000766DA3 /* InfinitStateResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitStateResult.h; sourceTree = "<group>"; };
 		83568DAF1A136E1000766DA3 /* InfinitStateResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitStateResult.m; sourceTree = "<group>"; };
+		835D5B091B847CBB00532BBD /* NSNumber+DataSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNumber+DataSize.h"; sourceTree = "<group>"; };
+		835D5B0A1B847CBB00532BBD /* NSNumber+DataSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNumber+DataSize.m"; sourceTree = "<group>"; };
 		8361B8511AF35E8800D5F890 /* InfinitThreadSafeSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitThreadSafeSet.h; sourceTree = "<group>"; };
 		8361B8521AF35E8800D5F890 /* InfinitThreadSafeSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitThreadSafeSet.m; sourceTree = "<group>"; };
 		836405ED1AB88DE9005CC50C /* InfinitKeychain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfinitKeychain.h; sourceTree = "<group>"; };
@@ -441,8 +447,10 @@
 		830D7D1C1B3BE38D003CE369 /* Account */ = {
 			isa = PBXGroup;
 			children = (
+				830B57901B832B26009DF3BA /* InfinitAccountUsageQuota.h */,
+				830B57911B832B26009DF3BA /* InfinitAccountUsageQuota.m */,
 				830D7D1D1B3BE3A8003CE369 /* InfinitAccountManager.h */,
-				830D7D1E1B3BE3A8003CE369 /* InfinitAccountManager.m */,
+				830D7D1E1B3BE3A8003CE369 /* InfinitAccountManager.mm */,
 			);
 			name = Account;
 			sourceTree = "<group>";
@@ -544,8 +552,6 @@
 				8372B1621AB3240D00F1B8B8 /* InfinitColor.h */,
 				8372B1631AB3240D00F1B8B8 /* InfinitColor.m */,
 				8380BDBF1B0B38580001F876 /* InfinitConstants.h */,
-				830AD1E11A6A943D00E2B058 /* InfinitDataSize.h */,
-				830AD1E21A6A943D00E2B058 /* InfinitDataSize.m */,
 				839716BC1ACC0AAA00357702 /* InfinitDeviceInformation.h */,
 				839716BD1ACC0AAA00357702 /* InfinitDeviceInformation.m */,
 				832C13051AF917CC0014895D /* InfinitGapLocalizedString.h */,
@@ -567,6 +573,8 @@
 				8380BDC11B0B38580001F876 /* InfinitURLParser.mm */,
 				830F48011B1C6DD8009B1C53 /* NSNotificationCenter+Debug.h */,
 				830F48021B1C6DD8009B1C53 /* NSNotificationCenter+Debug.m */,
+				835D5B091B847CBB00532BBD /* NSNumber+DataSize.h */,
+				835D5B0A1B847CBB00532BBD /* NSNumber+DataSize.m */,
 				836D394D1A67F19200892206 /* NSString+email.h */,
 				836D394E1A67F19200892206 /* NSString+email.m */,
 				83F9628B1AAB10A9003F2DE7 /* NSString+PhoneNumber.h */,
@@ -772,10 +780,8 @@
 				836F5C7F1A165AE5007C9C4E /* InfinitConnectionManager.h in Headers */,
 				83E0AC221A6A61CD003F60C6 /* InfinitTransaction.h in Headers */,
 				83F4D0141A136E3C0068BEB2 /* InfinitStateManager.h in Headers */,
-				830D7D1F1B3BE3A8003CE369 /* InfinitAccountManager.h in Headers */,
 				830AD1DF1A6A8D2400E2B058 /* InfinitTime.h in Headers */,
 				83FE9C921A1636FF00FC1CFD /* InfinitAvatarManager.h in Headers */,
-				830AD1E31A6A943D00E2B058 /* InfinitDataSize.h in Headers */,
 				83F4D0151A136E3C0068BEB2 /* InfinitStateResult.h in Headers */,
 				83EBB08C1A93B6E400144BC6 /* InfinitConnectionStatus.h in Headers */,
 				836D398A1A690E2A00892206 /* InfinitCrashReporter.h in Headers */,
@@ -794,7 +800,10 @@
 				83C9AE761B28691F00DD28CE /* InfinitExternalAccountsManager.h in Headers */,
 				8361B8531AF35E8800D5F890 /* InfinitThreadSafeSet.h in Headers */,
 				8300097A1B67D0E200E5AC60 /* InfinitSwizzler.h in Headers */,
+				835D5B0B1B847CBB00532BBD /* NSNumber+DataSize.h in Headers */,
+				830B57921B832B26009DF3BA /* InfinitAccountUsageQuota.h in Headers */,
 				830D7CE81B37FF6F003CE369 /* InfinitThreadSafeArray.h in Headers */,
+				830D7D1F1B3BE3A8003CE369 /* InfinitAccountManager.h in Headers */,
 				830778E31AD2E7920047F8E6 /* InfinitFileSystemError.h in Headers */,
 				839610701A2479B50044B874 /* InfinitManagedFiles.h in Headers */,
 				830F48131B1C82F6009B1C53 /* NSNotificationCenter+Debug.h in Headers */,
@@ -814,7 +823,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8380BDC31B0B38580001F876 /* InfinitConstants.h in Headers */,
 				83C06D6C1AEE324100761237 /* NSString+UUID.h in Headers */,
 				8372B30C1AB3354D00F1B8B8 /* InfinitAvatarManager.h in Headers */,
 				8372B30D1AB3354D00F1B8B8 /* InfinitConnectionStatus.h in Headers */,
@@ -828,7 +836,6 @@
 				8372B3161AB3354D00F1B8B8 /* InfinitStateManager.h in Headers */,
 				8372B3171AB3354D00F1B8B8 /* InfinitStateResult.h in Headers */,
 				830D7CE91B37FF6F003CE369 /* InfinitThreadSafeArray.h in Headers */,
-				8300097B1B67D0E200E5AC60 /* InfinitSwizzler.h in Headers */,
 				8372B31A1AB3354D00F1B8B8 /* InfinitLinkTransaction.h in Headers */,
 				8372B31B1AB3354D00F1B8B8 /* InfinitLinkTransactionManager.h in Headers */,
 				8372B31C1AB3354D00F1B8B8 /* InfinitPeerTransaction.h in Headers */,
@@ -839,11 +846,14 @@
 				8380BDC51B0B38580001F876 /* InfinitURLParser.h in Headers */,
 				8372B3201AB3354D00F1B8B8 /* InfinitUserManager.h in Headers */,
 				8372B3211AB3354D00F1B8B8 /* InfinitColor.h in Headers */,
+				830B57931B832B26009DF3BA /* InfinitAccountUsageQuota.h in Headers */,
 				83FDF4161B0B5AE800AEE188 /* InfinitGhostCodeManager.h in Headers */,
+				8300097B1B67D0E200E5AC60 /* InfinitSwizzler.h in Headers */,
 				83A7599D1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h in Headers */,
 				830D7D201B3BE3A8003CE369 /* InfinitAccountManager.h in Headers */,
+				8380BDC31B0B38580001F876 /* InfinitConstants.h in Headers */,
+				835D5B0C1B847CBB00532BBD /* NSNumber+DataSize.h in Headers */,
 				83C9AE7F1B286AE300DD28CE /* InfinitExternalAccount.h in Headers */,
-				8372B3221AB3354D00F1B8B8 /* InfinitDataSize.h in Headers */,
 				8372B3231AB3354D00F1B8B8 /* InfinitTime.h in Headers */,
 				8372B3241AB3354D00F1B8B8 /* NSString+email.h in Headers */,
 				830778F41AD2EAC10047F8E6 /* InfinitFileSystemError.h in Headers */,
@@ -1088,9 +1098,9 @@
 				83568DB11A136E1000766DA3 /* InfinitStateResult.m in Sources */,
 				839716BF1ACC0AAA00357702 /* InfinitDeviceInformation.m in Sources */,
 				83568DAB1A136DFF00766DA3 /* InfinitPeerTransactionManager.mm in Sources */,
-				830AD1E41A6A943D00E2B058 /* InfinitDataSize.m in Sources */,
 				83EBB08D1A93B6E400144BC6 /* InfinitConnectionStatus.m in Sources */,
 				836D39A61A694E5500892206 /* InfinitLogManager.mm in Sources */,
+				835D5B0D1B847CBB00532BBD /* NSNumber+DataSize.m in Sources */,
 				83F9628E1AAB10A9003F2DE7 /* NSString+PhoneNumber.m in Sources */,
 				830778E41AD2E7920047F8E6 /* InfinitFileSystemError.m in Sources */,
 				8396106D1A2479A40044B874 /* InfinitTemporaryFileManager.mm in Sources */,
@@ -1099,7 +1109,8 @@
 				83F35D0E1A1CF08F00DF7F35 /* InfinitFeaturesManager.mm in Sources */,
 				8380BDC61B0B38580001F876 /* InfinitURLParser.mm in Sources */,
 				8361B8541AF35E8800D5F890 /* InfinitThreadSafeSet.m in Sources */,
-				830D7D211B3BE3A8003CE369 /* InfinitAccountManager.m in Sources */,
+				830B57941B832B26009DF3BA /* InfinitAccountUsageQuota.m in Sources */,
+				830D7D211B3BE3A8003CE369 /* InfinitAccountManager.mm in Sources */,
 				83FB5AAF1AADBB83004D5028 /* InfinitDevice.m in Sources */,
 				83E0AC231A6A61CD003F60C6 /* InfinitTransaction.m in Sources */,
 				830AD1E01A6A8D2400E2B058 /* InfinitTime.m in Sources */,
@@ -1128,7 +1139,7 @@
 				8372B2F71AB3353B00F1B8B8 /* InfinitCrashReporter.mm in Sources */,
 				8372B2F81AB3353B00F1B8B8 /* InfinitDevice.m in Sources */,
 				8372B2F91AB3353B00F1B8B8 /* InfinitDeviceManager.mm in Sources */,
-				830D7D221B3BE3A8003CE369 /* InfinitAccountManager.m in Sources */,
+				830D7D221B3BE3A8003CE369 /* InfinitAccountManager.mm in Sources */,
 				8372B2FA1AB3353B00F1B8B8 /* InfinitDirectoryManager.mm in Sources */,
 				8372B2FB1AB3353B00F1B8B8 /* InfinitFeaturesManager.mm in Sources */,
 				8372B2FC1AB3353B00F1B8B8 /* InfinitStateManager.mm in Sources */,
@@ -1140,13 +1151,14 @@
 				8372B3021AB3353B00F1B8B8 /* InfinitPeerTransaction.m in Sources */,
 				83A7599F1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m in Sources */,
 				8372B3031AB3353B00F1B8B8 /* InfinitPeerTransactionManager.mm in Sources */,
+				830B57951B832B26009DF3BA /* InfinitAccountUsageQuota.m in Sources */,
 				8380BDC71B0B38580001F876 /* InfinitURLParser.mm in Sources */,
 				8372B3041AB3353B00F1B8B8 /* InfinitTransaction.m in Sources */,
 				8372B3051AB3353B00F1B8B8 /* InfinitUser.m in Sources */,
 				8372B3061AB3353B00F1B8B8 /* InfinitUserManager.mm in Sources */,
 				8372B3071AB3353B00F1B8B8 /* InfinitColor.m in Sources */,
 				83C06D6E1AEE324100761237 /* NSString+UUID.m in Sources */,
-				8372B3081AB3353B00F1B8B8 /* InfinitDataSize.m in Sources */,
+				835D5B0E1B847CBB00532BBD /* NSNumber+DataSize.m in Sources */,
 				8372B3091AB3353B00F1B8B8 /* InfinitTime.m in Sources */,
 				8372B30A1AB3353B00F1B8B8 /* NSString+email.m in Sources */,
 				8372B30B1AB3353B00F1B8B8 /* NSString+PhoneNumber.m in Sources */,
@@ -1248,7 +1260,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1300,7 +1312,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
+				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1350,6 +1362,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -1392,7 +1405,7 @@
 				PRODUCT_NAME = Gap;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				STRIP_INSTALLED_PRODUCT = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
 				USER_HEADER_SEARCH_PATHS = "../../../_build/macosx64/elle/boost/include ../../../_build/macosx64/fist/src ../../../_build/macosx64/oracles/src";
 				VALID_ARCHS = x86_64;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1456,7 +1469,7 @@
 				PRODUCT_NAME = Gap;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				STRIP_INSTALLED_PRODUCT = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
 				USER_HEADER_SEARCH_PATHS = "../../../_build/macosx64/elle/boost/include ../../../_build/macosx64/fist/src ../../../_build/macosx64/oracles/src";
 				VALID_ARCHS = x86_64;
 				VERSIONING_SYSTEM = "apple-generic";
