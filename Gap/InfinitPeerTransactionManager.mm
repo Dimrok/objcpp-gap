@@ -9,15 +9,15 @@
 #import "InfinitPeerTransactionManager.h"
 
 #import "InfinitConnectionManager.h"
-#import "InfinitDataSize.h"
 #import "InfinitDeviceManager.h"
 #import "InfinitDirectoryManager.h"
 #import "InfinitStateManager.h"
 #import "InfinitThreadSafeDictionary.h"
-#ifdef TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
 # import "InfinitTemporaryFileManager.h"
 #endif
 
+#import "NSNumber+DataSize.h"
 #import "NSString+email.h"
 #import "NSString+PhoneNumber.h"
 
@@ -326,8 +326,8 @@ static dispatch_once_t _instance_token = 0;
   {
     ELLE_WARN("%s: insufficient free space to accept: %s < %s",
               self.description.UTF8String,
-              [InfinitDataSize fileSizeStringFrom:@(free_space)].UTF8String,
-              [InfinitDataSize fileSizeStringFrom:transaction.size].UTF8String);
+              @(free_space).infinit_fileSize.UTF8String,
+              transaction.size.infinit_fileSize.UTF8String);
     if (error != NULL)
     {
       *error = [NSError errorWithDomain:INFINIT_FILE_SYSTEM_ERROR_DOMAIN
@@ -561,16 +561,42 @@ static dispatch_once_t _instance_token = 0;
   }
 }
 
+- (void)_checkStatusInfo:(InfinitPeerTransaction*)transaction
+{
+  NSString* notification = nil;
+  switch (transaction.status_info)
+  {
+    case gap_send_to_self_limit_reached:
+      notification = INFINIT_SEND_TO_SELF_LIMITED;
+      break;
+    case gap_file_transfer_size_limited:
+      notification = INFINIT_PEER_TRANSFER_SIZE_LIMITED;
+      break;
+    case gap_ghost_download_limit_reached:
+      notification = INFINIT_GHOST_DOWNLOAD_LIMITED;
+      break;
+
+    default:
+      break;
+  }
+  if (notification)
+    [self postNotificationOnMainThreadName:notification transaction:transaction];
+}
+
 - (void)transactionUpdated:(InfinitPeerTransaction*)transaction
 {
   @synchronized(self.transaction_map)
   {
+    [self _checkStatusInfo:transaction];
     InfinitPeerTransaction* existing = [self.transaction_map objectForKey:transaction.id_];
     if (existing == nil)
     {
-      [self.transaction_map setObject:transaction forKey:transaction.id_];
-      [self sendNewTransactionNotification:transaction];
-      [self handleGhostTransaction:transaction];
+      if (![self _ignoredStatus:transaction])
+      {
+        [self.transaction_map setObject:transaction forKey:transaction.id_];
+        [self sendNewTransactionNotification:transaction];
+        [self handleGhostTransaction:transaction];
+      }
     }
     else
     {
@@ -592,6 +618,18 @@ static dispatch_once_t _instance_token = 0;
           [self sendTransactionAcceptedNotification:existing];
       }
     }
+  }
+}
+
+- (BOOL)_ignoredStatus:(InfinitPeerTransaction*)transaction
+{
+  switch (transaction.status)
+  {
+    case gap_transaction_payment_required:
+      return YES;
+
+    default:
+      return NO;
   }
 }
 

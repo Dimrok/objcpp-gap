@@ -42,6 +42,18 @@
  */
 #define INFINIT_PEER_TRANSACTION_MODEL_READY_NOTIFICATION @"INFINIT_PEER_TRANSACTION_MODEL_READY_NOTIFICATION"
 
+/** Notification sent when send to self limit reached.
+ */
+#define INFINIT_SEND_TO_SELF_LIMITED                      @"INFINIT_SEND_TO_SELF_LIMITED"
+
+/** Notification sent when file transfer size limit reached.
+ */
+#define INFINIT_PEER_TRANSFER_SIZE_LIMITED                @"INFINIT_PEER_TRANSFER_SIZE_LIMITED"
+
+/** Notification sent when ghost will be required to download client to get transaction files.
+ */
+#define INFINIT_GHOST_DOWNLOAD_LIMITED                    @"INFINIT_GHOST_DOWNLOAD_LIMITED"
+
 @interface InfinitPeerTransactionManager : NSObject
 
 /// Returns list of Meta IDs for archived transactions.
