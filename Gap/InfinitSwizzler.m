@@ -6,7 +6,7 @@
 //
 //
 
-#ifdef DEBUG
+#if defined(DEBUG) || !TARGET_OS_IPHONE
 
 # import "InfinitSwizzler.h"
 
