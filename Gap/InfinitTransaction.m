@@ -23,13 +23,14 @@
 
 #pragma mark - Init
 
-- (id)initWithId:(NSNumber*)id_
-         meta_id:(NSString*)meta_id
-          status:(gap_TransactionStatus)status
-           mtime:(NSTimeInterval)mtime
-         message:(NSString*)message
-            size:(NSNumber*)size
-sender_device_id:(NSString*)sender_device_id
+- (instancetype)initWithId:(NSNumber*)id_
+                   meta_id:(NSString*)meta_id
+                    status:(gap_TransactionStatus)status
+                     mtime:(NSTimeInterval)mtime
+                   message:(NSString*)message
+                      size:(NSNumber*)size
+          sender_device_id:(NSString*)sender_device_id
+               status_info:(gap_Status)status_info
 {
   if (self = [super init])
   {
@@ -43,6 +44,7 @@ sender_device_id:(NSString*)sender_device_id
     _message = message;
     _size = size;
     _sender_device_id = sender_device_id;
+    _status_info = status_info;
   }
   return self;
 }
@@ -105,6 +107,7 @@ sender_device_id:(NSString*)sender_device_id
   _message = transaction.message;
   _mtime = transaction.mtime;
   _size = transaction.size;
+  _status_info = transaction.status_info;
 }
 
 - (void)updateTimeRemainingWithCurrentProgress:(CGFloat)current_progress
@@ -115,9 +118,7 @@ sender_device_id:(NSString*)sender_device_id
   if (_data_points == nil)
     _data_points = [NSMutableArray array];
   if (_data_points.count > 29)
-  {
     [_data_points removeObjectAtIndex:0];
-  }
   [_data_points addObject:[NSNumber numberWithDouble:rate]];
 
   _last_time = current_time;

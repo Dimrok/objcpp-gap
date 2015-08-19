@@ -25,18 +25,19 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.LinkTransaction");
 
 @implementation InfinitLinkTransaction
 
-- (id)initWithId:(NSNumber*)id_
-         meta_id:(NSString*)meta_id
-          status:(gap_TransactionStatus)status
-   sender_device:(NSString*)sender_device
-            name:(NSString*)name
-           mtime:(NSTimeInterval)mtime
-            hash:(NSString*)hash
-            link:(NSString*)link
-     click_count:(NSNumber*)click_count
-         message:(NSString*)message
-            size:(NSNumber*)size
-      screenshot:(BOOL)screenshot
+- (instancetype)initWithId:(NSNumber*)id_
+                   meta_id:(NSString*)meta_id
+                    status:(gap_TransactionStatus)status
+             sender_device:(NSString*)sender_device
+                      name:(NSString*)name
+                     mtime:(NSTimeInterval)mtime
+                      hash:(NSString*)hash
+                      link:(NSString*)link
+               click_count:(NSNumber*)click_count
+                   message:(NSString*)message
+                      size:(NSNumber*)size
+                screenshot:(BOOL)screenshot
+               status_info:(gap_Status)status_info
 {
   if (self = [super initWithId:id_
                        meta_id:meta_id
@@ -44,7 +45,8 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.LinkTransaction");
                          mtime:mtime
                        message:message
                           size:size
-              sender_device_id:sender_device])
+              sender_device_id:sender_device
+                   status_info:status_info])
   {
     _name = name;
     _hash_str = hash;

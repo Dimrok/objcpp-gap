@@ -29,16 +29,18 @@
 @property (nonatomic, readonly) NSString* sender_device_id;
 @property (nonatomic, readonly) NSNumber* size;
 @property (nonatomic, readwrite) gap_TransactionStatus status; // Written to in order to fake updates.
+@property (nonatomic, readonly) gap_Status status_info;
 @property (nonatomic, readonly) NSString* status_text;
 @property (nonatomic, readonly) NSTimeInterval time_remaining;
 
-- (id)initWithId:(NSNumber*)id_
-         meta_id:(NSString*)meta_id
-          status:(gap_TransactionStatus)status
-           mtime:(NSTimeInterval)mtime
-         message:(NSString*)message
-            size:(NSNumber*)size
-sender_device_id:(NSString*)sender_device_id;
+- (instancetype)initWithId:(NSNumber*)id_
+                   meta_id:(NSString*)meta_id
+                    status:(gap_TransactionStatus)status
+                     mtime:(NSTimeInterval)mtime
+                   message:(NSString*)message
+                      size:(NSNumber*)size
+          sender_device_id:(NSString*)sender_device_id
+               status_info:(gap_Status)status_info;
 
 - (void)updateWithTransaction:(InfinitTransaction*)transaction;
 

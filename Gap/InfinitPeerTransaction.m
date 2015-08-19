@@ -21,19 +21,20 @@
 
 #pragma mark - Init
 
-- (id)initWithId:(NSNumber*)id_
-         meta_id:(NSString*)meta_id
-          status:(gap_TransactionStatus)status
-          sender:(NSNumber*)sender_id
-   sender_device:(NSString*)sender_device_id
-       recipient:(NSNumber*)recipient_id
-recipient_device:(NSString*)recipient_device_id
-           files:(NSArray*)files
-           mtime:(NSTimeInterval)mtime
-         message:(NSString*)message
-            size:(NSNumber*)size
-       directory:(BOOL)directory
-        canceler:(NSString*)canceler_meta_id
+- (instancetype)initWithId:(NSNumber*)id_
+                   meta_id:(NSString*)meta_id
+                    status:(gap_TransactionStatus)status
+                    sender:(NSNumber*)sender_id
+             sender_device:(NSString*)sender_device_id
+                 recipient:(NSNumber*)recipient_id
+          recipient_device:(NSString*)recipient_device_id
+                     files:(NSArray*)files
+                     mtime:(NSTimeInterval)mtime
+                   message:(NSString*)message
+                      size:(NSNumber*)size
+                 directory:(BOOL)directory
+                  canceler:(NSString*)canceler_meta_id
+               status_info:(gap_Status)status_info
 {
   if (self = [super initWithId:id_
                        meta_id:meta_id
@@ -41,7 +42,8 @@ recipient_device:(NSString*)recipient_device_id
                          mtime:mtime
                        message:message
                           size:size
-              sender_device_id:sender_device_id])
+              sender_device_id:sender_device_id
+                   status_info:status_info])
   {
     _sender_id = sender_id;
     _recipient_id = recipient_id;

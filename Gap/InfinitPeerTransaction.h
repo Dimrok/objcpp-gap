@@ -26,19 +26,20 @@
 @property (nonatomic, readonly) BOOL to_device;
 @property (nonatomic, readwrite) BOOL unread;
 
-- (id)initWithId:(NSNumber*)id_
-         meta_id:(NSString*)meta_id
-          status:(gap_TransactionStatus)status
-          sender:(NSNumber*)sender_id
-   sender_device:(NSString*)sender_device_id
-       recipient:(NSNumber*)recipient_id
-recipient_device:(NSString*)recipient_device_id
-           files:(NSArray*)files
-           mtime:(NSTimeInterval)mtime
-         message:(NSString*)message
-            size:(NSNumber*)size
-       directory:(BOOL)directory
-        canceler:(NSString*)canceler_meta_id;
+- (instancetype)initWithId:(NSNumber*)id_
+                   meta_id:(NSString*)meta_id
+                    status:(gap_TransactionStatus)status
+                    sender:(NSNumber*)sender_id
+             sender_device:(NSString*)sender_device_id
+                 recipient:(NSNumber*)recipient_id
+          recipient_device:(NSString*)recipient_device_id
+                     files:(NSArray*)files
+                     mtime:(NSTimeInterval)mtime
+                   message:(NSString*)message
+                      size:(NSNumber*)size
+                 directory:(BOOL)directory
+                  canceler:(NSString*)canceler_meta_id
+               status_info:(gap_Status)status_info;
 
 - (void)updateWithTransaction:(InfinitPeerTransaction*)transaction;
 
