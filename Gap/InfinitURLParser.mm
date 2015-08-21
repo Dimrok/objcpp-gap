@@ -31,6 +31,8 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.URLParser");
       possible_code = [components[1] componentsSeparatedByString:@"?"][0];
     else
       possible_code = components[1];
+    if (!possible_code.length)
+      return nil;
     return possible_code;
   }
   return nil;
