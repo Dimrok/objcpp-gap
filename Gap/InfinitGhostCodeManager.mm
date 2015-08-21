@@ -52,6 +52,13 @@ static dispatch_once_t _instance_token = 0;
         wasLink:(BOOL)was_link
 completionBlock:(InfinitGhostCodeUsedBlock)completion_block
 {
+  if (!code.length)
+  {
+    ELLE_WARN("%s: got empty code", self.description.UTF8String);
+    return;
+  }
+  ELLE_TRACE("%s: set code: %s from %s",
+             self.description.UTF8String, code.UTF8String, was_link ? "link" : "user");
   if (self.code_set)
   {
     ELLE_WARN("%s: overwriting ghost code used block", self.description.UTF8String);
