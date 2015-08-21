@@ -397,6 +397,11 @@ static NSString* _facebook_app_id = nil;
 - (void)useGhostCode:(NSString*)code
              wasLink:(BOOL)link
 {
+  if (!code.length)
+  {
+    ELLE_WARN("%s: called useGhostCode:wasLink with empty code", self.description.UTF8String);
+    return;
+  }
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
     return gap_use_ghost_code(manager.stateWrapper.state, code.UTF8String, link);
@@ -1504,6 +1509,25 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
                                               gap_invite_message_native,
                                               fail_reason);
   }];
+}
+
+- (void)sendMetricSendToSelfLimit
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     uint64_t limit =
+      [InfinitAccountManager sharedInstance].send_to_self_quota.quota.unsignedLongLongValue;
+     return gap_send_to_self_limit_metric(manager.stateWrapper.state, limit);
+   }];
+}
+
+- (void)sendMetricTransferSizeLimitWithTransferSize:(uint64_t)transfer_size
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     uint64_t limit = [InfinitAccountManager sharedInstance].transfer_size_limit;
+     return gap_file_transfer_limit_metric(manager.stateWrapper.state, limit, transfer_size);
+   }];
 }
 
 #pragma mark - Proxy
