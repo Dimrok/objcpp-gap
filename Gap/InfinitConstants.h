@@ -38,6 +38,12 @@
 /// Help URL.
 #  define kInfinitHelpURL @"http://help.infinit.io/knowledgebase?utm_source=app&utm_medium=ios"
 
+/// Invite URL.
+#  define kInfinitReferalInviteURL @"https://infinit.io/account/referral?utm_source=app&utm_medium=ios&utm_campaign=invite"
+
+/// Upgrade plan URL.
+#  define kInfinitUpgradePlanURL @"https://infinit.io/account?utm_source=app&utm_medium=ios&utm_campaign=upgrade_plan"
+
 # else
 /**************************
  * Mac Specific constants *
@@ -60,6 +66,9 @@
 
 /// Invite URL.
 #  define kInfinitReferalInviteURL @"https://infinit.io/account/referral?utm_source=app&utm_medium=mac&utm_campaign=invite"
+
+/// Help URL.
+#  define kInfinitHelpURL @"http://help.infinit.io/knowledgebase?utm_source=app&utm_medium=mac"
 
 # endif
 /**************************
