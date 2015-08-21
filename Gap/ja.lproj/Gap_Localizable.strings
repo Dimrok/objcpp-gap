@@ -1,0 +1,58 @@
+/* bytes */
+"B" = "B"
+
+/* No comment provided by engineer. */
+"My Computer" = "私のパソコン"
+
+/* No comment provided by engineer. */
+"My Mac" = "私のMac"
+
+/* No comment provided by engineer. */
+"My MacBook" = "私のMacBook"
+
+/* No comment provided by engineer. */
+"My Mobile" = "私のモバイル機"
+
+/* No comment provided by engineer. */
+"My iPad" = "私のiPad"
+
+/* No comment provided by engineer. */
+"My iPhone" = "私のiPhone"
+
+/* No comment provided by engineer. */
+"My iPod" = "私のiPod"
+
+/* No comment provided by engineer. */
+"No data to write" = "書き込むデータがありません"
+
+/* No comment provided by engineer. */
+"Not enough free space" = "空き容量不足です"
+
+/* No comment provided by engineer. */
+"Now" = "たった今"
+
+/* No comment provided by engineer. */
+"Path doesn't exist" = "パスが存在しません"
+
+/* No comment provided by engineer. */
+"Unable to write" = "書き込みできません"
+
+/* No comment provided by engineer. */
+"Unknown" = "不明です"
+
+/* about 1 min */
+"about 1 min" = "約1分"
+
+/* less than 1 min */
+"less than 1 min" = "1分以内"
+
+/* less than 10 s */
+"less than 10 s" = "10秒以内"
+
+/* No comment provided by engineer. */
+"min ago" = "分前"
+
+/* more than two days */
+"more than two days" = "2日以上"
+
+

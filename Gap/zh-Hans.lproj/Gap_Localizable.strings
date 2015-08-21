@@ -1,0 +1,56 @@
+/* bytes */
+"B" = "B"
+
+/* No comment provided by engineer. */
+"My Computer" = "我的电脑"
+
+/* No comment provided by engineer. */
+"My Mac" = "我的Mac"
+
+/* No comment provided by engineer. */
+"My MacBook" = "我的MacBook"
+
+/* No comment provided by engineer. */
+"My Mobile" = "我的手机"
+
+/* No comment provided by engineer. */
+"My iPad" = "我的iPad"
+
+/* No comment provided by engineer. */
+"My iPhone" = "我的iPhone"
+
+/* No comment provided by engineer. */
+"My iPod" = "我的iPod"
+
+/* No comment provided by engineer. */
+"No data to write" = "无写入数据"
+
+/* No comment provided by engineer. */
+"Not enough free space" = "剩余空间不足"
+
+/* No comment provided by engineer. */
+"Now" = "现在"
+
+/* No comment provided by engineer. */
+"Path doesn't exist" = "路径不存在"
+
+/* No comment provided by engineer. */
+"Unable to write" = "无法写入"
+
+/* No comment provided by engineer. */
+"Unknown" = "未知"
+
+/* about 1 min */
+"about 1 min" = "约1分钟"
+
+/* less than 1 min */
+"less than 1 min" = "不到1分钟"
+
+/* less than 10 s */
+"less than 10 s" = "不到10秒"
+
+/* No comment provided by engineer. */
+"min ago" = "分钟前"
+
+/* more than two days */
+"more than two days" = "2天以上"
