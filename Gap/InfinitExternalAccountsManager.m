@@ -10,6 +10,8 @@
 
 #import "InfinitStateManager.h"
 
+#import "NSString+email.h"
+
 @interface InfinitExternalAccountsManager ()
 
 @property (atomic, readwrite) NSArray* accounts;
@@ -58,8 +60,11 @@ static dispatch_once_t _instance_token = 0;
   return NO;
 }
 
-- (BOOL)userEmail:(NSString*)email
+- (BOOL)userEmail:(NSString*)email_
 {
+  NSString* email = email_.infinit_cleanEmail;
+  if (!email.infinit_isEmail)
+    return NO;
   for (InfinitExternalAccount* account in self.account_list)
   {
     if (account.type == InfinitExternalAccountTypeEmail &&
