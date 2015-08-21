@@ -10,11 +10,21 @@
 
 #import "InfinitAccountUsageQuota.h"
 
+/** Notification sent when the user's plan changes.
+ Contains a dictionary with the plan name.
+ */
+#define INFINIT_ACCOUNT_PLAN_CHANGED @"INFINIT_ACCOUNT_PLAN_CHANGED"
+
+/// Constant used as key for transaction ID in dictionaries.
+#define kInfinitAccountPlanName @"name"
+
 typedef NS_ENUM(NSUInteger, InfinitAccountPlanType)
 {
   InfinitAccountPlanTypeBasic = 0,
   InfinitAccountPlanTypePlus,
   InfinitAccountPlanTypePremium,
+
+  InfinitAccountPlanTypeUninitialized,
 };
 
 @interface InfinitAccountManager : NSObject
