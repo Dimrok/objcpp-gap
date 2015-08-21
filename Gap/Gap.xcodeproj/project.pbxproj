@@ -390,6 +390,9 @@
 		83C9AE751B28691F00DD28CE /* InfinitExternalAccountsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitExternalAccountsManager.m; sourceTree = "<group>"; };
 		83C9AE7C1B286AE300DD28CE /* InfinitExternalAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitExternalAccount.h; sourceTree = "<group>"; };
 		83C9AE7D1B286AE300DD28CE /* InfinitExternalAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitExternalAccount.m; sourceTree = "<group>"; };
+		83D0EC6D1B8718AA002BB9C9 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
+		83D0EC6E1B871924002BB9C9 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Gap_Localizable.strings; sourceTree = "<group>"; };
+		83D0EC6F1B871977002BB9C9 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Gap_Localizable.strings"; sourceTree = "<group>"; };
 		83E0AC201A6A61CD003F60C6 /* InfinitTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitTransaction.h; sourceTree = "<group>"; };
 		83E0AC211A6A61CD003F60C6 /* InfinitTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitTransaction.m; sourceTree = "<group>"; };
 		83EAE9781AF15624009D2886 /* libmetaclient.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmetaclient.dylib; path = ../../../_build/macosx64/lib/libmetaclient.dylib; sourceTree = "<group>"; };
@@ -942,6 +945,9 @@
 				"es-ES",
 				sv,
 				pt,
+				ja,
+				ko,
+				"zh-Hans",
 			);
 			mainGroup = 83568D6B1A136D5D00766DA3;
 			productRefGroup = 83568D7A1A136D7700766DA3 /* Products */;
@@ -1199,6 +1205,9 @@
 				836463521AFA79C4009D8C00 /* sv */,
 				83016DE91B00D69C004864B9 /* es */,
 				83C1140E1B00EA300059AF22 /* pt */,
+				83D0EC6D1B8718AA002BB9C9 /* ja */,
+				83D0EC6E1B871924002BB9C9 /* ko */,
+				83D0EC6F1B871977002BB9C9 /* zh-Hans */,
 			);
 			name = Gap_Localizable.strings;
 			sourceTree = "<group>";
