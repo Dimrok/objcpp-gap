@@ -20,6 +20,15 @@ static dispatch_once_t _infinit_email_predicate_token = 0;
   return [[NSString _infinit_emailPredicate] evaluateWithObject:self];
 }
 
+- (NSString*)infinit_cleanEmail
+{
+  if (!self.infinit_isEmail)
+    return self;
+  NSString* trimmed =
+    [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+  return trimmed.lowercaseString;
+}
+
 #pragma mark - Helpers
 
 + (NSPredicate*)_infinit_emailPredicate

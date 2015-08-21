@@ -11,5 +11,6 @@
 @interface NSString (infinit_email)
 
 @property (nonatomic, readonly) BOOL infinit_isEmail;
+@property (nonatomic, readonly) NSString* infinit_cleanEmail;
 
 @end
