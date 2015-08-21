@@ -420,6 +420,10 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
                           code:(NSString*)code
                     failReason:(NSString*)fail_reason;
 
+- (void)sendMetricSendToSelfLimit;
+
+- (void)sendMetricTransferSizeLimitWithTransferSize:(uint64_t)transfer_size;
+
 #pragma mark - Proxy
 
 - (void)setProxy:(gap_ProxyType)type
