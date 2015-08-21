@@ -14,6 +14,7 @@
 #import "InfinitPeerTransactionManager.h"
 #import "InfinitStateManager.h"
 #import "InfinitStoredMutableDictionary.h"
+#import "NSNumber+DataSize.h"
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <Photos/Photos.h>
@@ -394,13 +395,13 @@ static dispatch_once_t _library_token = 0;
       *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoDataToWrite];
     return nil;
   }
-  ELLE_DEBUG("%s: writing %lu b to %s",
-             self.description.UTF8String, data.length, filename.UTF8String);
+  ELLE_DEBUG("%s: writing %s to %s", self.description.UTF8String,
+             @(data.length).infinit_fileSize.UTF8String, filename.UTF8String);
   uint64_t free_space = [InfinitDirectoryManager sharedInstance].free_space;
   if (data.length > free_space)
   {
-    ELLE_ERR("%s: insufficient free space: %lu > %lu",
-             self.description.UTF8String, data.length, free_space);
+    ELLE_ERR("%s: insufficient free space: %s > %s", self.description.UTF8String,
+             @(data.length).infinit_fileSize.UTF8String, @(free_space).infinit_fileSize.UTF8String);
     if (error != NULL)
       *error = [InfinitFileSystemError errorWithCode:InfinitFileSystemErrorNoFreeSpace];
     return nil;
@@ -690,7 +691,17 @@ static dispatch_once_t _library_token = 0;
   NSUInteger buffered = [asset.defaultRepresentation getBytes:buffer
                                                    fromOffset:0
                                                        length:asset_size
-                                                        error:nil];
+                                                        error:error];
+  if (*error)
+  {
+    ELLE_WARN("%s: unable to get bytes from ALAsset: %s",
+              self.description.UTF8String, (*error).description.UTF8String);
+  }
+  if (buffered < asset_size)
+  {
+    ELLE_WARN("%s: bytes fetched from ALAsset less than size: %lu < %lu",
+              self.description.UTF8String, buffered, asset_size);
+  }
   NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
   NSString* filename = asset.defaultRepresentation.filename;
   NSDate* creation_date = [asset valueForProperty:ALAssetPropertyDate];
