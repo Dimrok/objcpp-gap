@@ -13,12 +13,6 @@
 
 ELLE_LOG_COMPONENT("Gap-ObjC++.StateManager");
 
-@interface InfinitAccountManager ()
-
-@property (nonatomic) InfinitAccountPlanType last_plan;
-
-@end
-
 static InfinitAccountManager* _instance = nil;
 static dispatch_once_t _instance_token = 0;
 
@@ -31,7 +25,7 @@ static dispatch_once_t _instance_token = 0;
   NSCAssert(_instance == nil, @"Use sharedInstance.");
   if (self = [super init])
   {
-    _last_plan = InfinitAccountPlanTypeUninitialized;
+    _plan = InfinitAccountPlanTypeUninitialized;
   }
   return self;
 }
@@ -54,18 +48,16 @@ static dispatch_once_t _instance_token = 0;
        sendToSelfQuota:(InfinitAccountUsageQuota*)send_to_self_quota
          transferLimit:(uint64_t)transfer_limit
 {
-  _plan = plan;
-  if (self.last_plan != InfinitAccountPlanTypeUninitialized && self.plan != self.last_plan)
+  BOOL plan_changed = NO;
+  if (self.plan != InfinitAccountPlanTypeUninitialized && self.plan != plan)
+    plan_changed = YES;
+  BOOL quota_changed = NO;
+  if (![self.link_quota isEqual:link_quota] ||
+      ![self.send_to_self_quota isEqual:send_to_self_quota])
   {
-    NSDictionary* user_info = @{kInfinitAccountPlanName: [self _stringPlanName:self.plan]};
-    dispatch_async(dispatch_get_main_queue(), ^
-    {
-      [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_ACCOUNT_PLAN_CHANGED
-                                                          object:nil
-                                                        userInfo:user_info];
-    });
+    quota_changed = YES;
   }
-  _last_plan = self.plan;
+  _plan = plan;
   _custom_domain = custom_domain;
   if (link_format.length && [link_format componentsSeparatedByString:@"%@"].count == 3)
     _link_format = link_format;
@@ -74,9 +66,28 @@ static dispatch_once_t _instance_token = 0;
   _link_quota = link_quota;
   _send_to_self_quota = send_to_self_quota;
   _transfer_size_limit = transfer_limit;
+  // Send notifications once model has been updated.
+  if (plan_changed)
+  {
+    NSDictionary* user_info = @{kInfinitAccountPlanName: [self _stringPlanName:self.plan]};
+    [self sendNotificationOnMainThread:INFINIT_ACCOUNT_PLAN_CHANGED withUserInfo:user_info];
+  }
+  if (quota_changed)
+    [self sendNotificationOnMainThread:INFINIT_ACCOUNT_QUOTA_UPDATED withUserInfo:nil];
 }
 
 #pragma mark - Helpers
+
+- (void)sendNotificationOnMainThread:(NSString*)notification
+                        withUserInfo:(NSDictionary*)user_info
+{
+  dispatch_async(dispatch_get_main_queue(), ^
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:notification
+                                                        object:nil
+                                                      userInfo:user_info];
+  });
+}
 
 - (NSString*)_stringPlanName:(InfinitAccountPlanType)plan
 {

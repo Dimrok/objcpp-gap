@@ -15,6 +15,10 @@
  */
 #define INFINIT_ACCOUNT_PLAN_CHANGED @"INFINIT_ACCOUNT_PLAN_CHANGED"
 
+/** Notification sent when one of the user's quotas or usage has been updated.
+ */
+#define INFINIT_ACCOUNT_QUOTA_UPDATED @"INFINIT_ACCOUNT_QUOTA_UPDATED"
+
 /// Constant used as key for transaction ID in dictionaries.
 #define kInfinitAccountPlanName @"name"
 
