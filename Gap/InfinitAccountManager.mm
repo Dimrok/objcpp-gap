@@ -25,7 +25,9 @@ static dispatch_once_t _instance_token = 0;
   NSCAssert(_instance == nil, @"Use sharedInstance.");
   if (self = [super init])
   {
+    _link_quota = nil;
     _plan = InfinitAccountPlanTypeUninitialized;
+    _send_to_self_quota = nil;
   }
   return self;
 }
@@ -52,8 +54,8 @@ static dispatch_once_t _instance_token = 0;
   if (self.plan != InfinitAccountPlanTypeUninitialized && self.plan != plan)
     plan_changed = YES;
   BOOL quota_changed = NO;
-  if (![self.link_quota isEqual:link_quota] ||
-      ![self.send_to_self_quota isEqual:send_to_self_quota])
+  if ((self.link_quota != nil && ![self.link_quota isEqual:link_quota]) ||
+      (self.send_to_self_quota != nil && ![self.send_to_self_quota isEqual:send_to_self_quota]))
   {
     quota_changed = YES;
   }
