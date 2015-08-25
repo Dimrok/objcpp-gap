@@ -6,7 +6,7 @@
 //
 //
 
-#if defined(DEBUG) || !TARGET_OS_IPHONE
+#if DEBUG || !TARGET_OS_IPHONE
 
 # import <objc/runtime.h>
 

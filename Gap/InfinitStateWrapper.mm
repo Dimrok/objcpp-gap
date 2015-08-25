@@ -55,9 +55,9 @@ static BOOL _production = NO;
 
   setenv("ELLE_LOG_TIME", "1", 0);
 
-#ifdef DEBUG
-
-  std::string local_server = "192.168.0.83";
+#if DEBUG
+//  setenv("INFINIT_META_HOST", "preprod.meta.production.infinit.io", 1);
+  std::string local_server = "192.168.0.43";
 
   setenv("INFINIT_META_PROTOCOL", "http", 0);
   setenv("INFINIT_META_HOST", local_server.c_str(), 0);

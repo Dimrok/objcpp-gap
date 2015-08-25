@@ -6,7 +6,7 @@
 //
 //
 
-#ifdef DEBUG
+#if DEBUG
 
 # import <Foundation/Foundation.h>
 
