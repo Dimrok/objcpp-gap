@@ -805,7 +805,7 @@ static dispatch_once_t _library_token = 0;
                     manager.description.UTF8String);
         }
       }
-      else if (info[PHImageErrorKey])
+      else if (info[PHImageErrorKey] && [info[PHImageErrorKey] description].length)
       {
         ELLE_WARN("%s: error fetching PHAsset video, reason: %s",
                   manager.description.UTF8String, [info[PHImageErrorKey] description].UTF8String);
@@ -833,6 +833,7 @@ static dispatch_once_t _library_token = 0;
                                                                 UIImageOrientation orientation,
                                                                 NSDictionary* info)
     {
+      InfinitTemporaryFileManager* manager = [InfinitTemporaryFileManager sharedInstance];
       NSURL* url = info[@"PHImageFileURLKey"];
       NSString* filename = url.lastPathComponent;
       if ([filename isEqualToString:@"FullSizeRender.jpg"])
@@ -843,8 +844,8 @@ static dispatch_once_t _library_token = 0;
           if ([component containsString:@"IMG"])
           {
             NSString* new_filename = [component stringByAppendingString:@".JPG"];
-            ELLE_DEBUG("%s: renaming file: %s -> %s",
-                       self.description.UTF8String, filename.UTF8String, new_filename.UTF8String);
+            ELLE_DEBUG("%s: renaming file: %s -> %s", manager.description.UTF8String,
+                       filename.UTF8String, new_filename.UTF8String);
             filename = new_filename;
             break;
           }
@@ -855,15 +856,15 @@ static dispatch_once_t _library_token = 0;
         NSString* reason = @"<empty>";
         if (info[PHImageCancelledKey])
           reason = @"fetch cancelled";
-        if (info[PHImageErrorKey])
+        if (info[PHImageErrorKey] && [info[PHImageErrorKey] description].length)
           reason = [info[PHImageErrorKey] description];
         ELLE_WARN("%s: got empty file from PHImageManager for %s, reason: %s",
-                  self.description.UTF8String, filename.UTF8String, reason.UTF8String);
+                  manager.description.UTF8String, filename.UTF8String, reason.UTF8String);
       }
-      else if (info[PHImageErrorKey])
+      else if (info[PHImageErrorKey] && [info[PHImageErrorKey] description].length)
       {
         ELLE_WARN("%s: error fetching PHAsset %s, reason: %s",
-                  self.description.UTF8String, (filename.length ? filename.UTF8String : "<nil>"),
+                  manager.description.UTF8String, (filename.length ? filename.UTF8String : "<nil>"),
                   [info[PHImageErrorKey] description].UTF8String);
       }
       if (imageData.length)
