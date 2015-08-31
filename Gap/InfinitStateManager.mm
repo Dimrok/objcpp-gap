@@ -1127,7 +1127,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 - (void)_accountChanged:(Account const&)account
 {
   using infinit::oracles::meta::AccountPlanType;
-  InfinitAccountPlanType plan = InfinitAccountPlanTypeBasic;
+  InfinitAccountPlanType plan = InfinitAccountPlanTypePlus; // Fallback to plus plan.
   switch (account.plan)
   {
     case AccountPlanType::AccountPlanType_Basic:
@@ -1138,6 +1138,9 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
       break;
     case AccountPlanType::AccountPlanType_Premium:
       plan = InfinitAccountPlanTypePremium;
+      break;
+    case AccountPlanType::AccountPlanType_Team:
+      plan = InfinitAccountPlanTypeTeam;
       break;
 
     default:
