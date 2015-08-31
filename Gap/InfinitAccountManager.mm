@@ -8,6 +8,8 @@
 
 #import "InfinitAccountManager.h"
 
+#import "InfinitGapLocalizedString.h"
+
 #undef check
 #import <elle/log.hh>
 
@@ -41,6 +43,13 @@ static dispatch_once_t _instance_token = 0;
   return _instance;
 }
 
+#pragma mark - External
+
+- (NSString*)plan_string
+{
+  return [self _stringPlanName:self.plan];
+}
+
 #pragma mark - State Manager Callback
 
 - (void)accountUpdated:(InfinitAccountPlanType)plan
@@ -71,7 +80,7 @@ static dispatch_once_t _instance_token = 0;
   // Send notifications once model has been updated.
   if (plan_changed)
   {
-    NSDictionary* user_info = @{kInfinitAccountPlanName: [self _stringPlanName:self.plan]};
+    NSDictionary* user_info = @{kInfinitAccountPlanName: self.plan_string};
     [self sendNotificationOnMainThread:INFINIT_ACCOUNT_PLAN_CHANGED withUserInfo:user_info];
   }
   if (quota_changed)
@@ -96,13 +105,15 @@ static dispatch_once_t _instance_token = 0;
   switch (plan)
   {
     case InfinitAccountPlanTypeBasic:
-      return @"Basic";
+      return GapLocalizedString(@"Basic Plan", nil);
     case InfinitAccountPlanTypePlus:
-      return @"Plus";
+      return GapLocalizedString(@"Plus Plan", nil);
     case InfinitAccountPlanTypePremium:
-      return @"Professional";
+      return GapLocalizedString(@"Professional Plan", nil);
+    case InfinitAccountPlanTypeTeam:
+      return GapLocalizedString(@"Team Plan", nil);
     case InfinitAccountPlanTypeUninitialized:
-      return @"Unknown";
+      return GapLocalizedString(@"Unknown Plan", nil);
   }
 }
 

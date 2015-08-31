@@ -27,6 +27,7 @@ typedef NS_ENUM(NSUInteger, InfinitAccountPlanType)
   InfinitAccountPlanTypeBasic = 0,
   InfinitAccountPlanTypePlus,
   InfinitAccountPlanTypePremium,
+  InfinitAccountPlanTypeTeam,
 
   InfinitAccountPlanTypeUninitialized,
 };
@@ -37,6 +38,7 @@ typedef NS_ENUM(NSUInteger, InfinitAccountPlanType)
 @property (nonatomic, readonly) NSString* link_format;
 @property (nonatomic, readonly) InfinitAccountUsageQuota* link_quota;
 @property (nonatomic, readonly) InfinitAccountPlanType plan;
+@property (nonatomic, readonly) NSString* plan_string;
 @property (nonatomic, readonly) InfinitAccountUsageQuota* send_to_self_quota;
 @property (nonatomic, readonly) uint64_t transfer_size_limit;
 
