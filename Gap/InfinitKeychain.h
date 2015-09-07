@@ -20,6 +20,10 @@
 - (BOOL)updatePassword:(NSString*)password
             forAccount:(NSString*)account;
 
+- (BOOL)storePersistentData:(NSString*)data
+                     forKey:(NSString*)key;
+- (NSString*)persistentDataForKey:(NSString*)key;
+
 - (NSString*)passwordForProxyAccount:(NSString*)account
                             protocol:(NSString*)protocol
                                 host:(NSString*)host

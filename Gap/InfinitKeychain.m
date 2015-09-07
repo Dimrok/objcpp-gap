@@ -11,6 +11,7 @@
 #import <Security/Security.h>
 
 static InfinitKeychain* _instance = nil;
+static dispatch_once_t _instance_token = 0;
 static NSString* _service_name = @"Infinit";
 
 @implementation InfinitKeychain
@@ -21,15 +22,16 @@ static NSString* _service_name = @"Infinit";
 {
   NSCAssert(_instance == nil, @"Use the sharedInstance");
   if (self = [super init])
-  {
-  }
+  {}
   return self;
 }
 
 + (instancetype)sharedInstance
 {
-  if (_instance == nil)
+  dispatch_once(&_instance_token, ^
+  {
     _instance = [[InfinitKeychain alloc] init];
+  });
   return _instance;
 }
 
@@ -38,10 +40,16 @@ static NSString* _service_name = @"Infinit";
 - (BOOL)addPassword:(NSString*)password
          forAccount:(NSString*)account
 {
-  if (!account.length || !password.length)
+  return [self storePersistentData:password forKey:account];
+}
+
+- (BOOL)storePersistentData:(NSString*)data
+                     forKey:(NSString*)key
+{
+  if (!key.length || !data.length)
     return NO;
-  NSMutableDictionary* dict = [self keychainDictionaryForAccount:account];
-  dict[(__bridge id)kSecValueData] = [self encodeString:password];
+  NSMutableDictionary* dict = [self keychainDictionaryForAccount:key];
+  dict[(__bridge id)kSecValueData] = [self encodeString:data];
   CFDictionaryRef dict_ref = (__bridge_retained CFDictionaryRef)dict;
   OSStatus status = SecItemAdd(dict_ref, NULL);
   CFRelease(dict_ref);
@@ -69,9 +77,14 @@ static NSString* _service_name = @"Infinit";
 
 - (NSString*)passwordForAccount:(NSString*)account
 {
-  if (!account.length)
+  return [self persistentDataForKey:account];
+}
+
+- (NSString*)persistentDataForKey:(NSString*)key
+{
+  if (!key.length)
     return nil;
-  NSMutableDictionary* dict = [self keychainDictionaryForAccount:account];
+  NSMutableDictionary* dict = [self keychainDictionaryForAccount:key];
   dict[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitOne;
   dict[(__bridge id)kSecReturnData] = (id)kCFBooleanTrue;
   CFTypeRef result = NULL;
@@ -81,7 +94,7 @@ static NSString* _service_name = @"Infinit";
   if (status != errSecSuccess)
   {
 #if TARGET_OS_IPHONE
-    NSLog(@"Unable to find password for account (%@): %d", account, (int)status);
+    NSLog(@"Unable to find password for account (%@): %d", key, (int)status);
 #else
     NSLog(@"Unable to find password for account (%@): %@",
           account, (__bridge_transfer NSString*)SecCopyErrorMessageString(status, NULL));
