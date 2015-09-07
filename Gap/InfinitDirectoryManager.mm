@@ -63,6 +63,13 @@ static dispatch_once_t _instance_token = 0;
   return _instance;
 }
 
+#pragma mark - Device ID
+
+- (NSString*)device_id_file
+{
+  return [self.persistent_directory stringByAppendingPathComponent:@"device.uuid"];
+}
+
 #pragma mark - Transaction
 
 - (NSString*)downloadDirectoryForTransaction:(InfinitTransaction*)transaction
