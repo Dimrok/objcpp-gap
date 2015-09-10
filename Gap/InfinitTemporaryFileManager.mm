@@ -304,19 +304,28 @@ static dispatch_once_t _library_token = 0;
   return managed_files;
 }
 
-- (void)addALAssetsLibraryList:(NSArray*)list
+- (void)addALAssetsLibraryList:(NSArray*)list_
                 toManagedFiles:(InfinitManagedFiles*)managed_files
                completionBlock:(InfinitTemporaryFileManagerCallback)block
 {
   ELLE_TRACE("%s: adding %lu items to %s",
-             self.description.UTF8String, list.count, managed_files.uuid.UTF8String);
+             self.description.UTF8String, list_.count, managed_files.uuid.UTF8String);
   if (![self.files_map objectForKey:managed_files.uuid])
   {
     ELLE_ERR("%s: unable to add asset list, %s not in map",
              self.description.UTF8String, managed_files.uuid.UTF8String);
     return;
   }
-  managed_files.copied = YES;
+  managed_files.copied = YES;NSMutableArray* list = [NSMutableArray array];
+  for (ALAsset* asset in list_)
+  {
+    NSURL* identifier = [asset valueForProperty:ALAssetPropertyAssetURL];
+    if ([managed_files.asset_map objectForKey:identifier] ||
+        [managed_files.assets_copying containsObject:identifier])
+      continue;
+    [list addObject:asset];
+    [managed_files.assets_copying addObject:identifier];
+  }
   managed_files.copying = YES;
   __block NSError* child_error = nil;
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
@@ -324,15 +333,17 @@ static dispatch_once_t _library_token = 0;
     for (ALAsset* asset in list)
     {
       [self _foundAsset:asset
-                withURL:[asset valueForProperty:ALAssetPropertyAssetURL] 
+                withURL:[asset valueForProperty:ALAssetPropertyAssetURL]
         forManagedFiles:managed_files
               withError:&child_error];
     }
     if (child_error)
       managed_files.done_copying_block = nil;
-    managed_files.copying = NO;
     dispatch_async(dispatch_get_main_queue(), ^
     {
+      for (ALAsset* asset in list_)
+        [managed_files.assets_copying removeObject:[asset valueForProperty:ALAssetPropertyAssetURL]];
+      managed_files.copying = NO;
       BOOL success = YES;
       if (child_error)
         success = NO;
@@ -341,12 +352,12 @@ static dispatch_once_t _library_token = 0;
   });
 }
 
-- (void)addPHAssetsLibraryList:(NSArray*)list
+- (void)addPHAssetsLibraryList:(NSArray*)list_
                 toManagedFiles:(InfinitManagedFiles*)managed_files
                completionBlock:(InfinitTemporaryFileManagerCallback)block
 {
   ELLE_TRACE("%s: adding %lu items to %s",
-             self.description.UTF8String, list.count, managed_files.uuid.UTF8String);
+             self.description.UTF8String, list_.count, managed_files.uuid.UTF8String);
   if (![self.files_map objectForKey:managed_files.uuid])
   {
     ELLE_ERR("%s: unable to add asset list, %s not in map",
@@ -354,6 +365,15 @@ static dispatch_once_t _library_token = 0;
     return;
   }
   managed_files.copied = YES;
+  NSMutableArray* list = [NSMutableArray array];
+  for (PHAsset* asset in list_)
+  {
+    if ([managed_files.asset_map objectForKey:asset.localIdentifier] ||
+        [managed_files.assets_copying containsObject:asset.localIdentifier])
+      continue;
+    [list addObject:asset];
+    [managed_files.assets_copying addObject:asset.localIdentifier];
+  }
   managed_files.copying = YES;
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
   {
@@ -366,9 +386,11 @@ static dispatch_once_t _library_token = 0;
     }
     if (child_error)
       managed_files.done_copying_block = nil;
-    managed_files.copying = NO;
     dispatch_async(dispatch_get_main_queue(), ^
     {
+      for (PHAsset* asset in list)
+        [managed_files.assets_copying removeObject:asset.localIdentifier];
+      managed_files.copying = NO;
       BOOL success = YES;
       if (child_error)
         success = NO;
@@ -684,8 +706,6 @@ static dispatch_once_t _library_token = 0;
     forManagedFiles:(InfinitManagedFiles*)managed_files
           withError:(NSError**)error
 {
-  if ([managed_files.asset_map objectForKey:url])
-    return YES;
   NSUInteger asset_size = (NSUInteger)asset.defaultRepresentation.size;
   Byte* buffer = (Byte*)malloc(asset_size);
   NSUInteger buffered = [asset.defaultRepresentation getBytes:buffer
@@ -719,7 +739,11 @@ static dispatch_once_t _library_token = 0;
              (*error).description.UTF8String);
     return NO;
   }
-  [managed_files.asset_map setObject:path forKey:url];
+  dispatch_sync(dispatch_get_main_queue(), ^
+  {
+    if (path.length)
+      [managed_files.asset_map setObject:path forKey:url];
+  });
   return YES;
 }
 
@@ -727,8 +751,6 @@ static dispatch_once_t _library_token = 0;
      toManagedFiles:(InfinitManagedFiles*)managed_files
           withError:(NSError**)error
 {
-  if ([managed_files.asset_map objectForKey:asset.localIdentifier])
-    return YES;
   __block BOOL res = YES;
   __block NSString* path = nil;
   if (asset.mediaType == PHAssetMediaTypeVideo)
@@ -886,8 +908,11 @@ static dispatch_once_t _library_token = 0;
              self.description.UTF8String, managed_files.uuid.UTF8String, error_message.UTF8String);
     res = NO;
   }
-  if (path.length)
-    [managed_files.asset_map setObject:path forKey:asset.localIdentifier];
+  dispatch_sync(dispatch_get_main_queue(), ^
+  {
+    if (path.length)
+      [managed_files.asset_map setObject:path forKey:asset.localIdentifier];
+  });
   return res;
 }
 

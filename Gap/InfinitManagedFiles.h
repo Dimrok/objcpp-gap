@@ -10,6 +10,8 @@
 
 @interface InfinitManagedFiles : NSObject <NSCoding>
 
+/// Assets with identifier (ALAsset: URL, PHAsset: localIdentifier) that are currently being copied.
+@property (nonatomic, readonly) NSMutableSet* assets_copying;
 /// Asset URLs that have been converted to files.
 @property (nonatomic, readwrite) NSMutableDictionary* asset_map;
 /// If the files were copied to a temporary location.

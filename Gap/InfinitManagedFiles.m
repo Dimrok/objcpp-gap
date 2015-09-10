@@ -19,6 +19,7 @@
   if (self = [super init])
   {
     _uuid = [NSUUID UUID].UUIDString;
+    _assets_copying = [NSMutableSet set];
     _managed_paths = [NSMutableOrderedSet orderedSet];
     _asset_map = [NSMutableDictionary dictionary];
     _remove_assets = [NSMutableSet set];
@@ -45,6 +46,11 @@
 {
   @synchronized(self)
   {
+    if (self.assets_copying.count)
+    {
+      _copying = YES;
+      return;
+    }
     _copying = copying;
     if (!copying)
     {
@@ -60,10 +66,7 @@
       }
       if (self.done_copying_block)
       {
-        dispatch_sync(dispatch_get_main_queue(), ^
-        {
-          self.done_copying_block();
-        });
+        self.done_copying_block();
       }
     }
   }
@@ -81,6 +84,7 @@
   if (self = [super init])
   {
     _uuid = [decoder decodeObjectForKey:@"uuid"];
+    _assets_copying = [NSMutableSet set];
     _managed_paths =
       [NSMutableOrderedSet orderedSetWithArray:[decoder decodeObjectForKey:@"managed_paths"]];
     _root_dir = [decoder decodeObjectForKey:@"root_dir"];
