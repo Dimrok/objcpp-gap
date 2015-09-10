@@ -24,7 +24,8 @@
 
 @implementation InfinitThreadSafeDictionary
 
-- (instancetype)initWithName:(NSString*)name 
+- (instancetype)initWithName:(NSString*)name
+                  dictionary:(NSDictionary*)dictionary
               withNilSupport:(BOOL)nil_support
 {
   NSCAssert(name.length, @"Ensure name has length.");
@@ -33,7 +34,10 @@
     _nil_support = nil_support;
     _queue_name = [NSString stringWithFormat:@"io.Infinit.ThreadSafeDictionary-%@", name];
     _queue = dispatch_queue_create(self.queue_name.UTF8String, DISPATCH_QUEUE_SERIAL);
-    _dictionary = [NSMutableDictionary dictionary];
+    if (dictionary == nil)
+      _dictionary = [NSMutableDictionary dictionary];
+    else
+      _dictionary = [NSMutableDictionary dictionaryWithDictionary:dictionary];
   }
   return self;
 }
@@ -41,7 +45,14 @@
 + (instancetype)dictionaryWithName:(NSString*)name
                     withNilSupport:(BOOL)nil_support
 {
-  return [[self alloc] initWithName:name withNilSupport:nil_support];
+  return [[self alloc] initWithName:name dictionary:nil withNilSupport:nil_support];
+}
+
++ (instancetype)dictionaryWithName:(NSString*)name 
+                        dictionary:(NSDictionary*)dictionary
+                    withNilSupport:(BOOL)nil_support
+{
+  return [[self alloc] initWithName:name dictionary:dictionary withNilSupport:nil_support];
 }
 
 + (instancetype)initWithName:(NSString*)name
@@ -56,6 +67,16 @@
 }
 
 #pragma mark - Getters
+
+- (NSDictionary*)underlying_copy
+{
+  __block NSDictionary* res = nil;
+  dispatch_sync(self.queue, ^
+  {
+    res = [self.underlying_copy copy];
+  });
+  return res;
+}
 
 - (NSArray*)allKeys
 {

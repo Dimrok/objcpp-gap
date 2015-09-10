@@ -10,9 +10,14 @@
 
 @interface InfinitThreadSafeDictionary : NSObject
 
+@property (nonatomic, readonly) NSDictionary* underlying_copy;
+
 /// Init defaults to no nil support.
 + (instancetype)initWithName:(NSString*)name;
 + (instancetype)dictionaryWithName:(NSString*)name
+                    withNilSupport:(BOOL)nil_support;
++ (instancetype)dictionaryWithName:(NSString*)name
+                        dictionary:(NSDictionary*)dictionary
                     withNilSupport:(BOOL)nil_support;
 
 /// Reading is synchronous.
