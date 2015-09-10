@@ -283,6 +283,12 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
                       os:(NSString*)os
          completionBlock:(InfinitStateCompletionBlock)completion_block;
 
+/** Change the device ID to one that was stored.
+ @param device_id
+  Device ID to change to.
+ */
+- (void)changeDeviceId:(NSString*)device_id;
+
 #pragma mark - User
 /// Users should be accessed using the User Manager.
 - (NSArray*)swaggers;

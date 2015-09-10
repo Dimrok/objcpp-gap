@@ -744,6 +744,16 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   } completionBlock:completion_block];
 }
 
+- (void)changeDeviceId:(NSString*)device_id
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     if (!device_id.length)
+       return gap_error;
+     return gap_set_device_id(manager.stateWrapper.state, std::string(device_id.UTF8String));
+   }];
+}
+
 #pragma mark - Polling
 
 - (void)_startPolling
