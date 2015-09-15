@@ -229,6 +229,8 @@ static dispatch_once_t _instance_token = 0;
       else if ([self _ignoredStatus:existing])
       {
         [self sendTransactionDeletedNotification:existing];
+        if (transaction.status == gap_transaction_failed && !transaction.screenshot)
+          [self sendTransactionFailedNotification:transaction];
         [self.transaction_map removeObjectForKey:existing.id_];
       }
       else
@@ -300,6 +302,12 @@ static dispatch_once_t _instance_token = 0;
 - (void)sendTransactionDeletedNotification:(InfinitLinkTransaction*)transaction
 {
   [self postNotificationOnMainThreadName:INFINIT_LINK_TRANSACTION_DELETED_NOTIFICATION
+                             transaction:transaction];
+}
+
+- (void)sendTransactionFailedNotification:(InfinitLinkTransaction*)transaction
+{
+  [self postNotificationOnMainThreadName:INFINIT_LINK_TRANSACTION_FAILED_NOTIFICATION
                              transaction:transaction];
 }
 

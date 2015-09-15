@@ -30,6 +30,11 @@
 */
 #define INFINIT_LINK_TRANSACTION_DELETED_NOTIFICATION @"INFINIT_LINK_TRANSACTION_DELETED_NOTIFICATION"
 
+/** Notification sent when a link fails and it's not a screenshot.
+ Contains a dicitonary with the transaction "id".
+ */
+#define INFINIT_LINK_TRANSACTION_FAILED_NOTIFICATION  @"INFINIT_LINK_TRANSACTION_FAILED_NOTIFICATION"
+
 /** Notification sent when link created.
  Contains a dictionary with the transaction "id".
  */
