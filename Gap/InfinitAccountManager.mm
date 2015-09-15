@@ -9,6 +9,7 @@
 #import "InfinitAccountManager.h"
 
 #import "InfinitGapLocalizedString.h"
+#import "InfinitStateManager.h"
 
 #undef check
 #import <elle/log.hh>
@@ -30,6 +31,10 @@ static dispatch_once_t _instance_token = 0;
     _link_quota = nil;
     _plan = InfinitAccountPlanTypeUninitialized;
     _send_to_self_quota = nil;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(willLogout) 
+                                                 name:INFINIT_WILL_LOGOUT_NOTIFICATION 
+                                               object:nil];
   }
   return self;
 }
@@ -115,6 +120,13 @@ static dispatch_once_t _instance_token = 0;
     case InfinitAccountPlanTypeUninitialized:
       return GapLocalizedString(@"Unknown Plan", nil);
   }
+}
+
+#pragma - On Logout
+
+- (void)willLogout
+{
+  _plan = InfinitAccountPlanTypeUninitialized;
 }
 
 @end
