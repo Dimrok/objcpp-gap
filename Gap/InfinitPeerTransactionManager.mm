@@ -31,19 +31,16 @@ static dispatch_once_t _instance_token = 0;
 
 @interface InfinitPeerTransactionManager ()
 
-@property (atomic, readonly) NSMutableArray* archived_transaction_ids;
+@property (nonatomic, readonly) NSString* archived_transactions_file;
+@property (atomic, readwrite) NSMutableArray* archived_transaction_ids;
 @property (atomic, readwrite) BOOL filled_model;
 @property (atomic, readonly) InfinitThreadSafeDictionary* transaction_map;
 
 @end
 
-@implementation InfinitPeerTransactionManager
-{
-@private
-  NSString* _archived_transactions_file;
-}
-
 #pragma mark - Init
+
+@implementation InfinitPeerTransactionManager
 
 - (id)init
 {
@@ -89,18 +86,19 @@ static dispatch_once_t _instance_token = 0;
 
 - (void)_fetchArchivedTransactions
 {
-  if ([[NSFileManager defaultManager] fileExistsAtPath:_archived_transactions_file isDirectory:NULL])
+  if ([[NSFileManager defaultManager] fileExistsAtPath:self.archived_transactions_file isDirectory:NULL])
   {
-    _archived_transaction_ids = [NSMutableArray arrayWithContentsOfFile:_archived_transactions_file];
+    self.archived_transaction_ids =
+      [NSMutableArray arrayWithContentsOfFile:self.archived_transactions_file];
     if (self.archived_transaction_ids == nil)
     {
       ELLE_ERR("%s: unable to read archived transactions file, removing",
                self.description.UTF8String);
-      [[NSFileManager defaultManager] removeItemAtPath:_archived_transactions_file error:nil];
+      [[NSFileManager defaultManager] removeItemAtPath:self.archived_transactions_file error:nil];
     }
   }
   if (self.archived_transaction_ids == nil)
-    _archived_transaction_ids = [NSMutableArray array];
+    self.archived_transaction_ids = [NSMutableArray array];
 }
 
 - (void)_fillTransactionMap
@@ -413,9 +411,9 @@ static dispatch_once_t _instance_token = 0;
     [to_archive addObject:transaction.meta_id];
   }
   if (self.archived_transaction_ids == nil)
-    _archived_transaction_ids = [NSMutableArray array];
+    self.archived_transaction_ids = [NSMutableArray array];
   [self.archived_transaction_ids addObjectsFromArray:to_archive];
-  if (![self.archived_transaction_ids writeToFile:_archived_transactions_file atomically:YES])
+  if (![self.archived_transaction_ids writeToFile:self.archived_transactions_file atomically:YES])
   {
     ELLE_ERR("%s: unable to write archived transactions to disk", self.description.UTF8String);
   }
@@ -436,10 +434,10 @@ static dispatch_once_t _instance_token = 0;
   if (transaction.meta_id.length == 0)
     return;
   if (self.archived_transaction_ids == nil)
-    _archived_transaction_ids = [NSMutableArray array];
+    self.archived_transaction_ids = [NSMutableArray array];
 
   [self.archived_transaction_ids addObject:transaction.meta_id];
-  if (![self.archived_transaction_ids writeToFile:_archived_transactions_file atomically:YES])
+  if (![self.archived_transaction_ids writeToFile:self.archived_transactions_file atomically:YES])
   {
     ELLE_ERR("%s: unable to write archived transactions to disk", self.description.UTF8String);
   }
@@ -451,7 +449,7 @@ static dispatch_once_t _instance_token = 0;
     return;
   transaction.archived = NO;
   [self.archived_transaction_ids removeObject:transaction.meta_id];
-  if (![self.archived_transaction_ids writeToFile:_archived_transactions_file atomically:YES])
+  if (![self.archived_transaction_ids writeToFile:self.archived_transactions_file atomically:YES])
   {
     ELLE_ERR("%s: unable to write archived transactions to disk", self.description.UTF8String);
   }
