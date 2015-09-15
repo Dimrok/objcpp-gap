@@ -51,6 +51,19 @@
 
 #pragma mark - Properties
 
+- (BOOL)buffered
+{
+  switch (self.status)
+  {
+    case gap_transaction_cloud_buffered:
+    case gap_transaction_ghost_uploaded:
+      return YES;
+      
+    default:
+      return NO;
+  }
+}
+
 - (BOOL)concerns_device
 {
   return YES;
@@ -195,6 +208,8 @@
       return @"paused";
     case gap_transaction_payment_required:
       return @"payment required";
+    case gap_transaction_ghost_uploaded:
+      return @"ghost uploaded";
 
     default:
       return @"unknown";

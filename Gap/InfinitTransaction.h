@@ -18,6 +18,7 @@
 @interface InfinitTransaction : NSObject
 
 @property (nonatomic, readwrite) BOOL archived;
+@property (nonatomic, readonly) BOOL buffered;
 @property (nonatomic, readonly) BOOL concerns_device;
 @property (nonatomic, readonly) BOOL done;
 @property (nonatomic, readonly) BOOL from_device;
