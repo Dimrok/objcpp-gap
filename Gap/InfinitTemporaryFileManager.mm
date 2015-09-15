@@ -236,6 +236,7 @@ static dispatch_once_t _library_token = 0;
     case gap_transaction_cloud_buffered:
     case gap_transaction_deleted:
     case gap_transaction_failed:
+    case gap_transaction_ghost_uploaded:
     case gap_transaction_finished:
     case gap_transaction_rejected:
     case gap_transaction_on_other_device:
