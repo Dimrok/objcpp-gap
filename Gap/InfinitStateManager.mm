@@ -364,15 +364,19 @@ static NSString* _facebook_app_id = nil;
 - (void)sendInvitation:(NSString*)destination
                message:(NSString*)message
              ghostCode:(NSString*)ghost_code
+            userCancel:(BOOL)user_cancel
+                  type:(NSString*)type
 {
-  if (!destination.length || !message.length || !ghost_code.length)
+  if (!destination.length || !message.length || !ghost_code.length || !type.length)
     return;
   [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
   {
     return gap_send_invite(manager.stateWrapper.state,
                            destination.UTF8String,
                            message.UTF8String,
-                           ghost_code.UTF8String);
+                           ghost_code.UTF8String,
+                           type.UTF8String,
+                           user_cancel);
   }];
 }
 

@@ -116,10 +116,16 @@ typedef void(^InfinitPlainInviteBlock)(InfinitStateResult* result,
   Message for SMS.
  @param ghost_code
   Code associated with message.
+ @param user_cance
+  If the user canceled the sending of the message.
+ @param type
+  Type of invitation to be sent: 'ghost', 'plain' or 'reminder'.
  */
 - (void)sendInvitation:(NSString*)destination
                message:(NSString*)message
-             ghostCode:(NSString*)ghost_code;
+             ghostCode:(NSString*)ghost_code
+            userCancel:(BOOL)user_cancel
+                  type:(NSString*)type;
 
 /** Check a ghost code exists.
  @param code
