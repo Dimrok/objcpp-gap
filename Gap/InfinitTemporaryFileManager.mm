@@ -26,8 +26,6 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.TemporaryFileManager");
 
 static InfinitTemporaryFileManager* _instance = nil;
 static dispatch_once_t _instance_token = 0;
-static ALAssetsLibrary* _library = nil;
-static dispatch_once_t _library_token = 0;
 
 @interface InfinitTemporaryFileManager ()
 
@@ -215,15 +213,6 @@ static dispatch_once_t _library_token = 0;
     _instance = [[InfinitTemporaryFileManager alloc] init];
   });
   return _instance;
-}
-
-- (ALAssetsLibrary*)_sharedLibrary
-{
-  dispatch_once(&_library_token, ^
-  {
-    _library = [[ALAssetsLibrary alloc] init];
-  });
-  return _library;
 }
 
 #pragma mark - Transaction Callback
