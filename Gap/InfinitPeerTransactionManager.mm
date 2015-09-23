@@ -149,7 +149,7 @@ static dispatch_once_t _instance_token = 0;
 
 + (InfinitPeerTransaction*)transactionWithId:(NSNumber*)id_
 {
-  return [[InfinitPeerTransactionManager sharedInstance] transactionWithId:id_];
+  return [[self sharedInstance] transactionWithId:id_];
 }
 
 - (InfinitPeerTransaction*)transactionWithId:(NSNumber*)id_
@@ -158,11 +158,14 @@ static dispatch_once_t _instance_token = 0;
   {
     InfinitPeerTransaction* res = [self.transaction_map objectForKey:id_];
     if (res == nil)
-    {
       res = [[InfinitStateManager sharedInstance] peerTransactionById:id_];
-    }
     return res;
   }
+}
+
++ (InfinitPeerTransaction*)transactionWithMetaId:(NSString*)meta_id
+{
+  return [[self sharedInstance] transactionWithMetaId:meta_id];
 }
 
 - (BOOL)unread_transactions
