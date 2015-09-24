@@ -11,6 +11,9 @@
 #import "InfinitStateManager.h"
 #import "InfinitAvatarManager.h"
 
+#import "NSString+email.h"
+#import "NSString+PhoneNumber.h"
+
 @implementation InfinitUser
 
 #pragma mark - Init
@@ -40,6 +43,10 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
     _ghost_invitation_url = ghost_invitation_url;
     _meta_id = meta_id;
     _phone_number = phone_number;
+    if (self.fullname.infinit_isEmail)
+      _ghost_identifier = [fullname copy];
+    else if (self.fullname.infinit_isPhoneNumber)
+      _ghost_identifier = [fullname copy];
   }
   return self;
 }
