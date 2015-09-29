@@ -135,6 +135,10 @@
 		83A7599D1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A7599A1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83A7599E1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A7599B1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m */; };
 		83A7599F1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A7599B1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m */; };
+		83AF5DC81BB3F6230053FA24 /* NSString+URLEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = 83AF5DC61BB3F6230053FA24 /* NSString+URLEncode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83AF5DC91BB3F6230053FA24 /* NSString+URLEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = 83AF5DC61BB3F6230053FA24 /* NSString+URLEncode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83AF5DCA1BB3F6230053FA24 /* NSString+URLEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = 83AF5DC71BB3F6230053FA24 /* NSString+URLEncode.m */; };
+		83AF5DCB1BB3F6230053FA24 /* NSString+URLEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = 83AF5DC71BB3F6230053FA24 /* NSString+URLEncode.m */; };
 		83B4BBC71AB765E9004B8E76 /* libtransaction.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 83B4BBC61AB765E9004B8E76 /* libtransaction.dylib */; };
 		83C06D6B1AEE324100761237 /* NSString+UUID.h in Headers */ = {isa = PBXBuildFile; fileRef = 83C06D691AEE324000761237 /* NSString+UUID.h */; };
 		83C06D6C1AEE324100761237 /* NSString+UUID.h in Headers */ = {isa = PBXBuildFile; fileRef = 83C06D691AEE324000761237 /* NSString+UUID.h */; };
@@ -382,6 +386,8 @@
 		839716BD1ACC0AAA00357702 /* InfinitDeviceInformation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitDeviceInformation.m; sourceTree = "<group>"; };
 		83A7599A1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitThreadSafeDictionary.h; sourceTree = "<group>"; };
 		83A7599B1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitThreadSafeDictionary.m; sourceTree = "<group>"; };
+		83AF5DC61BB3F6230053FA24 /* NSString+URLEncode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+URLEncode.h"; sourceTree = "<group>"; };
+		83AF5DC71BB3F6230053FA24 /* NSString+URLEncode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+URLEncode.m"; sourceTree = "<group>"; };
 		83B4BBC61AB765E9004B8E76 /* libtransaction.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtransaction.dylib; path = ../../../_build/macosx64/lib/libtransaction.dylib; sourceTree = "<group>"; };
 		83C06D691AEE324000761237 /* NSString+UUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UUID.h"; sourceTree = "<group>"; };
 		83C06D6A1AEE324000761237 /* NSString+UUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UUID.m"; sourceTree = "<group>"; };
@@ -582,6 +588,8 @@
 				836D394E1A67F19200892206 /* NSString+email.m */,
 				83F9628B1AAB10A9003F2DE7 /* NSString+PhoneNumber.h */,
 				83F9628C1AAB10A9003F2DE7 /* NSString+PhoneNumber.m */,
+				83AF5DC61BB3F6230053FA24 /* NSString+URLEncode.h */,
+				83AF5DC71BB3F6230053FA24 /* NSString+URLEncode.m */,
 				83C06D691AEE324000761237 /* NSString+UUID.h */,
 				83C06D6A1AEE324000761237 /* NSString+UUID.m */,
 			);
@@ -806,6 +814,7 @@
 				835D5B0B1B847CBB00532BBD /* NSNumber+DataSize.h in Headers */,
 				830B57921B832B26009DF3BA /* InfinitAccountUsageQuota.h in Headers */,
 				830D7CE81B37FF6F003CE369 /* InfinitThreadSafeArray.h in Headers */,
+				83AF5DC81BB3F6230053FA24 /* NSString+URLEncode.h in Headers */,
 				830D7D1F1B3BE3A8003CE369 /* InfinitAccountManager.h in Headers */,
 				830778E31AD2E7920047F8E6 /* InfinitFileSystemError.h in Headers */,
 				839610701A2479B50044B874 /* InfinitManagedFiles.h in Headers */,
@@ -855,6 +864,7 @@
 				83A7599D1AE4F1E70026FB26 /* InfinitThreadSafeDictionary.h in Headers */,
 				830D7D201B3BE3A8003CE369 /* InfinitAccountManager.h in Headers */,
 				8380BDC31B0B38580001F876 /* InfinitConstants.h in Headers */,
+				83AF5DC91BB3F6230053FA24 /* NSString+URLEncode.h in Headers */,
 				835D5B0C1B847CBB00532BBD /* NSNumber+DataSize.h in Headers */,
 				83C9AE7F1B286AE300DD28CE /* InfinitExternalAccount.h in Headers */,
 				8372B3231AB3354D00F1B8B8 /* InfinitTime.h in Headers */,
@@ -1098,6 +1108,7 @@
 				83FE9C931A1636FF00FC1CFD /* InfinitAvatarManager.mm in Sources */,
 				836D39501A67F19200892206 /* NSString+email.m in Sources */,
 				83FB5AB31AADBEDF004D5028 /* InfinitDeviceManager.mm in Sources */,
+				83AF5DCA1BB3F6230053FA24 /* NSString+URLEncode.m in Sources */,
 				836F5C801A165AE5007C9C4E /* InfinitConnectionManager.mm in Sources */,
 				836F5C841A165B48007C9C4E /* InfinitReachability.m in Sources */,
 				836D398B1A690E2A00892206 /* InfinitCrashReporter.mm in Sources */,
@@ -1162,6 +1173,7 @@
 				8372B3041AB3353B00F1B8B8 /* InfinitTransaction.m in Sources */,
 				8372B3051AB3353B00F1B8B8 /* InfinitUser.m in Sources */,
 				8372B3061AB3353B00F1B8B8 /* InfinitUserManager.mm in Sources */,
+				83AF5DCB1BB3F6230053FA24 /* NSString+URLEncode.m in Sources */,
 				8372B3071AB3353B00F1B8B8 /* InfinitColor.m in Sources */,
 				83C06D6E1AEE324100761237 /* NSString+UUID.m in Sources */,
 				835D5B0E1B847CBB00532BBD /* NSNumber+DataSize.m in Sources */,
@@ -1300,6 +1312,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
 				VALID_ARCHS = "$(ARCHS_STANDARD)";
 			};
 			name = Debug;
@@ -1321,7 +1334,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
+				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
