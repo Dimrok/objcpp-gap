@@ -110,15 +110,15 @@ static dispatch_once_t _instance_token = 0;
   switch (plan)
   {
     case InfinitAccountPlanTypeBasic:
-      return GapLocalizedString(@"Basic Plan", nil);
+      return @"Basic Plan";
     case InfinitAccountPlanTypePlus:
-      return GapLocalizedString(@"Plus Plan", nil);
+      return @"Plus Plan";
     case InfinitAccountPlanTypePremium:
-      return GapLocalizedString(@"Professional Plan", nil);
+      return @"Professional Plan";
     case InfinitAccountPlanTypeTeam:
-      return GapLocalizedString(@"Team Plan", nil);
+      return @"Team Plan";
     case InfinitAccountPlanTypeUninitialized:
-      return GapLocalizedString(@"Unknown Plan", nil);
+      return @"Unknown Plan";
   }
 }
 
