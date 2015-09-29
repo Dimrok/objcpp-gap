@@ -432,6 +432,11 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
                           code:(NSString*)code
                     failReason:(NSString*)fail_reason;
 
+- (void)sendMetricGhostReminderSent:(BOOL)success
+                             method:(gap_InviteMessageMethod)method
+                               code:(NSString*)code
+                         failReason:(NSString*)fail_reason_;
+
 - (void)sendMetricSendToSelfLimit;
 
 - (void)sendMetricTransferSizeLimitWithTransferSize:(uint64_t)transfer_size;

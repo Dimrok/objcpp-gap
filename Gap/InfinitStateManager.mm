@@ -51,6 +51,7 @@ typedef void(^gap_void_operation_t)(InfinitStateManager*, NSOperation*);
 static InfinitStateManager* _manager_instance = nil;
 static dispatch_once_t _instance_token = 0;
 static NSNumber* _self_id = nil;
+static dispatch_once_t _self_device_id_token = 0;
 static NSString* _self_device_id = nil;
 static NSString* _facebook_app_id = nil;
 
@@ -185,7 +186,7 @@ static NSString* _facebook_app_id = nil;
   if (clear_model)
     [self _clearModels];
   _self_id = nil;
-  _self_device_id = nil;
+  _self_device_id_token = 0;
   _current_user = nil;
 }
 
@@ -754,6 +755,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
    {
      if (!device_id.length)
        return gap_error;
+     _self_device_id_token = 0;
      return gap_set_device_id(manager.stateWrapper.state, std::string(device_id.UTF8String));
    }];
 }
@@ -881,8 +883,10 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 
 - (NSString*)self_device_id
 {
-  if (_self_device_id == nil)
+  dispatch_once(&_self_device_id_token, ^
+  {
     _self_device_id = [self _nsString:gap_self_device_id(self.stateWrapper.state)];
+  });
   return _self_device_id;
 }
 
@@ -910,23 +914,32 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 
 - (void)pauseTransactionWithId:(NSNumber*)id_
 {
-  if (!self.logged_in)
-    return;
-  gap_pause_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    if (!manager.logged_in)
+      return gap_not_logged_in;
+    return gap_pause_transaction(manager.stateWrapper.state, id_.unsignedIntValue);
+  }];
 }
 
 - (void)resumeTransactionWithId:(NSNumber*)id_
 {
-  if (!self.logged_in)
-    return;
-  gap_resume_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    if (!manager.logged_in)
+      return gap_not_logged_in;
+    return gap_resume_transaction(manager.stateWrapper.state, id_.unsignedIntValue);
+  }];
 }
 
 - (void)cancelTransactionWithId:(NSNumber*)id_
 {
-  if (!self.logged_in)
-    return;
-  gap_cancel_transaction(self.stateWrapper.state, id_.unsignedIntValue);
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    if (!manager.logged_in)
+      return gap_not_logged_in;
+    return gap_cancel_transaction(manager.stateWrapper.state, id_.unsignedIntValue);
+  }];
 }
 
 - (float)transactionProgressForId:(NSNumber*)id_
@@ -1507,7 +1520,8 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
                                               success,
                                               code.UTF8String,
                                               method,
-                                              fail_reason);
+                                              fail_reason,
+                                              false);
   }];
 }
 
@@ -1523,9 +1537,29 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
     return gap_invitation_message_sent_metric(manager.stateWrapper.state,
                                               success,
                                               code.UTF8String,
-                                              gap_invite_message_native,
-                                              fail_reason);
+                                              gap_invite_message_native_sms,
+                                              fail_reason,
+                                              false);
   }];
+}
+
+- (void)sendMetricGhostReminderSent:(BOOL)success
+                             method:(gap_InviteMessageMethod)method
+                               code:(NSString*)code
+                         failReason:(NSString*)fail_reason_
+{
+  if (!code.length)
+    return;
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+   {
+     std::string fail_reason = fail_reason_.length ? std::string(fail_reason_.UTF8String) : "";
+     return gap_invitation_message_sent_metric(manager.stateWrapper.state,
+                                               success,
+                                               code.UTF8String,
+                                               method,
+                                               fail_reason,
+                                               true);
+   }];
 }
 
 - (void)sendMetricSendToSelfLimit
