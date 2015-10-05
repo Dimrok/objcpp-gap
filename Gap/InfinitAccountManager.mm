@@ -61,6 +61,7 @@ static dispatch_once_t _instance_token = 0;
           customDomain:(NSString*)custom_domain
             linkFormat:(NSString*)link_format
              linkQuota:(InfinitAccountUsageQuota*)link_quota
+       referralActions:(InfinitAccountReferralActions*)referral_actions
        sendToSelfQuota:(InfinitAccountUsageQuota*)send_to_self_quota
          transferLimit:(uint64_t)transfer_limit
 {
@@ -80,6 +81,7 @@ static dispatch_once_t _instance_token = 0;
   else
     _link_format = nil;
   _link_quota = link_quota;
+  _referral_actions = referral_actions;
   _send_to_self_quota = send_to_self_quota;
   _transfer_size_limit = transfer_limit;
   // Send notifications once model has been updated.

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "InfinitAccountUsageQuota.h"
+#import "InfinitAccountReferralActions.h"
 
 /** Notification sent when the user's plan changes.
  Contains a dictionary with the plan name.
@@ -39,6 +40,7 @@ typedef NS_ENUM(NSUInteger, InfinitAccountPlanType)
 @property (nonatomic, readonly) InfinitAccountUsageQuota* link_quota;
 @property (nonatomic, readonly) InfinitAccountPlanType plan;
 @property (nonatomic, readonly) NSString* plan_string;
+@property (nonatomic, readonly) InfinitAccountReferralActions* referral_actions;
 @property (nonatomic, readonly) InfinitAccountUsageQuota* send_to_self_quota;
 @property (nonatomic, readonly) uint64_t transfer_size_limit;
 
@@ -49,6 +51,7 @@ typedef NS_ENUM(NSUInteger, InfinitAccountPlanType)
           customDomain:(NSString*)custom_domain
             linkFormat:(NSString*)link_format
              linkQuota:(InfinitAccountUsageQuota*)link_quota
+       referralActions:(InfinitAccountReferralActions*)referral_actions
        sendToSelfQuota:(InfinitAccountUsageQuota*)send_to_self_quota
          transferLimit:(uint64_t)transfer_limit;
 
