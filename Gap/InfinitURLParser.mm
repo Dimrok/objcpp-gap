@@ -19,12 +19,27 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.URLParser");
 
 + (NSString*)getGhostCodeFromURL:(NSURL*)url
 {
+  ELLE_TRACE("get ghost code from URL: %s", url.description.UTF8String);
+  return [self codeFromURL:url withSpecifier:kInfinitURLInvite];
+}
+
++ (NSString*)getReferralCodeFromURL:(NSURL*)url
+{
+  ELLE_TRACE("get referral code from URL: %s", url.description.UTF8String);
+  NSString* possible_code = [self codeFromURL:url withSpecifier:kInfinitURLReferral];
+  if (possible_code.length == 16)
+    return possible_code;
+  return nil;
+}
+
++ (NSString*)codeFromURL:(NSURL*)url 
+           withSpecifier:(NSString*)specifier
+{
   if (![url.scheme isEqualToString:kInfinitURLScheme])
     return nil;
-  ELLE_TRACE("get ghost code from URL: %s", url.description.UTF8String);
   NSString* resource_specifier = [url.resourceSpecifier substringFromIndex:2];
   NSArray* components = [resource_specifier componentsSeparatedByString:@"/"];
-  if ([components[0] isEqual:kInfinitURLInvite])
+  if ([components[0] isEqual:specifier])
   {
     NSString* possible_code = nil;
     if ([components[1] rangeOfString:@"?"].location != NSNotFound)
