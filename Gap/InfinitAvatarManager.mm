@@ -29,13 +29,8 @@ ELLE_LOG_COMPONENT("Gap-ObjC++.AvatarManager");
 
 static InfinitAvatarManager* _instance = nil;
 static dispatch_once_t _instance_token = 0;
-#if TARGET_OS_IPHONE
-static UIImage* _email_avatar = nil;
-static UIImage* _phone_avatar = nil;
-#else
-static NSImage* _email_avatar = nil;
-static NSImage* _phone_avatar = nil;
-#endif
+static INFINIT_IMAGE* _email_avatar = nil;
+static INFINIT_IMAGE* _phone_avatar = nil;
 
 
 @interface InfinitAvatarManager ()
@@ -61,21 +56,9 @@ static NSImage* _phone_avatar = nil;
     _avatar_map = [InfinitThreadSafeDictionary initWithName:@"AvatarModel"];
     _requested_avatars = [NSMutableSet set];
     if (_phone_avatar == nil)
-    {
-#if TARGET_OS_IPHONE
-      _phone_avatar = [UIImage imageNamed:@"avatar-phone"];
-#else
-      _phone_avatar = [NSImage imageNamed:@"avatar-phone"];
-#endif
-    }
+      _phone_avatar = [INFINIT_IMAGE imageNamed:@"avatar-phone"];
     if (_email_avatar == nil)
-    {
-#if TARGET_OS_IPHONE
-      _email_avatar = [UIImage imageNamed:@"avatar-email"];
-#else
-      _email_avatar = [NSImage imageNamed:@"avatar-phone"];
-#endif
-    }
+      _email_avatar = [INFINIT_IMAGE imageNamed:@"avatar-email"];
 
   }
   return self;
@@ -112,19 +95,15 @@ static NSImage* _phone_avatar = nil;
   return [res stringByAppendingPathExtension:@"jpg"];
 }
 
-#if TARGET_OS_IPHONE
 - (void)writeUser:(InfinitUser*)user
-avatarToDiskCache:(UIImage*)avatar
+avatarToDiskCache:(INFINIT_IMAGE*)avatar
 {
   NSError* error = nil;
+#if TARGET_OS_IPHONE
   [UIImageJPEGRepresentation(avatar, 1.0f) writeToFile:[self pathForUser:user]
                                                options:NSDataWritingAtomic
                                                  error:&error];
 #else
-- (void)writeUser:(InfinitUser*)user
-avatarToDiskCache:(NSImage*)avatar
-  {
-    NSError* error = nil;
     NSData* image_data = avatar.TIFFRepresentation;
     NSBitmapImageRep* image_rep = [[NSBitmapImageRep imageRepsWithData:image_data] firstObject];
     NSDictionary* image_properties = @{NSImageCompressionFactor: @1.0f};
@@ -138,11 +117,7 @@ avatarToDiskCache:(NSImage*)avatar
   }
 }
 
-#if TARGET_OS_IPHONE
-- (UIImage*)diskCacheAvatarForUser:(InfinitUser*)user
-#else
-- (NSImage*)diskCacheAvatarForUser:(InfinitUser*)user
-#endif
+- (INFINIT_IMAGE*)diskCacheAvatarForUser:(InfinitUser*)user
 {
   NSError* error = nil;
   NSArray* cached_files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:self.avatar_dir
@@ -159,11 +134,7 @@ avatarToDiskCache:(NSImage*)avatar
     if ([user_id isEqualToString:user.meta_id])
     {
       NSString* path = [self.avatar_dir stringByAppendingPathComponent:item];
-#if TARGET_OS_IPHONE
-      UIImage* avatar = [UIImage imageWithContentsOfFile:path];
-#else
-      NSImage* avatar = [[NSImage alloc] initWithContentsOfFile:path];
-#endif
+      INFINIT_IMAGE* avatar = [[INFINIT_IMAGE alloc] initWithContentsOfFile:path];
       if (avatar != nil && user_id != nil)
       {
         [self.avatar_map setObject:avatar forKey:user_id];
@@ -178,9 +149,7 @@ avatarToDiskCache:(NSImage*)avatar
 {
   NSError* error = nil;
   if ([[NSFileManager defaultManager] fileExistsAtPath:[self pathForUser:user]])
-  {
     [[NSFileManager defaultManager] removeItemAtPath:[self pathForUser:user] error:&error];
-  }
   if (error)
   {
     ELLE_WARN("%s: unable to remove cached avatar (%s): %s",
@@ -190,11 +159,7 @@ avatarToDiskCache:(NSImage*)avatar
 
 #pragma mark - Public Functions
 
-#if TARGET_OS_IPHONE
-- (void)setSelfAvatar:(UIImage*)avatar
-#else
-- (void)setSelfAvatar:(NSImage*)avatar
-#endif
+- (void)setSelfAvatar:(INFINIT_IMAGE*)avatar
 {
   [[InfinitStateManager sharedInstance] setSelfAvatar:avatar
                                       performSelector:@selector(setAvatarCallback:)
@@ -216,19 +181,11 @@ avatarToDiskCache:(NSImage*)avatar
   }
 }
 
-#if TARGET_OS_IPHONE
-- (UIImage*)avatarForUser:(InfinitUser*)user
-#else
-- (NSImage*)avatarForUser:(InfinitUser*)user
-#endif
+- (INFINIT_IMAGE*)avatarForUser:(InfinitUser*)user
 {
   if (user.id_.unsignedIntegerValue == 0)
     return nil;
-#if TARGET_OS_IPHONE
-  UIImage* avatar = [self.avatar_map objectForKey:user.meta_id];
-#else
-  NSImage* avatar = [self.avatar_map objectForKey:user.meta_id];
-#endif
+  INFINIT_IMAGE* avatar = [self.avatar_map objectForKey:user.meta_id];
   if (avatar == nil && ![self.requested_avatars containsObject:user.meta_id])
   {
     [self.requested_avatars addObject:user.meta_id];
@@ -263,11 +220,7 @@ avatarToDiskCache:(NSImage*)avatar
 
 #pragma mark - Generate Avatar
 
-#if TARGET_OS_IPHONE
-- (UIImage*)generateAvatarForUser:(InfinitUser*)user
-#else
-- (NSImage*)generateAvatarForUser:(InfinitUser*)user
-#endif
+- (INFINIT_IMAGE*)generateAvatarForUser:(InfinitUser*)user
 {
 #if TARGET_OS_IPHONE
   if (user.fullname.infinit_isPhoneNumber)
@@ -300,11 +253,11 @@ avatarToDiskCache:(NSImage*)avatar
   NSDictionary* attrs = nil;
   NSString* font_name = @"HelveticaNeue-Light";
   CGFloat font_size = 51.0f;
+  INFINIT_IMAGE* res = nil;
 #if TARGET_OS_IPHONE
   CGFloat scale = [UIScreen mainScreen].scale;
   rect = CGRectMake(rect.origin.x, rect.origin.y,
                     rect.size.width * scale, rect.size.height * scale);
-  UIImage* res = nil;
   UIGraphicsBeginImageContext(rect.size);
   CGContextRef context = UIGraphicsGetCurrentContext();
   [fill_color setFill];
@@ -313,7 +266,7 @@ avatarToDiskCache:(NSImage*)avatar
                                                  size:(font_size * scale)],
             NSForegroundColorAttributeName: text_color};
 #else
-  NSImage* res = [[NSImage alloc] initWithSize:NSMakeSize(rect.size.width, rect.size.height)];
+  res = [[NSImage alloc] initWithSize:NSMakeSize(rect.size.width, rect.size.height)];
   [res lockFocus];
   [fill_color set];
   NSBezierPath* path = [NSBezierPath bezierPathWithRect:NSRectFromCGRect(rect)];
@@ -338,11 +291,7 @@ avatarToDiskCache:(NSImage*)avatar
 
 - (void)gotAvatarForUserWithId:(NSNumber*)id_
 {
-#if TARGET_OS_IPHONE
-  UIImage* avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:id_];
-#else
-  NSImage* avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:id_];
-#endif
+  INFINIT_IMAGE* avatar = [[InfinitStateManager sharedInstance] avatarForUserWithId:id_];
   if (avatar != nil)
   {
     InfinitUser* user = [[InfinitUserManager sharedInstance] userWithId:id_];
