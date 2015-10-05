@@ -648,6 +648,14 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   }];
 }
 
+- (void)performSocialPostOnMedium:(NSString*)medium
+{
+  [self _addOperation:^gap_Status(InfinitStateManager* manager, NSOperation*)
+  {
+    return gap_performed_social_post(manager.stateWrapper.state, medium.UTF8String);
+  }];
+}
+
 - (void)cancelAllOperationsExcluding:(NSOperation*)exclude
 {
   for (NSOperation* operation in _queue.operations)
@@ -1151,34 +1159,94 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 
 #pragma mark - Account
 
+- (InfinitReferralMethod)_referralMethod:(Account::ReferralActions::Referral::ReferralMethod)method
+{
+  typedef Account::ReferralActions::Referral::ReferralMethod Method;
+  switch (method)
+  {
+    case Method::ReferralMethod_Ghost:
+      return InfinitReferralMethod_Ghost;
+    case Method::ReferralMethod_Plain:
+      return InfinitReferralMethod_Plain;
+    case Method::ReferralMethod_Link:
+      return InfinitReferralMethod_Link;
+
+    default:
+      return InfinitReferralMethod_Ghost;
+  }
+}
+
+- (InfinitReferralStatus)_referralStatus:(Account::ReferralActions::Referral::ReferralStatus)status
+{
+  typedef Account::ReferralActions::Referral::ReferralStatus Status;
+  switch (status)
+  {
+    case Status::ReferralStatus_Pending:
+      return InfinitReferralStatus_Pending;
+    case Status::ReferralStatus_Complete:
+      return InfinitReferralStatus_Complete;
+    case Status::ReferralStatus_Blocked:
+      return InfinitReferralStatus_Blocked;
+  }
+}
+
+- (InfinitAccountReferral*)_referral:(Account::ReferralActions::Referral const&)referral
+{
+  NSString* identifier = [self _nsStringOptional:referral.identifier];
+  InfinitReferralMethod method = [self _referralMethod:referral.method];
+  InfinitReferralStatus status = [self _referralStatus:referral.status];
+  return [InfinitAccountReferral referral:identifier
+                                   method:method
+                                   status:status 
+                              hasLoggedIn:referral.has_logged_in];
+}
+
+- (InfinitAccountReferralActions*)_referralActions:(Account::ReferralActions const&)referral_actions
+{
+  NSMutableArray<InfinitAccountReferral*>* referrals = [NSMutableArray array];
+  for (auto referral_: referral_actions.referrals)
+  {
+    InfinitAccountReferral* referral = [self _referral:referral_];
+    if (referral)
+      [referrals addObject:referral];
+  }
+  return [InfinitAccountReferralActions referralActionsHasAvatar:referral_actions.has_avatar
+                                                   facebookPosts:referral_actions.facebook_posts
+                                                    twitterPosts:referral_actions.twitter_posts 
+                                                       referrals:referrals];
+}
+
+- (InfinitAccountPlanType)_accountPlan:(infinit::oracles::meta::AccountPlanType)plan
+{
+  using infinit::oracles::meta::AccountPlanType;
+  switch (plan)
+  {
+    case AccountPlanType::AccountPlanType_Basic:
+      return InfinitAccountPlanTypeBasic;
+    case AccountPlanType::AccountPlanType_Plus:
+      return InfinitAccountPlanTypePlus;
+    case AccountPlanType::AccountPlanType_Premium:
+      return InfinitAccountPlanTypePremium;
+    case AccountPlanType::AccountPlanType_Team:
+      return InfinitAccountPlanTypeTeam;
+
+    default:
+      return InfinitAccountPlanTypePlus;
+  }
+}
+
 - (void)_accountChanged:(Account const&)account
 {
   using infinit::oracles::meta::AccountPlanType;
-  InfinitAccountPlanType plan = InfinitAccountPlanTypePlus; // Fallback to plus plan.
-  switch (account.plan)
-  {
-    case AccountPlanType::AccountPlanType_Basic:
-      plan = InfinitAccountPlanTypeBasic;
-      break;
-    case AccountPlanType::AccountPlanType_Plus:
-      plan = InfinitAccountPlanTypePlus;
-      break;
-    case AccountPlanType::AccountPlanType_Premium:
-      plan = InfinitAccountPlanTypePremium;
-      break;
-    case AccountPlanType::AccountPlanType_Team:
-      plan = InfinitAccountPlanTypeTeam;
-      break;
-
-    default:
-      break;
-  }
+  InfinitAccountPlanType plan = [self _accountPlan:account.plan];
   NSString* custom_domain = [self _nsString:account.custom_domain];
   NSString* link_format =
     [[self _nsString:account.link_format] stringByReplacingOccurrencesOfString:@"%s"
                                                                      withString:@"%@"];
   auto const& quotas = account.quotas.value();
   InfinitAccountUsageQuota* link_quota = [self _convertAccountUsageQuota:quotas.links];
+  InfinitAccountReferralActions* referral_actions =
+    [self _referralActions:account.referral_actions.value()];
   InfinitAccountUsageQuota* send_to_self_quota =
     [self _convertAccountUsageQuota:quotas.send_to_self];
   uint64_t transfer_limit = quotas.p2p.limit ? quotas.p2p.limit.get() : 0;
@@ -1186,6 +1254,7 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
                                             customDomain:custom_domain
                                               linkFormat:link_format 
                                                linkQuota:link_quota
+                                         referralActions:referral_actions
                                          sendToSelfQuota:send_to_self_quota
                                            transferLimit:transfer_limit];
 }
@@ -1586,11 +1655,12 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
 - (void)setProxy:(gap_ProxyType)type
             host:(NSString*)host
             port:(UInt16)port
-        username:(NSString*)username
-        password:(NSString*)password
+        username:(NSString*)username_
+        password:(NSString*)password_
 {
-  gap_set_proxy(self.stateWrapper.state, type, host.UTF8String, port,
-                username.UTF8String, password.UTF8String);
+  std::string username = username_.length ? username_.UTF8String : "";
+  std::string password = password_.length ? password_.UTF8String : "";
+  gap_set_proxy(self.stateWrapper.state, type, host.UTF8String, port, username, password);
 }
 
 - (void)unsetProxy:(gap_ProxyType)type

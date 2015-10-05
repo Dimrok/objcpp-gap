@@ -248,6 +248,12 @@ typedef void(^InfinitFacebookUserRegistered)(InfinitStateResult* result, BOOL re
  */
 - (void)addFacebookAccount:(NSString*)facebook_token;
 
+/** User performed a social post.
+ @param medium
+  Medium used (facebook/twitter).
+ */
+- (void)performSocialPostOnMedium:(NSString*)medium;
+
 /** Log the current user out.
  @param selector
   Function to call when complete.
