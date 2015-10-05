@@ -41,6 +41,9 @@
 /// Invite URL.
 #  define kInfinitReferalInviteURL @"https://infinit.io/account/referral?utm_source=app&utm_medium=ios&utm_campaign=invite"
 
+/// Self Quota Limit Post Twitter URL
+#  define kInfinitChecklistPostTwitterURL @"https://infinit.io/account/referral?utm_source=app&utm_medium=ios&utm_campaign=checklist"
+
 /// Upgrade plan URL.
 #  define kInfinitUpgradePlanURL @"https://infinit.io/account?utm_source=app&utm_medium=ios&utm_campaign=upgrade_plan"
 
@@ -81,7 +84,13 @@
 /// URL Invite.
 # define kInfinitURLInvite @"invitation"
 
+/// URL Referral.
+# define kInfinitURLReferral @"referral"
+
 /// Facebook read permissions.
 # define kInfinitFacebookReadPermissions @[@"public_profile", @"email", @"user_friends"]
+
+/// Facebook write permissions.
+# define kInfinitFacebookWritePermissions @[@"publish_actions"]
 
 #endif
