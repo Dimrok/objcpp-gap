@@ -1051,13 +1051,16 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   NSArray* sorted_files =
     [files sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
   std::vector<std::string> files_ = [self _filesVectorFromNSArray:sorted_files];
+  std::string message_ = "";
+  if (message.length)
+    message_ = std::string(message.UTF8String);
   if ([recipient isKindOfClass:InfinitUser.class])
   {
     InfinitUser* user = recipient;
     res = gap_send_files(self.stateWrapper.state,
                          user.id_.unsignedIntValue,
                          files_,
-                         message.UTF8String);
+                         message_);
   }
   else if ([recipient isKindOfClass:InfinitDevice.class])
   {
@@ -1089,7 +1092,9 @@ completionBlock:(InfinitStateCompletionBlock)completion_block
   if (!self.logged_in)
     return nil;
   uint32_t res = 0;
-  std::string device_id_(device_id.UTF8String);
+  boost::optional<std::string> device_id_ = boost::none;
+  if (device_id.length)
+    device_id_ = std::string(device_id.UTF8String);
   NSArray* sorted_files =
     [files sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
   res = gap_send_files(self.stateWrapper.state,
