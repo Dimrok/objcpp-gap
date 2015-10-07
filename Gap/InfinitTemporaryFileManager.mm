@@ -240,14 +240,19 @@ static dispatch_once_t _instance_token = 0;
 {
   if (!transaction.from_device || !transaction.meta_id.length)
     return;
-  InfinitManagedFiles* temp = [self.transaction_map objectForKey:transaction.id_];
-  if (temp && transaction.meta_id.length)
+  InfinitManagedFiles* managed_files = [self.transaction_map objectForKey:transaction.id_];
+  if (managed_files)
   {
+    ELLE_TRACE("%s: set transaction id (%s) for managed files (%s)", self.description.UTF8String,
+               transaction.meta_id.UTF8String, managed_files.uuid.UTF8String);
     [self.transaction_map removeObjectForKey:transaction.id_];
-    [self.transaction_map setObject:temp forKey:transaction.meta_id];
+    [self.transaction_map setObject:managed_files forKey:transaction.meta_id];
+  }
+  else
+  {
+    managed_files = [self.transaction_map objectForKey:transaction.meta_id];
   }
 
-  InfinitManagedFiles* managed_files = [self.transaction_map objectForKey:transaction.meta_id];
   if (managed_files == nil)
     return;
 
@@ -298,6 +303,9 @@ static dispatch_once_t _instance_token = 0;
                 toManagedFiles:(InfinitManagedFiles*)managed_files
                completionBlock:(InfinitTemporaryFileManagerCallback)block
 {
+  
+  if (!list_.count)
+    return;
   ELLE_TRACE("%s: adding %lu items to %s",
              self.description.UTF8String, list_.count, managed_files.uuid.UTF8String);
   if (![self.files_map objectForKey:managed_files.uuid])
@@ -346,6 +354,8 @@ static dispatch_once_t _instance_token = 0;
                 toManagedFiles:(InfinitManagedFiles*)managed_files
                completionBlock:(InfinitTemporaryFileManagerCallback)block
 {
+  if (!list_.count)
+    return;
   ELLE_TRACE("%s: adding %lu items to %s",
              self.description.UTF8String, list_.count, managed_files.uuid.UTF8String);
   if (![self.files_map objectForKey:managed_files.uuid])
