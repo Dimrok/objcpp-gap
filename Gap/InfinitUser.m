@@ -127,6 +127,8 @@ ghostInvitationURL:(NSString*)ghost_invitation_url
 
 - (BOOL)isEqual:(id)object
 {
+  if (object == self)
+    return YES;
   if (![object isKindOfClass:self.class])
     return NO;
   if ([self.id_ isEqualToNumber:[object id_]])
