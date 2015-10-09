@@ -153,6 +153,8 @@
 
 - (BOOL)isEqual:(id)object
 {
+  if (object == self)
+    return YES;
   if (![object isKindOfClass:InfinitTransaction.class])
     return NO;
   InfinitTransaction* other = object;
