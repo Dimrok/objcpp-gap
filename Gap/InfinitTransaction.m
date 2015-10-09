@@ -174,6 +174,11 @@
   return NSOrderedSame;
 }
 
+- (NSUInteger)hash
+{
+  return self.meta_id.hash;
+}
+
 #pragma mark - Description
 
 - (NSString*)status_text
