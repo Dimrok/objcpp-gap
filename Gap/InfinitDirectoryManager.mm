@@ -314,4 +314,19 @@ static dispatch_once_t _instance_token = 0;
   return res;
 }
 
+- (uint64_t)folderSize:(NSString*)folder_path
+{
+  NSArray* files = [[NSFileManager defaultManager] subpathsOfDirectoryAtPath:folder_path error:nil];
+  NSEnumerator* enumerator = [files objectEnumerator];
+  NSString* file_name;
+  uint64_t res = 0;
+  while (file_name = [enumerator nextObject])
+  {
+    NSString* path = [folder_path stringByAppendingPathComponent:file_name];
+    NSDictionary* dict = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
+    res += [dict fileSize];
+  }
+  return res;
+}
+
 @end

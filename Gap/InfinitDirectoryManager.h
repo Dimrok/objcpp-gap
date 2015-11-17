@@ -28,4 +28,6 @@
 
 - (NSString*)downloadDirectoryForTransaction:(InfinitTransaction*)transaction;
 
+- (uint64_t)folderSize:(NSString*)folder_path;
+
 @end
