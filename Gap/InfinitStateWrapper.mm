@@ -33,8 +33,25 @@ static BOOL _production = NO;
     NSString* free_space = @([InfinitDirectoryManager sharedInstance].free_space).infinit_fileSize;
     ELLE_LOG("%s: started state with %s of free space in download directory",
              self.description.UTF8String, free_space.UTF8String);
+    [self diskUsage];
   }
   return self;
+}
+
+- (void)diskUsage
+{
+  InfinitDirectoryManager* manager = [InfinitDirectoryManager sharedInstance];
+  const char* desc = self.description.UTF8String;
+  NSString* folder_size = @([manager folderSize:manager.download_directory]).infinit_fileSize;
+  ELLE_LOG("%s: download folder usage: %s", desc, folder_size.UTF8String);
+  folder_size = @([manager folderSize:manager.avatar_cache_directory]).infinit_fileSize;
+  ELLE_LOG("%s: avatar folder usage: %s", desc, folder_size.UTF8String);
+  folder_size = @([manager folderSize:manager.temporary_files_directory]).infinit_fileSize;
+  ELLE_LOG("%s: temporary files folder usage: %s", desc, folder_size.UTF8String);
+  folder_size = @([manager folderSize:manager.thumbnail_cache_directory]).infinit_fileSize;
+  ELLE_LOG("%s: download thumbnail cache folder usage: %s", desc, folder_size.UTF8String);
+  folder_size = @([manager folderSize:manager.upload_thumbnail_cache_directory]).infinit_fileSize;
+  ELLE_LOG("%s: upload thumbnail cache folder usage: %s", desc, folder_size.UTF8String);
 }
 
 - (void)dealloc
