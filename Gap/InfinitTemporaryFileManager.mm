@@ -72,6 +72,11 @@ static dispatch_once_t _instance_token = 0;
                                                name:UIApplicationWillTerminateNotification
                                              object:nil];
   _ready = YES;
+  dispatch_async(dispatch_get_main_queue(), ^
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_TEMPORARY_FILE_MANAGER_READY
+                                                        object:nil];
+  });
 }
 
 - (void)clearModel
@@ -111,11 +116,6 @@ static dispatch_once_t _instance_token = 0;
     ELLE_WARN("%s: removing old files: %s", self.description.UTF8String, uuid.UTF8String);
     [self deleteManagedFiles:uuid force:YES];
   }
-  dispatch_async(dispatch_get_main_queue(), ^
-  {
-    [[NSNotificationCenter defaultCenter] postNotificationName:INFINIT_TEMPORARY_FILE_MANAGER_READY
-                                                        object:nil];
-  });
 }
 
 - (void)_cleanOrphans
@@ -124,9 +124,7 @@ static dispatch_once_t _instance_token = 0;
   for (InfinitManagedFiles* managed_files in self.files_map.allValues)
   {
     if ([self.transaction_map allKeysForObject:managed_files].count == 0)
-    {
       [orphans addObject:managed_files.uuid];
-    }
   }
   for (NSString* uuid in orphans)
   {
@@ -141,9 +139,7 @@ static dispatch_once_t _instance_token = 0;
     [NSTemporaryDirectory() stringByAppendingPathComponent:self.managed_root.lastPathComponent];
   // Remove old temporary files root.
   if ([[NSFileManager defaultManager] fileExistsAtPath:old_managed_root isDirectory:NULL])
-  {
     [[NSFileManager defaultManager] removeItemAtPath:old_managed_root error:nil];
-  }
   NSMutableSet* remove_keys = [NSMutableSet set];
   InfinitLinkTransactionManager* l_manager = [InfinitLinkTransactionManager sharedInstance];
   InfinitPeerTransactionManager* p_manager = [InfinitPeerTransactionManager sharedInstance];
@@ -152,11 +148,19 @@ static dispatch_once_t _instance_token = 0;
   for (id key in self.transaction_map.allKeys)
   {
     InfinitManagedFiles* managed_files = [self.transaction_map objectForKey:key];
-    // Transactions without meta ids are useless as are ones that we no longer track in our managers
-    if (![key isKindOfClass:NSString.class] ||
-        !([l_manager transactionWithMetaId:key] || [p_manager transactionWithMetaId:key]))
+    // Transactions without meta ids are useless.
+    if (![key isKindOfClass:NSString.class])
     {
       ELLE_WARN("%s: removing files for transaction without meta ID: %s",
+                self.description.UTF8String, managed_files.uuid.UTF8String);
+      [remove_keys addObjectsFromArray:[self.transaction_map allKeysForObject:managed_files]];
+      [self deleteManagedFiles:managed_files.uuid force:YES];
+    }
+    // Transactions which aren't in either of the managers are useless too.
+    else if ([l_manager transactionWithMetaId:key] == nil &&
+             [p_manager transactionWithMetaId:key] == nil)
+    {
+      ELLE_WARN("%s: removing files with no corresponding transaction in manager: %s",
                 self.description.UTF8String, managed_files.uuid.UTF8String);
       [remove_keys addObjectsFromArray:[self.transaction_map allKeysForObject:managed_files]];
       [self deleteManagedFiles:managed_files.uuid force:YES];
@@ -382,18 +386,18 @@ static dispatch_once_t _instance_token = 0;
     {
       [self _addPHAsset:asset toManagedFiles:managed_files withError:&child_error];
       if (child_error)
+      {
+        ELLE_TRACE("%s: got child error, breaking", self.description.UTF8String)
+        managed_files.done_copying_block = nil;
         break;
+      }
     }
-    if (child_error)
-      managed_files.done_copying_block = nil;
     dispatch_async(dispatch_get_main_queue(), ^
     {
       for (PHAsset* asset in list)
         [managed_files.assets_copying removeObject:asset.localIdentifier];
       managed_files.copying = NO;
-      BOOL success = YES;
-      if (child_error)
-        success = NO;
+      BOOL success = child_error ? NO : YES;
       block(success, child_error);
     });
   });
@@ -763,7 +767,7 @@ static dispatch_once_t _instance_token = 0;
     [[PHImageManager defaultManager] requestAVAssetForVideo:asset
                                                     options:options
                                               resultHandler:^(AVAsset* av_asset,
-                                                              AVAudioMix* audioMix,
+                                                              AVAudioMix* audio_mix,
                                                               NSDictionary* info)
     {
       InfinitTemporaryFileManager* manager = [InfinitTemporaryFileManager sharedInstance];
@@ -908,11 +912,13 @@ static dispatch_once_t _instance_token = 0;
              self.description.UTF8String, managed_files.uuid.UTF8String, error_message.UTF8String);
     res = NO;
   }
-  dispatch_sync(dispatch_get_main_queue(), ^
+  else
   {
-    if (path.length)
+    dispatch_sync(dispatch_get_main_queue(), ^
+    {
       [managed_files.asset_map setObject:path forKey:asset.localIdentifier];
-  });
+    });
+  }
   return res;
 }
 
